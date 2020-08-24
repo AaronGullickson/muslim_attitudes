@@ -1,0 +1,5 @@
+# Pew Data
+
+The data from the Pew Research Center are from two surveys. The bulk of the data come from [The World's Muslims](https://www.pewforum.org/2013/04/30/the-worlds-muslims-religion-politics-society-overview/) survey conducted between conducted between 2011-2012. This data was supplemented by data on sub-Saharan African countries with a similar questionnaire from the [Tolerance an Tension: Islam and Christianity in Sub-Saharan Africa] survey. Both surveys were downloaded from Pew's website and are provided here in separate directories which contain the dataset (in SPSS format), as well as questionnaires and codebooks.
+
+Pew Research Center bears no responsibility for the analyses or interpretations of the data presented here. The opinions expressed herein, including any implications for policy, are those of the authors and not of Pew Research Center.
