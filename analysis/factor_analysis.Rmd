@@ -24,9 +24,7 @@ In each case, we use a correlogram to graphically examine correlations between v
 
 We use EFA with oblimin (oblique) rotation rather than PCA for the analysis. There is considerable debate about which technique is more appropriate, a lot of which hinges on whether the goal is to truly identify a latent construct or just provide a simple data reduction of collinear terms - which strike me as theoretical not always separable. In most cases, the techniques produce similar resuls. We have also repeated the anlalysis here with PCA and reached the same conclusion. We note below the only case where PCA produced a notable difference. 
 
-## Independent Variables
-
-### Religiosity 
+## Religiosity 
 <a href="#top">Back to top</a>
 
 This is a classic measure in studies of religion in the Western context, but is often used as a multi-dimensional construct measuring a variety of different concepts. We are using it as a measure of the intensity of religious belief and practice in a person's life, separate from specific kinds of practices, rituals, and beliefs. We are considering the four variables below. 
@@ -77,14 +75,14 @@ loadings(fa(cor(religiosity[,c(-4,-5)], use="pairwise.complete.obs"),1,rotate=ro
 100*round(prop.table(table(pew$attend, pew$gender),2),3)
 ```
 
-#### Summary
+### Summary
 
 As the analysis above shows, the religiosity measures did hang together pretty well as a single factor. Cronbach's $\alpha$ was reasonably high and the factor loadings from the EFA were also strong, although somewhat weaker for the follow_prophet variable. Additionally, when split into two factors, the follow_prophet variable seems to have some distinctiveness. There is also a potential issue with attendance, because the expectation about mosque attendance is different for men and women. This expectation shows up in the data where women attend mosque far less regularly. This may make attendance slightly problematic for measuring religiosity, because women will incorrectly look like they have less religiosity.
 
 Based on these results and data availability, I recommend that we construct a scale using attend, relig_important, and prayer in order to maximize sample size.  These variables are available across all countries and hang together well as a single factor.  
 
 
-### Theological Conservatism
+## Theological Conservatism
 <a href="#top">Back to top</a>
 
 Theological conservatism is a common characteristic in studies of religion in the West. Olson and Carroll have created a composite variable from the GSS data in the US. Theological conservatism measures the importance of literalism and orthodoxy in religious belief. These are the candidate variables that we are considering as part of theological conservatism. 
@@ -139,13 +137,13 @@ alpha(cor(theocons[,1:3], use="pairwise.complete.obs"))
 loadings(fa(cor(theocons[,1:3], use="pairwise.complete.obs"),1,rotate=rotation_choice))
 ```
 
-#### Summary
+### Summary
 
 The variables for theological conservatism did not hold together well. Cronback's $\alpha$ is low and a lot of the factor loadings are low as well. When split into two or three factors, nothing really holds together in a meaningful way. 
 
 Based on these results, I would recommend that we not create a scale here, but that we consider including islam_truth, islam_oneway, and believe_moral as separate independent variables. 
 
-### Social conservatism
+## Social conservatism
 <a href="#top">Back to top</a>
 
 Social conservatism all relate to Q84. Respondents were asked whether the following behaviors were morally acceptable, morally wrong, or not a moral issue. 
@@ -200,12 +198,12 @@ fa.diagram(fa(cor(morality[,-1*1:2], use="pairwise.complete.obs"),2,rotate=rotat
 
 ```
 
-#### Summary
+### Summary
 
 The morality variables seem to hold together well as a single construct, except for the moral_divorce and moral_fertility items which seem to be tapping something else. There is also a secondary split between the items involving "life and death" (suicide, euthanasia, and abortion) but I don't think there is a need for the complexity of two separate constructs here as the factor loadings and Cronbach's $\alpha$ for a single factor are quite good. I would recommend we these items wihout moral_divorce and moral_fertility to construct a single scale. 
 
 
-### Attitude toward the west
+## Attitude toward the west
 <a href="#top">Back to top</a>
 
 
@@ -238,11 +236,11 @@ loadings(fa(cor(western, use="pairwise.complete.obs"),1,rotate=rotation_choice))
 loadings(fa(cor(western[,-3], use="pairwise.complete.obs"),1,rotate=rotation_choice))
 ```
 
-#### Summary
+### Summary
 
 The two westernization questions are reasonably correlated with each other but not with conflict_modern. I would recommend that we combine them into a single scale and keep conflict_modern as a separate variable.
 
-### Separation of Independent Variables
+## Separation of Independent Variables
 <a href="#top">Back to top</a>
 
 If I combine all four sets of independent variables together after cutting out variables that are missing for SS Africa, how well do they separate into the underlying constructs that I am exploring? 
@@ -287,12 +285,10 @@ The results show the strong separation of the religiosity and morality measures,
 - Create an anti-western culture scale based on western_immoral and western_cultural.
 - Include islam_oneway, islam_truth, believe_moral, and conflict_modern in the models as separate variables. 
 
-## Dependent Variables
-
-### Support for violent practices
+## Support for violent practices
 <a href="#top">Back to top</a>
 
-Here I want to capture whether respondents favor harsh and violent responses to violations of the social fabric/religious norms. So stoning, cutting off hands, honor killings, death for apostasy and the like. There is also a question about whether it is justified to kill civilians in defense of Islam. That variable seems like the closest to a "support for terrorism" variable that we have. 
+Here we want to capture whether respondents favor harsh and violent responses to violations of the social fabric/religious norms. So stoning, cutting off hands, honor killings, death for apostasy and the like. There is also a question about whether it is justified to kill civilians in defense of Islam. That variable seems like the closest to a "support for terrorism" variable that we have. 
 
 +------------------------+---------------------------------------+---------------------------+
 | Name                   | Question                              | Missing Countries         |
@@ -358,7 +354,7 @@ vss(cor(violent[,c(-1,-2,-6)], use="pairwise.complete.obs"))
 loadings(fa(cor(violent[,c(-1,-2,-6)], use="pairwise.complete.obs"),1,rotate=rotation_choice))
 ```
 
-#### Summary
+### Summary
 
 The results here suggest that while there are decent correlations between all variables, they seem to separate into two groupings. First, honor killings of men and women are highly correlated and are also reasonably correlated with civilian_target. Then death_apostasy, severe_corporal, and stone_adultery hang together well as a single factor. When split into three factors, death_apostasy seems a little different from the other two, but there is a high correlation between the two common factors. Its also worth nothing that when doing a PCA vs. EFA, it is civilian_target that shows up as different in the three factor solution (one of the only cases where EFA and PCA produces somewhat different results in our analysis). 
 
@@ -367,158 +363,3 @@ Honor killing is a little more problematic as a treatment of our dependent varia
 Based on the results, my recommendation would be to combine death_apostasy, severe_corporal, and stone_adultery into a single scale of "support for violent practices" and treat civilian_target as a separate dependent variable measuring "support for terrorism." 
 
 
-
-### Anti-Secularism
-<a href="#top">Back to top</a>
-
-I am measuring ant-secularism here as a preference for Islam and Islamic doctrine to occupy a privileged position within government, law, and civil society. We have several candidate variables, but also some significant missing values by country.
-
-+------------------------+---------------------------------------+---------------------------+
-| Name                   | Question                              | Missing Countries         |
-+========================+=======================================+===========================+
-| islamic_parties (Q13)  |Islamic parties better/worse than other| - Albania                 |
-|                        |political parties?                     | - Iran                    |
-|                        |                                       | - Russia                  |
-|                        |                                       | - Thailand                |
-|                        |                                       | - Uzbekistan              |
-|                        |                                       | - Sub-Saharan Africa      |
-+------------------------+---------------------------------------+---------------------------+
-| leaders_influence (Q15)|How much influence should religious    | - Morocco                 |
-|leaders_influence_binary|leaders have in political matters?     | - Thailand                |
-|                        |In Sub-saharan African sample, this was| - Uzbekistan              |
-|                        |asked slightly differently and R only  |                           |
-|                        |given binary prefrence, so we also     |                           |
-|                        |create binary version of variable      |                           |
-+------------------------+---------------------------------------+---------------------------+
-| sharia_law2(Q79a,80,81)|Do you favor making Sharia the official| - Uzbekistan              |
-| sharia_law3            |law of the land? Q81 further determines| - Wording slightly        |
-|                        |whether R wants universal Sharia or    |  different in Russia,     |
-|                        |only for Muslims. This question is not |  Thailand, and Iran       |
-|                        |asked for SS African sample, so we     |                           |
-|                        |use binary and trinary variables       |                           |
-+------------------------+---------------------------------------+---------------------------+
-| relig_judge (Q92a)     |Give muslim leaders and religious      | - Iran                    |
-|                        |judges the power to decide family and  | - Morocco                 |
-|                        |property disputes.                     | - Uzbekistan              |
-|                        |                                       | - Wording slightly        |
-|                        |                                       |different in Russia,       |
-|                        |                                       |Thailand, and Turkey       |
-+------------------------+---------------------------------------+---------------------------+
-
-```{r anti_secularism}
-anti_secular <- cbind(islamic_parties=as.numeric(pew$islamic_parties),
-                  leaders_influence_binary=as.numeric(pew$leaders_influence_binary),
-                  sharia_official=as.numeric(pew$sharia_law2),
-                  relig_judge=as.numeric(pew$relig_judge))
-corrgram(anti_secular, upper.panel="panel.cor", order="PCA")
-
-alpha(cor(anti_secular, use="pairwise.complete.obs"))
-nfactors(cor(anti_secular, use="pairwise.complete.obs"))
-
-loadings(fa(cor(anti_secular, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(anti_secular, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-loadings(fa(cor(anti_secular, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-fa.diagram(fa(cor(anti_secular, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-
-#without islamic parties, since that is the weakest and missing for SS Africa
-vss(cor(anti_secular[,-1], use="pairwise.complete.obs"))
-loadings(fa(cor(anti_secular[,-1], use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(anti_secular[,-1], use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(anti_secular[,-1], use="pairwise.complete.obs"),2,rotate=rotation_choice))
-```
-
-#### Summary
-
-The three variables of leaders_influence_binary, sharia_law2, and relig_judge hang together pretty  well, with a decent Cronbach's $\alpha$ and good factor loadings. There might be some argument that leaders_influence_binary is not as correlated as highly as the others and that it fits better in a two-factor model with islamic_parties, but it works pretty well and islamic_parties is not available for the SS African sample. I also worry that islamic_parties might may be very country specific depending on the actual Islamist parties and non-Islamist parties in a country. 
-
-Based on this I would recommend we use the three variables of leaders_influence_binary, sharia_law2, and relig_judge to construct a scale. 
-
-
-### Women's Rights
-<a href="#top">Back to top</a>
-
-Attitudes towards women's rights and women's equality. I think we are going to have to drop this one anyway because we are missing three of four variables in SS Africa, but I will leave it here. 
-
-+------------------------+---------------------------------------+---------------------------+
-| Name                   | Question                              | Missing Countries         |
-+========================+=======================================+===========================+
-| right_veil (Q58)       |Women should have the right to decide  | - Iran                    |
-|                        |to veil (reverse-coded)                |                           |
-+------------------------+---------------------------------------+---------------------------+
-| right_divorce (Q77)    |Wife should have right to divorce      | - Afghanistan             |
-|                        |husband (reverse-coded)                | - Iran                    |
-|                        |                                       | - Sub-Saharan Africa      |
-+------------------------+---------------------------------------+---------------------------+
-| obey_husband (Q78)     |A wife must always ovey her husband    | - Iran                    |
-|                        |                                       | - Sub-Saharan Africa      |
-+------------------------+---------------------------------------+---------------------------+
-| sons_inherit (Q83 )    |Sons should have greater right than    | - Iran                    |
-|                        |daughters to inheritance.              | - Sub-Saharan Africa      |
-+------------------------+---------------------------------------+---------------------------+
-
-```{r womens_rights}
-womensrights <- cbind(right_veil=as.numeric(pew$right_veil),
-                      right_divorce=as.numeric(pew$right_divorce),
-                      obey_husband=as.numeric(pew$obey_husband),
-                      sons_inherit=as.numeric(pew$sons_inherit))
-corrgram(womensrights, upper.panel="panel.cor", order="PCA")
-
-alpha(cor(womensrights, use="pairwise.complete.obs"))
-
-nfactors(cor(womensrights, use="pairwise.complete.obs"))
-
-loadings(fa(cor(womensrights, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(womensrights, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-loadings(fa(cor(womensrights, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-fa.diagram(fa(cor(womensrights, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-
-#hmm suggests two separate factors, one around issues of "right to" and the other around conservative values
-```
-
-#### Summary
-
-We have a couple of difficulties with this construct. First the data are missing on three of the four variables for SS Africa, meaning our analysis would probably be limited to the non-African sample. Second, the alpha and factor loadings for one factor are somewhat weak.
-
-Based on these results, I would recommend we drop this as a dependent variable for this paper.
-
-### Separation of Dependent Variables
-<a href="#top">Back to top</a>
-
-Now lets combine the dependent variables for violent practices and anti-secularism, in cases where we are not missing SS Africa and see how come out in a combined EFA.
-
-```{r separate_dependent_corrgram, echo=FALSE}
-
-dv <- cbind(violent[,3:6], anti_secular[,-1])
-
-corrgram(dv, upper.panel="panel.cor", order="PCA")
-```
-
-Map out the factor loadings when I use three factors.
-
-```{r separate_dependent_loadings, echo=FALSE}
-nfactors(cor(dv, use="pairwise.complete.obs"))
-
-fa_dv <- fa(cor(dv, use="pairwise.complete.obs"),3,rotate=rotation_choice)
-loadings(fa_dv)
-
-plot(fa_dv, labels=colnames(dv), show.points=FALSE,
-     cluster=c(1,1,1,2,3,3,3))
-fa.diagram(fa_dv)
-
-#what happens with two and four
-fa_dv <- fa(cor(dv, use="pairwise.complete.obs"),2,rotate=rotation_choice)
-loadings(fa_dv)
-fa.diagram(fa_dv)
-
-fa_dv <- fa(cor(dv, use="pairwise.complete.obs"),4,rotate=rotation_choice)
-loadings(fa_dv)
-fa.diagram(fa_dv)
-```
-
-#### Summary
-
-There is a very clear and obvious separation into two multi-item factors measuring support for violent practices and anti-secularism, with the civilian_target question as distinct. The only slightly ambigious question here is the leaders_influence_binary item which had a bit weaker factor loading on anti-secularism than the other two items. Based on this, I recommend that we use three dependent variables for the analysis:
-
-- **support for violent prcactices** scale composed of death_apostasy, severe_corporal, and stone_adultery.
-- **anti-secular views** scale composed of leaders_influence_binary, sharia_official, and relig_judge.
-- **support for terrorism** scale from civilian_target variable. 
