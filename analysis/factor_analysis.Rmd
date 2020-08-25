@@ -276,7 +276,7 @@ plot(fa_iv, labels=colnames(iv), show.points=FALSE,
 fa.diagram(fa_iv)
 ```
 
-#### Summary
+### Summary
 
 The results show the strong separation of the religiosity and morality measures, with the exception of moral_divorce and moral_fertility. It also shows the relative weakness of the theological conservativism variables and the uniqueness of the conflict with modernity. Based on this we will do the following:
 
