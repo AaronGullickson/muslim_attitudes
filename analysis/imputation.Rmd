@@ -1,0 +1,123 @@
+---
+title: "Missing Value Imputation"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+load(here("analysis","output","pewdata_combined.RData"))
+source(here("analysis","useful_functions.R"))
+source(here("analysis","check_packages.R"))
+```
+
+## Introduction
+
+This R Markdown file will conduct the missing value imputation for the project, once the data have been cleaned, organized and merged The missing value imputation procedure itself takes time and is computationally intensive. The final imputed datasets from this script will be saved as an RData object that is a list of the five separate complete datasets. 
+
+There are a couple of things that need to be considered in this missing value procedure. 
+
+- We do not want to assign missing values for cases where the question was not asked in the country. We have already removed a few countries that are missing questions key for the analysis, so there shouldn't be too much of this. Practically, we will run the imputation procedure on all variables and then re-assign missing values to cases where a question was missing for an entire country. There are two exceptions to this rule. Afghanistan and Lebanon are missing just a few questions that we use as control variables, so we are going to leave these imputed values so we can keep these countries in the full model. 
+- Some research suggests that imputing on the DV reduces efficiency. The general recommendation is that you include the DV in the imputation procedure but then re-assign missing values afterwards. We will follow this advice. 
+
+## Missing Value Analysis
+
+```{r analytic_sample, echo=FALSE}
+#First lets reduce the number of variables under consideration here to just the
+#ones that I plan on using in the model at some point. I can add variables to
+#this chain but will also need to check for country missing values and reassign
+#missing values if I am adding a DV
+
+analytic_sample <- subset(pew, 
+                          select=c("country",
+                                   "gender","age","marital","nchild","urbanicity","immigrant",
+                                   "incomeqq","subj_econ","edattain.simple","educqq",
+                                   "denom","sufi",
+                                   "attend","relig_important","prayer",
+                                   "believe_moral","follow_prophet",
+                                   "islam_truth","islam_oneway",
+                                   "moral_alcohol","moral_euthanasia","moral_suicide",
+                                   "moral_abortion","moral_prostitution",
+                                   "moral_premar_sex","moral_gay",
+                                   "leaders_influence_binary","sharia_law2","relig_judge",
+                                   "conflict_modern",
+                                   "right_veil","right_divorce","obey_husband","sons_inherit",
+                                   "death_apostasy","severe_corporal","stone_adultery",
+                                   "civilian_target",
+                                   "democracy","western_culture","western_immoral"))
+```
+
+Lets start by looking at the percent of values missing and which countries are missing for each variable.
+
+```{r missingvalue_report_pre, echo=FALSE}
+#create a table of percent missing and missing by country
+percentMissing <- apply(analytic_sample,2,function(x) round(100*sum(is.na(x))/length(x),1))
+missingCountries <- lapply(analytic_sample, getCountriesMissing)
+x <- NULL
+for(i in 1:length(missingCountries)) {
+  missing <- missingCountries[[i]]
+  x <- c(x, paste(missing, sep="", collapse=", "))
+}
+tab <- cbind("Percent Missing"=format(percentMissing),"Countries Missing"=x)
+knitr::kable(tab, caption = "Missing value report for all variables in the analytic sample",
+             align=c("r","l"))
+```
+
+## The Imputation
+
+Now lets run the imputation. Five imputations should be good. Note that country is not included as a variable in the imputation as a predictor. I believe the mice routine was failing because of all values being missing for some variables in some countries. It seems to work fine once I take that variable out. I have also set the seed for the final run here so that the results are reproducible
+
+```{r imputation}
+system.time(imputed_samples <- mice(analytic_sample[,-1], 5, print=FALSE, seed=2))
+```
+
+Now we need to go back in and re-assign missing values for dependent variables and cases where an entire country was missing. When, we are done, we will re-produce the missing value table above.
+
+```{r reassign_missing, echo=FALSE}
+#keep in mind that if you add variables to the analytic sample that are DVs, you need to add them
+#here as well.
+depvars <- c("leaders_influence_binary","sharia_law2","relig_judge",
+             "right_veil","right_divorce","obey_husband","sons_inherit",
+             "death_apostasy","severe_corporal","stone_adultery",
+             "civilian_target")
+
+analytic_samples <- vector("list",5)
+for(i in 1:5) {
+  imputed_sample <- mice::complete(imputed_samples, i)
+  #add country back into imputed sample
+  imputed_sample <- cbind("country"=analytic_sample$country, imputed_sample)
+  for(variable in names(percentMissing)) {
+    if(variable %in% depvars) {
+      imputed_sample[is.na(analytic_sample[,variable]),variable] <- NA
+    } else {
+      if(length(missingCountries[[variable]])>0) {
+        imputed_sample[imputed_sample$country %in% missingCountries[[variable]] &
+                         imputed_sample$country!="Afghanistan" & imputed_sample$country!="Lebanon", variable] <- NA
+      }
+    }
+  }
+  analytic_samples[[i]] <- imputed_sample
+}
+```
+
+```{r missingvalue_report_post, echo=FALSE}
+#create a table of percent missing and missing by country
+percentMissing <- apply(analytic_samples[[1]],2,function(x) round(100*sum(is.na(x))/length(x),1))
+missingCountries <- lapply(analytic_samples[[1]], getCountriesMissing)
+x <- NULL
+for(i in 1:length(missingCountries)) {
+  missing <- missingCountries[[i]]
+  x <- c(x, paste(missing, sep="", collapse=", "))
+}
+tab <- cbind("Percent Missing"=format(percentMissing),"Countries Missing"=x)
+knitr::kable(tab, caption = "Missing value report for all variables in the first analytic sample after multiple imputation",
+             align=c("r","l"))
+```
+
+### Save Data
+
+Finally, I will save the imputed data to my output directory. 
+
+```{r save}
+save(analytic_samples, file=here("analysis","output","imputed_samples.RData"))
+```
+

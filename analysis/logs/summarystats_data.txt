@@ -1,0 +1,504 @@
+SUMMARY
+--------------------------------------------------------------------------------
+        country          caseid           weight            gender     
+ Bangladesh : 1918   Min.   :     1   Min.   :0.008924   Male  :18232  
+ Indonesia  : 1880   1st Qu.:110767   1st Qu.:0.608829   Female:17168  
+ Egypt      : 1798   Median :120690   Median :0.885670                 
+ Afghanistan: 1509   Mean   :287738   Mean   :0.959587                 
+ Turkey     : 1485   3rd Qu.:133841   3rd Qu.:1.176269                 
+ Tajikistan : 1453   Max.   :922141   Max.   :9.469268                 
+ Djibouti   : 1452                                                     
+ Pakistan   : 1450                                                     
+ Tunisia    : 1450                                                     
+ (Other)    :21005                                                     
+             age                     marital          nchild      urbanicity   
+ Age 18-24     :8257   Never married     : 8584   Min.   :0.000   Rural:17735  
+ 25-29         :5240   Married           :23830   1st Qu.:0.000   Urban:17665  
+ 30-34         :4478   Divorced/Separated: 1007   Median :2.000                
+ 35-39         :3833   Widowed           : 1434   Mean   :2.104                
+ 40-44         :3493   NA's              :  545   3rd Qu.:3.000                
+ 45-49         :2895                              Max.   :6.000                
+ 50-54         :2446                              NA's   :1177                 
+ 55-59         :1981                                                           
+ Age 60 or over:2546                                                           
+ NA's          : 231                                                           
+ immigrant       use_internet social_networking own_cellphone    incomeqq    
+ Mode :logical   No  :25456   No  :20843        No  :10182    Min.   :0.001  
+ FALSE:33931     Yes : 9589   Yes : 6487        Yes :25017    1st Qu.:0.254  
+ TRUE :1345      NA's:  355   NA's: 8070        NA's:  201    Median :0.484  
+ NA's :124                                                    Mean   :0.502  
+                                                              3rd Qu.:0.749  
+                                                              Max.   :0.999  
+                                                              NA's   :3469   
+                                                                             
+                                                                             
+                                                                             
+         subj_econ                  edattain            edattain.simple 
+ Very bad     : 4505   Less than primary: 5193   Primary or less:12565  
+ Somewhat bad : 9284   Primary          : 7859   Secondary      :16015  
+ Somewhat good:17205   Secondary        :10788   Post-Secondary : 6467  
+ Very good    : 3888   University       : 3710   NA's           :  353  
+ NA's         :  518   NA's             : 7850                          
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+     educqq                         denom          sufi        
+ Min.   :0.0005   Sunni                :20467   Mode :logical  
+ 1st Qu.:0.2562   Shia                 : 2317   FALSE:27372    
+ Median :0.4660   Other                :  804   TRUE :7012     
+ Mean   :0.4919   Nothing in particular: 9998   NA's :1016     
+ 3rd Qu.:0.7209   NA's                 : 1814                  
+ Max.   :0.9997                                                
+ NA's   :405                                                   
+                                                               
+                                                               
+                                                               
+                   attend                  relig_important 
+ Never                : 7708   Not at all important:  431  
+ Seldom               : 3358   Not too important   : 1820  
+ A few times a year   : 2965   Somewhat important  : 6749  
+ Once or twice a month: 1981   Very important      :26071  
+ Once a week          : 6744   NA's                :  329  
+ More than once a week:12187                               
+ NA's                 :  457                               
+                                                           
+                                                           
+                                                           
+                 prayer                      read_koran  
+ Never              : 2482   Never                :3148  
+ Seldom             : 2854   A few times a year   :4391  
+ A few times a month: 1242   Once or twice a month:4344  
+ Once a week        : 1392   At least once a week :7296  
+ A few times a week : 2423   Every day            :7687  
+ Once a day         : 2739   NA's                 :8534  
+ Several times a day:21649                               
+ NA's               :  619                               
+                                                         
+                                                         
+                                     believe_moral        follow_prophet 
+ Not necessary to believe in God to be moral: 7262   Not at all  : 1300  
+ Necessary to believe in God to be moral    :25853   Not too much: 5873  
+ NA's                                       : 2285   A little    :10189  
+                                                     A lot       : 8268  
+                                                     NA's        : 9770  
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                      islam_truth                    islam_oneway  
+ Truth in many religions    : 5432   Many ways to interpret: 9766  
+ Both/Neither               : 1138   Neither/Both          : 1022  
+ Islam is the one true faith:26000   One way to interpret  :22096  
+ NA's                       : 2830   NA's                  : 2516  
+                                                                   
+                                                                   
+                                                                   
+                                                                   
+                                                                   
+                                                                   
+            sharia_god                     sharia_oneway  
+ Developed by men: 7384   Multiple Interpretations: 8486  
+ Both            : 1576   Neither                 :  451  
+ Word of God     :16431   One true Interpretation :12607  
+ NA's            :10009   NA's                    :13856  
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                   moral_divorce                     moral_polygamy 
+ Morally acceptable       :15451   Morally acceptable       :13492  
+ Depends/Not a moral issue: 8593   Depends/Not a moral issue: 7504  
+ Morally wrong            :10955   Morally wrong            :13780  
+ NA's                     :  401   NA's                     :  624  
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                  moral_fertility                    moral_alcohol  
+ Morally acceptable       :11063   Morally acceptable       : 2014  
+ Depends/Not a moral issue: 8079   Depends/Not a moral issue: 5512  
+ Morally wrong            : 7580   Morally wrong            :27377  
+ NA's                     : 8678   NA's                     :  497  
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                  moral_euthanasia                   moral_suicide  
+ Morally acceptable       : 1586   Morally acceptable       :  671  
+ Depends/Not a moral issue: 7260   Depends/Not a moral issue: 5165  
+ Morally wrong            :24734   Morally wrong            :29000  
+ NA's                     : 1820   NA's                     :  564  
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                   moral_abortion                  moral_prostitution
+ Morally acceptable       : 1677   Morally acceptable       :  640   
+ Depends/Not a moral issue: 7336   Depends/Not a moral issue: 2545   
+ Morally wrong            :25565   Morally wrong            :30028   
+ NA's                     :  822   NA's                     : 2187   
+                                                                     
+                                                                     
+                                                                     
+                                                                     
+                                                                     
+                                                                     
+                  moral_premar_sex                     moral_gay    
+ Morally acceptable       : 1713   Morally acceptable       :  885  
+ Depends/Not a moral issue: 3372   Depends/Not a moral issue: 2456  
+ Morally wrong            :28003   Morally wrong            :29253  
+ NA's                     : 2312   NA's                     : 2806  
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+       islamic_parties               leaders_influence
+ Worse         : 4261   No influence at all   :5378   
+ About the same: 9888   Not too much influence:5730   
+ Better        : 8586   Some influence        :8659   
+ NA's          :12665   Large influence       :6261   
+                        NA's                  :9372   
+                                                      
+                                                      
+                                                      
+                                                      
+                                                      
+         leaders_influence_binary sharia_law2                    sharia_law3   
+ Should keep out     :14405       Oppose:12003   Oppose                : 9282  
+ Should express views:19199       Favor :20327   Favor for muslims only: 8295  
+ NA's                : 1796       NA's  : 3070   Favor universal Sharia: 7244  
+                                                 NA's                  :10579  
+                                                                               
+                                                                               
+                                                                               
+                                                                               
+                                                                               
+                                                                               
+ relig_judge                    conflict_modern 
+ Oppose:13217   No, don’t think so      :20299  
+ Favor :19919   Yes, there is a conflict:11062  
+ NA's  : 2264   NA's                    : 4039  
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                           right_veil                right_divorce  
+ Should have right to decide    :21435   Right to divorce   :13395  
+ Neither/Both                   : 1404   Neither            : 1447  
+ Should not have right to decide:11646   No right to divorce:10205  
+ NA's                           :  915   NA's               :10353  
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+              obey_husband                 sons_inherit  
+ Completely disagree: 1749   Does not prefer sons:14370  
+ Mostly disagree    : 3451   Prefers sons        :12753  
+ Mostly agree       : 9129   NA's                : 8277  
+ Completely agree   :12594                               
+ NA's               : 8477                               
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+             honorkill_man              honorkill_woman  death_apostasy
+ Never justified    :15389   Never justified    :14313   Oppose:20695  
+ Rarely justified   : 4505   Rarely justified   : 3930   Favor :12469  
+ Sometimes justified: 3241   Sometimes justified: 3389   NA's  : 2236  
+ Often justified    : 2895   Often justified    : 4346                 
+ NA's               : 9370   NA's               : 9422                 
+                                                                       
+                                                                       
+                                                                       
+                                                                       
+                                                                       
+ severe_corporal stone_adultery            civilian_target 
+ Oppose:17297    Oppose:17298   Never justified    :21368  
+ Favor :16085    Favor :15723   Rarely justified   : 4778  
+ NA's  : 2018    NA's  : 2379   Sometimes justified: 3933  
+                                Often justified    : 2551  
+                                NA's               : 2770  
+                                                           
+                                                           
+                                                           
+                                                           
+                                                           
+         democracy                   say_govern   
+ Strong leader:11949   Completely disagree: 4915  
+ Democracy    :21277   Mostly disagree    : 6970  
+ NA's         : 2174   Mostly agree       :10394  
+                       Completely agree   :11501  
+                       NA's               : 1620  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                       western_culture 
+ I dislike western music, movies and television:17482  
+ I like western music, movies and television   :15843  
+ NA's                                          : 2075  
+                                                       
+                                                       
+                                                       
+                                                       
+                                                       
+                                                       
+                                                       
+                              western_immoral 
+ Western culture has NOT hurt morality:10222  
+ Western culture has hurt morality    :22355  
+ NA's                                 : 2823  
+                                              
+                                              
+                                              
+                                              
+                                              
+                                              
+                                              
+COUNTRIES WITH MISSING DATA
+--------------------------------------------------------------------------------
+$country
+character(0)
+
+$caseid
+character(0)
+
+$weight
+character(0)
+
+$gender
+character(0)
+
+$age
+character(0)
+
+$marital
+character(0)
+
+$nchild
+character(0)
+
+$urbanicity
+character(0)
+
+$immigrant
+character(0)
+
+$use_internet
+character(0)
+
+$social_networking
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$own_cellphone
+character(0)
+
+$incomeqq
+character(0)
+
+$subj_econ
+character(0)
+
+$edattain
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$edattain.simple
+character(0)
+
+$educqq
+character(0)
+
+$denom
+character(0)
+
+$sufi
+character(0)
+
+$attend
+character(0)
+
+$relig_important
+character(0)
+
+$prayer
+character(0)
+
+$read_koran
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$believe_moral
+[1] "Afghanistan"
+
+$follow_prophet
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$islam_truth
+[1] "Afghanistan"
+
+$islam_oneway
+character(0)
+
+$sharia_god
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$sharia_oneway
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Egypt"        
+ [5] "Ethiopia"      "Ghana"         "Guinea Bissau" "Jordan"       
+ [9] "Kenya"         "Liberia"       "Mali"          "Nigeria"      
+[13] "Senegal"       "Tanzania"      "Uganda"       
+
+$moral_divorce
+character(0)
+
+$moral_polygamy
+character(0)
+
+$moral_fertility
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$moral_alcohol
+character(0)
+
+$moral_euthanasia
+character(0)
+
+$moral_suicide
+character(0)
+
+$moral_abortion
+character(0)
+
+$moral_prostitution
+[1] "Afghanistan"
+
+$moral_premar_sex
+[1] "Afghanistan"
+
+$moral_gay
+[1] "Afghanistan"
+
+$islamic_parties
+ [1] "Albania"       "Cameroon"      "Chad"          "Djibouti"     
+ [5] "Ethiopia"      "Ghana"         "Guinea Bissau" "Kenya"        
+ [9] "Liberia"       "Mali"          "Nigeria"       "Russia"       
+[13] "Senegal"       "Tanzania"      "Uganda"       
+
+$leaders_influence
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$leaders_influence_binary
+character(0)
+
+$sharia_law2
+character(0)
+
+$sharia_law3
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$relig_judge
+character(0)
+
+$conflict_modern
+character(0)
+
+$right_veil
+character(0)
+
+$right_divorce
+ [1] "Afghanistan"   "Cameroon"      "Chad"          "Djibouti"     
+ [5] "Ethiopia"      "Ghana"         "Guinea Bissau" "Kenya"        
+ [9] "Liberia"       "Mali"          "Nigeria"       "Senegal"      
+[13] "Tanzania"      "Uganda"       
+
+$obey_husband
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$sons_inherit
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$honorkill_man
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$honorkill_woman
+ [1] "Cameroon"      "Chad"          "Djibouti"      "Ethiopia"     
+ [5] "Ghana"         "Guinea Bissau" "Kenya"         "Liberia"      
+ [9] "Mali"          "Nigeria"       "Senegal"       "Tanzania"     
+[13] "Uganda"       
+
+$death_apostasy
+character(0)
+
+$severe_corporal
+character(0)
+
+$stone_adultery
+character(0)
+
+$civilian_target
+[1] "Lebanon"
+
+$democracy
+character(0)
+
+$say_govern
+character(0)
+
+$western_culture
+[1] "Lebanon"
+
+$western_immoral
+[1] "Lebanon"
+
