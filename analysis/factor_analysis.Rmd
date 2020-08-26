@@ -8,9 +8,10 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-load("output/pewdata_combined.RData")
+library(here)
 library(psych)
 library(corrgram)
+load(here("analysis","output","pewdata_combined.RData"))
 rotation_choice <- "oblimin"
 ```
 
