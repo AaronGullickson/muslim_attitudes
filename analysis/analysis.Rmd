@@ -410,18 +410,21 @@ convert_model_re <- function(model) {
 knitreg(lapply(list(results_attitudes, results_relig_sep, results_relig2),
                convert_model_re),
         digits=3,
-        # custom.coef.names=c("Intercept","Religiosity","Secondary","Post-Secondary",
-        #                     "Income quantile","Age 25-29","Age 30-34","Age 35-39",
-        #                     "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
-        #                     "Age 60 and over", "Female", "Urban", "Shia",
-        #                     "Other denomination","Just a Muslim", "Sufi",
-        #                     "Necessary to believe in god to be moral",
-        #                     "Islam is the one true faith",
-        #                     "One way to interpret relig. teachings",
-        #                     "Religion in conflict with modernity",
-        #                     "Anti-Westernization scale",
-        #                     "Prefers strong leader to democracy",
-        #                     "Socially conservative scale"),
+        custom.coef.names=c("Intercept","Religiosity","Education quantile",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Anti-Westernization scale",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale",
+                            "Mosque attendance scale","Religion important scale",
+                            "Prayer frequency scale", 
+                            "Prayer and religion important scale"),
         single.row=TRUE,
         dcolumn=TRUE,
         caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
@@ -495,6 +498,33 @@ ggplot(country_effects, aes(x=intercept.relig_sep, y=relig_important.scale))+
   geom_smooth(method="lm", se=FALSE)+
   geom_text_repel(aes(label=country))+
   labs(x="average support in country", y="religion important scale effect")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=educqq_scl.relig_sep, y=relig_important.scale))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="educational effect", y="religion important scale effect")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=educqq_scl.relig_sep, y=attend.scale))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="educational effect", y="attendance scale effect")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=educqq_scl.relig_sep, y=prayer.scale))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="educational effect", y="prayer scale effect")+
   theme_bw()
 ```
 
