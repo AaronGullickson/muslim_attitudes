@@ -89,7 +89,7 @@ lmer.converge <- function(formula, data) {
 
 
 #A function to pool the random effects models and produce results for the fixed effects
-poolREModels <- function(models) {
+pool_re_models <- function(models) {
   
   b <- sapply(models, function(x) {summary(x)$coef[,"Estimate"]})
   se <- sapply(models, function(x) {summary(x)$coef[,"Std. Error"]})
@@ -192,8 +192,8 @@ pool_fe_model <- function(formula, imputations) {
               bic.null=bic.null))
 }
 
-#a function for texreg to get results nicely displayed
-convertModelFE <- function(model) {
+#a function for texreg to get FE results nicely displayed
+convert_model_fe <- function(model) {
   tr <- createTexreg(
     coef.names = rownames(model$coef), 
     coef = model$coef$b.pool, 

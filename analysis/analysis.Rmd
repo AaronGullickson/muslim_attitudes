@@ -1,5 +1,5 @@
 ---
-title: "Analysis for Project"
+title: "Analysis for Muslim Attitudes"
 output: 
   html_document: 
     fig_height: 6
@@ -10,11 +10,605 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("check_packages.R")
-source("useful_functions.R")
+library(here)
+source(here("analysis","useful_functions.R"))
+source(here("analysis","check_packages.R"))
+load(here("analysis","output","analytic_samples.RData"))
 ```
 
-# Introduction
+
+## Introduction
+
+This R Markdown file will read in the multiply imputed analytic dataset and run a series of random effects models across countries predicting support for violent practices, as well as a variety of sensitivity analyses.
+
+All figures draw from the first complete dataset constructed through multiple imputation, but models are calculated on all five mulitiply imputed datasets, with adjustments for imputation variablity.
+
+
+## Constructed scales
 <a href="#top">Back to top</a>
 
-Use this R Markdown to perform the main analysis for the project. I use this basically as a lab notebook. It contains the main analysis and a variety of sensitivity analysis. The code in this documents serves as a baseline for the eventual tables and figures that will go into the paper. At the same time it will serve as a record of all supplementary analyses performed. 
+The analysis uses several scales, detailed below. The decisions about how to construct these scales are based on the results from factoranalysis.Rmd. 
+
+- Independent variables
+    - Religiosity
+        - Frequency of mosque attendance
+        - Religion is important
+        - Frequency of prayer
+    - Socially Conservative. Response to seven questions about: 
+        - alcohol
+        - euthanasia 
+        - suicide
+        - abortion 
+        - prostitution
+        - premarital sex 
+        - homosexual behavior 
+    - Anti-Western
+        - Dislike western music, movies, and television
+        - Western culture has hurt morality
+- Dependent variable
+    - Support for violent practices
+        - Death for apostasy
+        - Approves of severe corporal punishment (e.g. cutting off hands)
+        - Adulterers should be stoned
+
+Below we show the distribution of each of these constructed variables. All scores are normalized to a mean of zero and a standard deviation of one. Dotted line at zero shows the mean for each score.
+
+```{r dist_religiosity, echo=FALSE, fig.cap="The distribution of religiosity is heavily left-skewed. Most respondents were highly religious with a smaller tail end going all the way to the completely secular."}
+ggplot(analytic_samples[[1]], aes(x=religiosity))+
+  geom_histogram(color="black",fill="grey")+
+  geom_vline(xintercept = 0, linetype=2)+
+  labs(x="religiosity scale")+
+  theme_bw()
+```
+
+```{r dist_social_conservative, echo=FALSE, fig.cap="Social conservatism is also highly left-skewed."}
+ggplot(analytic_samples[[1]], aes(x=social_cons))+
+  geom_histogram(color="black",fill="grey")+  
+  geom_vline(xintercept = 0, linetype=2)+
+  labs(x="social conservatism scale")+
+  theme_bw()
+```
+
+```{r dist_anti_western, echo=FALSE, fig.cap="the Anti-western scale only had three possible scores. The most common is to be anti-western on both questions, although there are substantial cases at all three scores."}
+ggplot(analytic_samples[[1]], aes(x=anti_western))+
+  geom_histogram(color="black",fill="grey")+ 
+  geom_vline(xintercept = 0, linetype=2)+
+  labs(x="anti-western scale")+
+  theme_bw()
+```
+
+```{r dist_violence, echo=FALSE, fig.cap="Support for violent practices only has four possible scores. The most common is to answer no on all three questions. The score is interestingly polarized, with the most common answer being yes on all three cases o no on all three cases."}
+ggplot(analytic_samples[[1]], aes(x=violence))+
+  geom_histogram(color="black",fill="grey")+ 
+  geom_vline(xintercept = 0, linetype=2)+
+  labs(x="support for violent practices scale")+
+  theme_bw()
+```
+
+## Country averages
+<a href="#top">Back to top</a>
+
+Start by calculating the country average support for the dependent variable to get a sense of country-level variation.
+
+```{r country_averages, echo=FALSE, warning=FALSE, fig.cap="Dotplot of percentage of Muslim respondents who support three different positions measuring support for violent practices. Countries are ordered from lowest to highest average level of support across all three questions."}
+country_agg <- 100*with(analytic_samples[[1]],
+     cbind(death_apostasy=tapply(death_apostasy=="Favor",country,mean,na.rm=TRUE),
+           stone_adultery=tapply(stone_adultery=="Favor",country,mean,na.rm=TRUE),
+           severe_corporal=tapply(severe_corporal=="Favor",country,mean,na.rm=TRUE)))
+country.scores <- sort(apply(country_agg,1,mean, na.rm=TRUE))
+temp <- as.data.frame.table(country_agg)
+
+colnames(temp) <- c("country","variable","percent")
+temp$country <- factor(temp$country,
+                       levels=names(country.scores),
+                       labels=shortenCountryNames(names(country.scores)))
+ncountry <- length(unique(temp$country))
+temp$variable <- factor(temp$variable,
+                        levels=c("death_apostasy","severe_corporal","stone_adultery"),
+                        labels=c("Death for apostasy",
+                                 "Severe corporal punishment",
+                                 "Adulterers should be stoned"))
+ggplot(temp, aes(x=country, y=percent,group=variable))+
+  geom_point(aes(colour=variable, shape=variable))+coord_flip()+
+  #scale_colour_brewer(palette = "Dark2", name="Value")+
+  scale_color_viridis_d(name="Variable", end=0.75)+
+  scale_shape_manual(values=c(15,16,17,7,9,10), name="Variable")+
+  ylab("Percentage in support")+xlab("")+
+  theme_bw()
+```
+
+## Random effects models
+<a href="#top">Back to top</a>
+
+The random effects models are random intercept and random slope models that allow the the intercept and the slopes of certain variables to vary across countries. 
+
+### Restricted models
+<a href="#top">Back to top</a>
+
+We begin with a model which only allows the religiosity and education slopes to vary across countries. These models are more parsimonious and are much faster computationally. They have the disadvantage of not fully controlling for the effects of other variables if those effects vary across countries. 
+
+```{r random_models, echo=FALSE}
+formula_baseline <- formula(violence~(1+religiosity+educqq_scl|country)+
+                              religiosity+educqq_scl)
+formula_demog <- update(formula_baseline, .~.+incomeqq_scl+
+                          age25_29+age30_34+age35_39+age40_44+
+                          age45_49+age50_54+age55_59+ageAge60orover+
+                          Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr)
+formula_theocons <- update(formula_demog, .~.+NecessarytobelieveinGodtobemoral+
+                             islam_truth_ctr+islam_oneway_ctr)
+formula_attitudes <- update(formula_theocons, .~.+conflict_modern_ctr+
+                              anti_western+anti_democratic_ctr+social_cons)
+
+results_baseline <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_baseline, data=x)
+}))
+results_demog <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_demog, data=x)
+}))
+results_theocons <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_theocons, data=x)
+}))
+results_attitudes <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_attitudes, data=x)
+}))
+
+#the function for converting back for knitreg will need to be model specific so 
+#it goes here and not useful functions
+convert_model_re <- function(model) {
+  tr <- createTexreg(
+    coef.names = names(model$fixef$beta), 
+    coef = model$fixef$beta, 
+    se = model$fixef$se, 
+    pvalues = model$fixef$pvalue,
+    gof.names = c("N (individual)","N (country)", "BIC",
+                  "SD (religiosity)","SD (education quantile)",
+                  "r(intercept, religiosity)","r(intercept, education)",
+                  "r(religiosity, education)"),
+    gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC,
+            model$ranef_sd["religiosity"], model$ranef_sd["educqq_scl"],
+            model$ranef_cor["(Intercept)","religiosity"],
+            model$ranef_cor["(Intercept)","educqq_scl"],
+            model$ranef_cor["religiosity","educqq_scl"]), 
+    gof.decimal = c(F,F,F,T,T,T,T,T)
+  )
+}
+
+knitreg(lapply(list(results_demog, results_theocons, results_attitudes),
+               convert_model_re),
+        digits=3,
+        custom.coef.names=c("Intercept","Religiosity","Education quantile",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Anti-Westernization scale",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
+        caption.above=TRUE,
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for religiosity and education. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+```
+
+
+```{r build-country-effects-df, echo=FALSE}
+country_effects <- as_tibble(results_attitudes$country_effects)
+colnames(country_effects)[1] <- "intercept"
+country_effects$country <- rownames(results_attitudes$country_effects)
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept, y=religiosity))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept in country", y="religiosity slope in country")+
+  theme_bw()
+```
+
+
+```{r}
+ggplot(country_effects, aes(x=intercept, y=educqq_scl))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept in country", y="education slope in country")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=religiosity, y=educqq_scl))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="religiosity slope in country", y="education slope in country")+
+  theme_bw()
+```
+
+### Allowing more random slopes
+<a href="#top">Back to top</a>
+
+Lets now consider allowing other slopes to vary. Its computationally impossible to allow everything to vary, but after experimentation we fit the fullest model that we felt was theoretically justified. For the demographic variables, we wanted to allow income and urbanicity to vary because of strong relationships between these variables and education. We also wanted to allow all the variables on theological conservatism and other attitudes to vary. However, we found that the models ran into problems with singular results when including the variables on Islam being the one true faith and the social conservatism scale, so we removed these from the results (check that on all analytical data). We do not allow age, gender, and denomination to vary. Denomination is heavily dependent on country and would therefore would almost certainly run into computational problems. Age had very small effects and general and the number of dummies presented problems, and gender we do not expect to see have strong correlations with our key variables. 
+
+
+```{r more_random_models, echo=FALSE}
+formula_full <- formula(violence~(1+religiosity+educqq_scl+incomeqq_scl+Urban+
+                                    NecessarytobelieveinGodtobemoral+
+                                    islam_oneway_ctr+
+                                    conflict_modern_ctr+
+                                    anti_western+anti_democratic_ctr|country)+
+                          religiosity+educqq_scl+incomeqq_scl+
+                          age25_29+age30_34+age35_39+age40_44+
+                          age45_49+age50_54+age55_59+ageAge60orover+
+                          Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr+
+                          NecessarytobelieveinGodtobemoral+
+                          islam_truth_ctr+islam_oneway_ctr+
+                          conflict_modern_ctr+anti_western+anti_democratic_ctr+
+                          social_cons)
+
+results_full <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_full, data=x)
+}))
+
+knitreg(lapply(list(results_attitudes, results_full),
+               convert_model_re),
+        digits=3,
+        custom.model.names=c("Restricted","Full"),
+        custom.coef.names=c("Intercept","Religiosity","Education quantile",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Anti-Westernization scale",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
+        caption.above=TRUE,
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+```
+
+
+```{r add-full-effects, echo=FALSE}
+temp <- as_tibble(results_full$country_effects)
+colnames(temp)[1] <- "intercept"
+temp$country <- rownames(results_full$country_effects)
+temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
+colnames(temp) <- c("intercept_full","religiosity_full","educqq_scl_full")
+country_effects <- cbind(country_effects, temp)
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept, y=intercept_full))+
+  geom_abline(slope=1, color="grey")+
+  geom_point()+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept, restricted model", y="intercept, full model")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=religiosity, y=religiosity_full))+
+  geom_abline(slope=1, color="grey")+
+  geom_point()+
+  geom_text_repel(aes(label=country))+
+  labs(x="religiosity slope, restricted model", 
+       y="religiosity slope, full model")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=educqq_scl, y=educqq_scl_full))+
+  geom_abline(slope=1, color="grey")+
+  geom_point()+
+  geom_text_repel(aes(label=country))+
+  labs(x="education slope, restricted model", 
+       y="education slope, full model")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept_full, y=religiosity_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept in country", y="religiosity slope (full) in country")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept_full, y=educqq_scl_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept in country", y="education slope (full) in country")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=religiosity_full, y=educqq_scl_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="religiosity slope (full) in country", y="education slope (full) in country")+
+  theme_bw()
+```
+
+## Alternate measures
+<a href="#top">Back to top</a>
+
+### Alternative religiosity measures
+<a href="#top">Back to top</a>
+
+I want to look closely at the components of the religiosity scale. For each outcome I will run three different models:
+
+1. A model which treats the three polytmous variables as three separate continuous variables. This is more parsimonious but creates no composite religiosity measure.
+2. A model which treats the first two components (prayer, relig_important) as a single scale, and attendance as a separate scale
+
+```{r religiosity_sensitivity_models, echo=FALSE}
+formula_relig_sep <- formula(violence~(1+attend.scale+relig_important.scale+prayer.scale+
+                                           educqq_scl|country)+
+                                 attend.scale+relig_important.scale+prayer.scale+
+                                 educqq_scl+incomeqq_scl+
+                                 age25_29+age30_34+age35_39+age40_44+
+                                 age45_49+age50_54+age55_59+ageAge60orover+
+                                 Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr+
+                                 NecessarytobelieveinGodtobemoral+
+                                 islam_truth_ctr+islam_oneway_ctr+
+                                 conflict_modern_ctr+anti_western+anti_democratic_ctr+
+                                 social_cons)
+formula_relig2 <- formula(violence~(1+religiosity2+attend.scale+educqq_scl|country)+
+                            religiosity2+attend.scale+
+                            educqq_scl+incomeqq_scl+
+                            age25_29+age30_34+age35_39+age40_44+
+                            age45_49+age50_54+age55_59+ageAge60orover+
+                            Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr+
+                            NecessarytobelieveinGodtobemoral+
+                            islam_truth_ctr+islam_oneway_ctr+
+                            conflict_modern_ctr+anti_western+anti_democratic_ctr+
+                            social_cons)
+
+results_relig_sep <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_relig_sep, data=x)
+}))
+
+results_relig2 <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_relig2, data=x)
+}))
+
+#the function for converting back for knitreg will need to be model specific so 
+#it goes here and not useful functions - going to ignore random effects summaries
+#here because religiosity is changing
+convert_model_re <- function(model) {
+  tr <- createTexreg(
+    coef.names = names(model$fixef$beta), 
+    coef = model$fixef$beta, 
+    se = model$fixef$se, 
+    pvalues = model$fixef$pvalue,
+    gof.names = c("N (individual)","N (country)", "BIC"),
+    gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC), 
+    gof.decimal = c(F,F,F)
+  )
+}
+
+knitreg(lapply(list(results_attitudes, results_relig_sep, results_relig2),
+               convert_model_re),
+        digits=3,
+        # custom.coef.names=c("Intercept","Religiosity","Secondary","Post-Secondary",
+        #                     "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+        #                     "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+        #                     "Age 60 and over", "Female", "Urban", "Shia",
+        #                     "Other denomination","Just a Muslim", "Sufi",
+        #                     "Necessary to believe in god to be moral",
+        #                     "Islam is the one true faith",
+        #                     "One way to interpret relig. teachings",
+        #                     "Religion in conflict with modernity",
+        #                     "Anti-Westernization scale",
+        #                     "Prefers strong leader to democracy",
+        #                     "Socially conservative scale"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
+        caption.above=TRUE,
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for religiosity measures and education. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+```
+
+```{r}
+round(results_relig_sep$ranef_cor, 3)
+```
+
+
+```{r}
+temp <- as_tibble(results_relig_sep$country_effects)
+colnames(temp)[1] <- "intercept"
+temp <- subset(temp, select=c("intercept","attend.scale","relig_important.scale",
+                              "prayer.scale","educqq_scl"))
+colnames(temp) <- c("intercept.relig_sep","attend.scale","relig_important.scale",
+                    "prayer.scale","educqq_scl.relig_sep")
+country_effects <- cbind(country_effects, temp)
+```
+
+```{r}
+ggplot(country_effects, aes(x=attend.scale, y=religiosity))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="attendance scale","combined religiosity scale")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=prayer.scale, y=religiosity))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="prayer scale","combined religiosity scale")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=relig_important.scale, y=religiosity))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="religion important scale","combined religiosity scale")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept.relig_sep, y=attend.scale))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="average support in country", y="attendance scale effect")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept.relig_sep, y=prayer.scale))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="average support in country", y="prayer scale effect")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept.relig_sep, y=relig_important.scale))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="average support in country", y="religion important scale effect")+
+  theme_bw()
+```
+
+### Alternative education measures
+
+```{r education_sensitivity_models, echo=FALSE}
+formula_baseline_educ_lvl <- formula(violence~(1+religiosity+Secondary+Post_Secondary|country)+
+                              religiosity+Secondary+Post_Secondary)
+formula_demog_educ_lvl <- update(formula_baseline_educ_lvl, .~.+incomeqq_scl+
+                          age25_29+age30_34+age35_39+age40_44+
+                          age45_49+age50_54+age55_59+ageAge60orover+
+                          Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr)
+formula_theocons_educ_lvl <- update(formula_demog_educ_lvl, .~.+NecessarytobelieveinGodtobemoral+
+                             islam_truth_ctr+islam_oneway_ctr)
+formula_attitudes_educ_lvl <- update(formula_theocons_educ_lvl, .~.+conflict_modern_ctr+
+                              anti_western+anti_democratic_ctr+social_cons)
+
+results_demog_educ_lvl <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_demog_educ_lvl, data=x)
+}))
+results_theocons_educ_lvl <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_theocons_educ_lvl, data=x)
+}))
+results_attitudes_educ_lvl <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_attitudes_educ_lvl, data=x)
+}))
+
+#the function for converting back for knitreg will need to be model specific so 
+#it goes here and not useful functions
+convert_model_re <- function(model) {
+  tr <- createTexreg(
+    coef.names = names(model$fixef$beta), 
+    coef = model$fixef$beta, 
+    se = model$fixef$se, 
+    pvalues = model$fixef$pvalue,
+    gof.names = c("N (individual)","N (country)", "BIC",
+                  "SD (religiosity)","SD (secondary)","SD (post-secondary)",
+                  "r(intercept, religiosity)","r(intercept, secondary)",
+                  "r(intercept, post-secondary)","r(religiosity, secondary)",
+                  "r(religiosity, post-secondary)", "r(secondary, post-secondary)"),
+    gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC,
+            model$ranef_sd["religiosity"], model$ranef_sd["Secondary"],
+            model$ranef_sd["Post_Secondary"],
+            model$ranef_cor["(Intercept)","religiosity"],
+            model$ranef_cor["(Intercept)","Secondary"],
+            model$ranef_cor["(Intercept)","Post_Secondary"],
+            model$ranef_cor["religiosity","Secondary"], 
+            model$ranef_cor["religiosity","Post_Secondary"],
+            model$ranef_cor["Secondary","Post_Secondary"]), 
+    gof.decimal = c(F,F,F,T,T,T,T,T,T,T,T,T)
+  )
+}
+
+knitreg(lapply(list(results_demog_educ_lvl, results_theocons_educ_lvl, 
+                    results_attitudes_educ_lvl),
+               convert_model_re),
+        digits=3,
+        custom.coef.names=c("Intercept","Religiosity","Secondary","Post-Secondary",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Anti-Westernization scale",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
+        caption.above=TRUE,
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for religiosity and education. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+```
+
+```{r}
+temp <- as_tibble(results_attitudes_educ_lvl$country_effects)
+colnames(temp)[1] <- "intercept"
+temp$country <- rownames(results_attitudes_educ_lvl$country_effects)
+temp <- subset(temp, select=c("Secondary","Post_Secondary"))
+country_effects <- cbind(country_effects, temp)
+```
+
+```{r}
+ggplot(country_effects, aes(x=Secondary, y=Post_Secondary))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_vline(xintercept=0, linetype=2)+
+  geom_abline(slope=1, color="grey")+
+  geom_point()+
+  geom_text_repel(aes(label=country))+
+  labs(x="secondary education slope", y="post-secondary education slope")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=educqq_scl, y=Secondary))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_vline(xintercept=0, linetype=2)+
+  geom_abline(slope=1, color="grey")+
+  geom_point()+
+  geom_text_repel(aes(label=country))+
+  labs(x="education quantile slope", y="secondary education slope")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=educqq_scl, y=Post_Secondary))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_vline(xintercept=0, linetype=2)+
+  geom_abline(slope=1, color="grey")+
+  geom_point()+
+  geom_text_repel(aes(label=country))+
+  labs(x="education quantile slope", y="post-secondary education slope")+
+  theme_bw()
+```
+
