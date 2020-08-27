@@ -406,6 +406,14 @@ ggplot(country_effects, aes(x=hdi, y=educqq_scl))+
 
 It seems true, but also largely dependent on region. Large group of African countries at the lower end, and MENA at the higher end. 
 
+```{r}
+ggplot(country_effects, aes(x=hdi, y=intercept))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  theme_bw()
+```
+
 ## Alternate measures
 <a href="#top">Back to top</a>
 
