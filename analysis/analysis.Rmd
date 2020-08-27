@@ -350,6 +350,62 @@ ggplot(country_effects, aes(x=religiosity_full, y=educqq_scl_full))+
   theme_bw()
 ```
 
+
+### Country-level effects
+
+
+```{r hdi_models, echo=FALSE}
+formula_hdi_intercept <- update(formula_attitudes, .~.+hdi_scaled)
+formula_hdi_full <- update(formula_attitudes, .~.+(religiosity+educqq_scl)*hdi_scaled)
+
+results_hdi_intercept <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_hdi_intercept, data=x)
+}))
+results_hdi_full <- pool_re_models(lapply(analytic_samples, function(x) {
+  lmer.converge(formula_hdi_full, data=x)
+}))
+
+knitreg(lapply(list(results_attitudes, results_hdi_intercept, results_hdi_full),
+               convert_model_re),
+        digits=3,
+        custom.coef.names=c("Intercept","Religiosity","Education quantile",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Anti-Westernization scale",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale",
+                            "Human development index",
+                            "HDI x religiosity", "HDI x education quantile"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
+        caption.above=TRUE,
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+```
+
+
+Interesting effects on education, lets look at that graphically
+
+```{r}
+temp <- subset(analytic_samples[[1]], !duplicated(country),
+               select=c("country","hdi"))
+country_effects <- merge(country_effects, temp)
+ggplot(country_effects, aes(x=hdi, y=educqq_scl))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  theme_bw()
+```
+
+
+It seems true, but also largely dependent on region. Large group of African countries at the lower end, and MENA at the higher end. 
+
 ## Alternate measures
 <a href="#top">Back to top</a>
 
