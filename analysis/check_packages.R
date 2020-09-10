@@ -5,7 +5,7 @@
 #add new packages to the chain here
 packages = c("foreign","psych","corrgram","ggplot2","mice","lme4","lattice","arm",
              "ggmap","ggalt","tidyr","purrr","dplyr","reshape2","ggrepel","egg",
-             "tidyverse","mapproj","texreg")
+             "tidyverse","mapproj","texreg","parallel")
 
 package.check <- lapply(packages, FUN = function(x) {
   if (!require(x, character.only = TRUE)) {
