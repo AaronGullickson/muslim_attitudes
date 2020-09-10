@@ -51,6 +51,9 @@ analytic_samples <- lapply(analytic_samples, function(asample) {
                             +as.numeric(asample$severe_corporal=="Favor"))
   asample$terrorism <- scale(as.numeric(asample$civilian_target))
   
+  #add in country level HDI measure
+  asample <- merge(asample, hdi, all.x=TRUE, all.y=FALSE)
+  
   return(asample)
 })
 

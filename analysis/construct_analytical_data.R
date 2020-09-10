@@ -35,5 +35,8 @@ sink()
 #run the imputation
 rmarkdown::render(here("analysis","imputation.Rmd"))
 
+#process country level data
+source(here("analysis","add_country_data.R"))
+
 #final coding of variables for analysis
-source("code_variables.R")
+source(here("analysis","code_variables.R"))
