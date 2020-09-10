@@ -40,14 +40,43 @@ hdi <- subset(hdi, Country %in% sample_countries)
 summary(hdi$`2010`)
 hdi <- subset(hdi, select=c("Country","2010"))
 colnames(hdi) <- c("country","hdi")
-#standardize scale of hdi by country
-hdi$hdi_scaled <- (hdi$hdi-mean(hdi$hdi))/(2*sd(hdi$hdi))
-summary(hdi$hdi_scaled)
 
+hdi$hdi_scaled <- scaleIndVariable(hdi$hdi)
 
+# WDI Data from World Bank ------------------------------------------------
+
+wdi <- read_csv(here("analysis","input","wdi",
+                     "2cafb383-199a-4c4b-938a-f4df8e52b362_Data.csv"),
+                n_max=1085, na="..")
+colnames(wdi) <- c("year","year_code", "country", "country_code", "gdpcap",
+                   "oil_rent_pct")
+
+#check to make sure we have all countries
+sample_countries[!(sample_countries %in% wdi$country)]
+
+#fix names
+wdi$country[wdi$country=="Egypt, Arab Rep."] <- "Egypt"
+wdi$country[wdi$country=="Guinea-Bissau"] <- "Guinea Bissau"
+wdi$country[wdi$country=="Kyrgyz Republic"] <- "Kyrgyzstan"
+wdi$country[wdi$country=="Russian Federation"] <- "Russia"
+wdi$country[wdi$country=="West Bank and Gaza"] <- "Palestinian Territories"
+
+wdi <- subset(wdi, country %in% sample_countries)
+
+#what am I looking at in terms of missing values in each year
+tapply(is.na(wdi$gdpcap), wdi$year, sum)
+tapply(is.na(wdi$oil_rent_pct), wdi$year, sum)
+
+#2010 has no missing data so lets take 2010
+wdi <- subset(wdi, year==2010,
+              select=c("country","gdpcap","oil_rent_pct"))
+
+wdi$lgdpcap <- log(wdi$gdpcap)
+wdi$lgdpcap_scaled <- scaleIndVariable(wdi$lgdpcap)
+wdi$oil_rent_pct_scaled <- scaleIndVariable(wdi$oil_rent_pct)
 
 # Save data ---------------------------------------------------------------
 
-country_data <- hdi
+country_data <- merge(hdi, wdi, all.x=TRUE, all.y=TRUE)
 
 save(country_data, file=here("analysis","output","country_data.RData"))

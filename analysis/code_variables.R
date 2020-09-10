@@ -4,6 +4,8 @@ library(here)
 source(here("analysis","check_packages.R"))
 source(here("analysis","useful_functions.R"))
 load(here("analysis","output","imputed_samples.RData"))
+load(here("analysis","output","country_data.RData"))
+
 
 # Introduction ------------------------------------------------------------
 
@@ -52,7 +54,7 @@ analytic_samples <- lapply(analytic_samples, function(asample) {
   asample$terrorism <- scale(as.numeric(asample$civilian_target))
   
   #add in country level HDI measure
-  asample <- merge(asample, hdi, all.x=TRUE, all.y=FALSE)
+  asample <- merge(asample, country_data, all.x=TRUE, all.y=FALSE)
   
   return(asample)
 })
