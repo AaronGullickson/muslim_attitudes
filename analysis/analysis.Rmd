@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(here)
 source(here("analysis","useful_functions.R"))
 source(here("analysis","check_packages.R"))
@@ -19,15 +19,15 @@ load(here("analysis","output","analytic_samples.RData"))
 
 ## Introduction
 
-This R Markdown file will read in the multiply imputed analytic dataset and run a series of random effects models across countries predicting support for violent practices, as well as a variety of sensitivity analyses.
+This R Markdown file will read in the multiply imputed analytic dataset and run a series of multilevel models across countries predicting support for violent practices, as well as a variety of sensitivity analyses.
 
-All figures draw from the first complete dataset constructed through multiple imputation, but models are calculated on all five mulitiply imputed datasets, with adjustments for imputation variablity.
+All figures based on the data are drawn from the first complete dataset constructed through multiple imputation, but models are calculated on all five mulitiply imputed datasets, with adjustments for imputation variablity.
 
 
 ## Constructed scales
 <a href="#top">Back to top</a>
 
-The analysis uses several scales, detailed below. The decisions about how to construct these scales are based on the results from factoranalysis.Rmd. 
+The analysis uses several scales, detailed below. The decisions about how to construct these scales are based on the results from the factor analysis provided in another report. 
 
 - Independent variables
     - Religiosity
@@ -88,7 +88,7 @@ ggplot(analytic_samples[[1]], aes(x=violence))+
 ## Country averages
 <a href="#top">Back to top</a>
 
-Start by calculating the country average support for the dependent variable to get a sense of country-level variation.
+Before modeling, lets just look at the variation in responses to the three independent variables that make up our construct across countries. 
 
 ```{r country_averages, echo=FALSE, warning=FALSE, fig.cap="Dotplot of percentage of Muslim respondents who support three different positions measuring support for violent practices. Countries are ordered from lowest to highest average level of support across all three questions."}
 country_agg <- 100*with(analytic_samples[[1]],
@@ -113,19 +113,43 @@ ggplot(temp, aes(x=country, y=percent,group=variable))+
   #scale_colour_brewer(palette = "Dark2", name="Value")+
   scale_color_viridis_d(name="Variable", end=0.75)+
   scale_shape_manual(values=c(15,16,17,7,9,10), name="Variable")+
-  ylab("Percentage in support")+xlab("")+
+  ylab("Percentage in support")+
+  xlab("")+
+  ylim(0,100)+
   theme_bw()
 ```
 
-## Random effects models
+A few big take homes from this:
+
+1. The variance in support for each practice is highly variable with countries fairly evenly spread out from about 0% in support to about 90% in support. Variance is good from an analytical point of view - there is something worth understanding here. Islamic society is not producing a uniform response.
+2. The level of support across outcomes tends to be correlated within countries. So countries with high level of support in one area have high level of support for the others as well, for example. This to some extent validates the factor analysis which found a high degree of correlation at the individual level. 
+3. Support for death for apostasy tend to be the least supported of the three in most countries and sometimes trails the other two by substantial margins. Only in the case of Egypt and Jordan was it the most supported.
+
+## Multilevel models
 <a href="#top">Back to top</a>
 
-The random effects models are random intercept and random slope models that allow the the intercept and the slopes of certain variables to vary across countries. 
+The multilevel models are random intercept and random slope models that allow the the intercept and the slopes of certain variables to vary across countries. In mathematical terms, the set-up is:
 
-### Restricted models
+$$y_{ij}=\beta_{0j}+\beta_{1j}(\texttt{religiosity}_{ij})+\beta_{2j}(\texttt{education}_{ij})+\sum_{k=1}^K \lambda_kx_{kij}+\epsilon_{ij}$$
+
+where $y_{ij}$ is the score on the support for violent practices measures for the $i$th respondent in the $j$th country. The intercept $\beta_{0j}$, and the two slopes of $\beta_{1j}$ and $\beta_{2j}$ on religiosity and education are allowed to vary by country. The model also includes $K$ additional independent control variables $x_{kij}$ that are not allowed to vary by country. $\epsilon_{ij}$ is an individual-level error term. 
+
+$\beta_{0j}$ measures the average support for support for violent practices in country $j$ and $\beta_{1j}$ and $\beta_{2j}$ measure the relationship between religiosity and education, respectively, and support for violent practices in country $j$. To complete the multilevel model structure, the three country-varying parameters have their own linear equations:
+
+$$\beta_{0j}=\gamma_{01}+\gamma_{02}z_j+\delta_j$$
+$$\beta_{1j}=\gamma_{11}+\gamma_{12}z_j+\eta_j$$
+$$\beta_{2j}=\gamma_{21}+\gamma_{22}z_j+\tau_j$$
+
+The three country level error terms $\delta_j$, $\eta_j$ and $\tau_j$ are important because they provide the country level random effects for each country that tell us how different each country is from the average in terms of the intercept and two slopes, respectively. I put no restrictions on the correlation in these error terms for the analysis, in order to see how they are empirically correlated in the data.
+
+The $z_j$ is a country-level variable that can be added to the analysis. In the initial models, I leave out all country-level variables in order to estimate models with only individual level effects. I then consider some different candidate variables for $z_j$. Note that the use of $z_j$ in the two slopes models is effectively an interaction term between education/religiosity and the $z_j$ variable. 
+
+In all models, independent variables are centered on the grand mean. For country level variables they are mean centered based on the country level mean. I scale all quantitative variables by twice the standard deviation. 
+
+### Individual-level models
 <a href="#top">Back to top</a>
 
-We begin with a model which only allows the religiosity and education slopes to vary across countries. These models are more parsimonious and are much faster computationally. They have the disadvantage of not fully controlling for the effects of other variables if those effects vary across countries. 
+We begin with a model which only allows the religiosity and education slopes to vary across countries, but adds no country level predictors. 
 
 ```{r random_models, echo=FALSE, results='asis'}
 formula_baseline <- formula(violence~(1+religiosity+educqq_scl|country)+
@@ -173,7 +197,7 @@ convert_model_re <- function(model) {
   )
 }
 
-knitreg(lapply(list(results_demog, results_theocons, results_attitudes),
+knitreg(lapply(list(results_baseline, results_demog, results_theocons, results_attitudes),
                convert_model_re),
         digits=3,
         custom.coef.names=c("Intercept","Religiosity","Education quantile",
@@ -192,9 +216,14 @@ knitreg(lapply(list(results_demog, results_theocons, results_attitudes),
         dcolumn=TRUE,
         caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
         caption.above=TRUE,
-        custom.note="%stars Notes: All models include random country-level intercepts and slopes for religiosity and education. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for religiosity and education. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.")
 ```
 
+Lets first talk about the education and religiosity effects. These effects are pretty consistent across models. They do decline in affect somewhat with the inclusion of various control terms, but remain statistically significant and substantively meaningful. The religiosity effect is much greater than the effect of education. In fact, the religiosity is the largest effect overall among all the variables. 
+
+Its important to remember that these are only the average effects across all countries. The SD on each effect shows that there is pretty substantial variation across the education and religiosity slopes across countries. These two variables do not have the same effect for each country. There are also pretty signficant positive correlations between intercepts and each slope. These correlations get larger for religiosity with more controls but stay pretty steady for education. On the other hand, there is relatively little correlation between the two slopes themselves. 
+
+To figure out what this means, lets look at these correlations graphically. We can do this by graphically looking at a scatterplot of the random intercepts by random slopes for each country.
 
 ```{r build-country-effects-df, echo=FALSE}
 country_effects <- as_tibble(results_attitudes$country_effects)
@@ -212,6 +241,9 @@ ggplot(country_effects, aes(x=intercept, y=religiosity))+
   theme_bw()
 ```
 
+We see a pretty strong correlation here between the two measures. What does this tell us? It means that religiosity is more strongly postively correlated with support for violent practices in countries where this more overall support for support for violent practices. On the other hand, in countries with very low support for violent practices overall, religiosity is much more weakly correlated with support for violent practices. In a few countries such as Azerbaijan, Turkey, and Kosovo, this correlation is close to zero. 
+
+Its important to note that None of the religiosity slopes are predicted to be negative here. So we do not have a lot of evidence that religiosity can be negatively correlated with support for violent practices. However, we do have evidence that the link between religiosity and support for violent practices can be broken and is more likely to be the case in countries with less overall support. Does this mean that the socialization hypothesis also applies to religiosity and religious institutions? I think it might. Religious institutions may simply follow the larger norms of society and less support overall may dampen enthusiasm for such practices.
 
 ```{r}
 ggplot(country_effects, aes(x=intercept, y=educqq_scl))+
@@ -223,6 +255,15 @@ ggplot(country_effects, aes(x=intercept, y=educqq_scl))+
   theme_bw()
 ```
 
+We see a similar positive corerlation between education slope and average overall support for violent practices. However, there are two notable features that are a bit different from the religiosity case:
+
+1. The overall relationship is a bit weaker. 
+2. We see a subtantial minority of countries in which the relationship between education and support for violent practices is estimated to be positive. Egypt is the most notable example. We never saw a reversal of direction for religiosity. 
+
+Overall this seems to support the socialization hypothesis, athough its an interesting question when you would expect this to flip from positive to negative.
+
+Tunisia is a clear outlier here. Education has a big negative effect in a country with already low support. I find the contrast with Algeria at the other end of the spectrum fascinating. Its not about "culture."
+
 ```{r}
 ggplot(country_effects, aes(x=religiosity, y=educqq_scl))+
   geom_hline(yintercept=0, linetype=2)+
@@ -233,196 +274,14 @@ ggplot(country_effects, aes(x=religiosity, y=educqq_scl))+
   theme_bw()
 ```
 
-### Allowing more random slopes
+The association between the two slopes is almost non-existent. This is fascinating. If we think there is some bigger engine like "modernization" or "development" driving both of these effects, then we would expect to see a positive correlation here. We are not seeing that. We are also not seeing evidence of polarization where high negative values on education are offset by high positive values on religiosity and vice versa. Tunisia is probably the closest case to that. In general, this suggests something like "independent domains" in which religious and educational institutions are evolving/developing largely independent of one another within countries.
+
+#### Alternative religiosity measures
 <a href="#top">Back to top</a>
 
-Lets now consider allowing other slopes to vary. Its computationally impossible to allow everything to vary, but after experimentation we fit the fullest model that we felt was theoretically justified. For the demographic variables, we wanted to allow income and urbanicity to vary because of strong relationships between these variables and education. We also wanted to allow all the variables on theological conservatism and other attitudes to vary. However, we found that the models ran into problems with singular results when including the variables on Islam being the one true faith and the social conservatism scale, so we removed these from the results (check that on all analytical data). We do not allow age, gender, and denomination to vary. Denomination is heavily dependent on country and would therefore would almost certainly run into computational problems. Age had very small effects and general and the number of dummies presented problems, and gender we do not expect to see have strong correlations with our key variables. 
+I want to try out models where I separate out the components of the religiosity scale. For each outcome I will run three different models:
 
-
-```{r more_random_models, echo=FALSE, results='asis'}
-formula_full <- formula(violence~(1+religiosity+educqq_scl+incomeqq_scl+Urban+
-                                    NecessarytobelieveinGodtobemoral+
-                                    islam_oneway_ctr+
-                                    conflict_modern_ctr+
-                                    anti_western+anti_democratic_ctr|country)+
-                          religiosity+educqq_scl+incomeqq_scl+
-                          age25_29+age30_34+age35_39+age40_44+
-                          age45_49+age50_54+age55_59+ageAge60orover+
-                          Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr+
-                          NecessarytobelieveinGodtobemoral+
-                          islam_truth_ctr+islam_oneway_ctr+
-                          conflict_modern_ctr+anti_western+anti_democratic_ctr+
-                          social_cons)
-
-results_full <- pool_re_models(mclapply(analytic_samples, function(x) {
-  lmer.converge(formula_full, data=x)
-}))
-
-knitreg(lapply(list(results_attitudes, results_full),
-               convert_model_re),
-        digits=3,
-        custom.model.names=c("Restricted","Full"),
-        custom.coef.names=c("Intercept","Religiosity","Education quantile",
-                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
-                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
-                            "Age 60 and over", "Female", "Urban", "Shia",
-                            "Other denomination","Just a Muslim", "Sufi",
-                            "Necessary to believe in god to be moral",
-                            "Islam is the one true faith",
-                            "One way to interpret relig. teachings",
-                            "Religion in conflict with modernity",
-                            "Anti-Westernization scale",
-                            "Prefers strong leader to democracy",
-                            "Socially conservative scale"),
-        single.row=TRUE,
-        dcolumn=TRUE,
-        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
-        caption.above=TRUE,
-        custom.note="%stars Notes: All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
-```
-
-
-```{r add-full-effects, echo=FALSE}
-temp <- as_tibble(results_full$country_effects)
-colnames(temp)[1] <- "intercept"
-temp$country <- rownames(results_full$country_effects)
-temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
-colnames(temp) <- c("intercept_full","religiosity_full","educqq_scl_full")
-country_effects <- cbind(country_effects, temp)
-```
-
-```{r}
-ggplot(country_effects, aes(x=intercept, y=intercept_full))+
-  geom_abline(slope=1, color="grey")+
-  geom_point()+
-  geom_text_repel(aes(label=country))+
-  labs(x="intercept, restricted model", y="intercept, full model")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=religiosity, y=religiosity_full))+
-  geom_abline(slope=1, color="grey")+
-  geom_point()+
-  geom_text_repel(aes(label=country))+
-  labs(x="religiosity slope, restricted model", 
-       y="religiosity slope, full model")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=educqq_scl, y=educqq_scl_full))+
-  geom_abline(slope=1, color="grey")+
-  geom_point()+
-  geom_text_repel(aes(label=country))+
-  labs(x="education slope, restricted model", 
-       y="education slope, full model")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=intercept_full, y=religiosity_full))+
-  geom_hline(yintercept=0, linetype=2)+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="intercept in country", y="religiosity slope (full) in country")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=intercept_full, y=educqq_scl_full))+
-  geom_hline(yintercept=0, linetype=2)+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="intercept in country", y="education slope (full) in country")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=religiosity_full, y=educqq_scl_full))+
-  geom_hline(yintercept=0, linetype=2)+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="religiosity slope (full) in country", y="education slope (full) in country")+
-  theme_bw()
-```
-
-
-### Country-level effects
-
-
-```{r hdi_models, echo=FALSE, results='asis'}
-formula_hdi_intercept <- update(formula_attitudes, .~.+hdi_scaled)
-formula_hdi_full <- update(formula_attitudes, .~.+(religiosity+educqq_scl)*hdi_scaled)
-
-results_hdi_intercept <- pool_re_models(mclapply(analytic_samples, function(x) {
-  lmer.converge(formula_hdi_intercept, data=x)
-}))
-results_hdi_full <- pool_re_models(mclapply(analytic_samples, function(x) {
-  lmer.converge(formula_hdi_full, data=x)
-}))
-
-knitreg(lapply(list(results_attitudes, results_hdi_intercept, results_hdi_full),
-               convert_model_re),
-        digits=3,
-        custom.coef.names=c("Intercept","Religiosity","Education quantile",
-                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
-                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
-                            "Age 60 and over", "Female", "Urban", "Shia",
-                            "Other denomination","Just a Muslim", "Sufi",
-                            "Necessary to believe in god to be moral",
-                            "Islam is the one true faith",
-                            "One way to interpret relig. teachings",
-                            "Religion in conflict with modernity",
-                            "Anti-Westernization scale",
-                            "Prefers strong leader to democracy",
-                            "Socially conservative scale",
-                            "Human development index",
-                            "HDI x religiosity", "HDI x education quantile"),
-        single.row=TRUE,
-        dcolumn=TRUE,
-        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
-        caption.above=TRUE,
-        custom.note="%stars Notes: All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
-```
-
-
-Interesting effects on education, lets look at that graphically
-
-```{r}
-temp <- subset(analytic_samples[[1]], !duplicated(country),
-               select=c("country","hdi"))
-country_effects <- merge(country_effects, temp)
-ggplot(country_effects, aes(x=hdi, y=educqq_scl))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  theme_bw()
-```
-
-
-It seems true, but also largely dependent on region. Large group of African countries at the lower end, and MENA at the higher end. 
-
-```{r}
-ggplot(country_effects, aes(x=hdi, y=intercept))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  theme_bw()
-```
-
-## Alternate measures
-<a href="#top">Back to top</a>
-
-### Alternative religiosity measures
-<a href="#top">Back to top</a>
-
-I want to look closely at the components of the religiosity scale. For each outcome I will run three different models:
-
-1. A model which treats the three polytmous variables as three separate continuous variables. This is more parsimonious but creates no composite religiosity measure.
+1. A model which treats the three polytmous variables as three separate continuous variables.
 2. A model which treats the first two components (prayer, relig_important) as a single scale, and attendance as a separate scale
 
 ```{r religiosity_sensitivity_models, echo=FALSE, results='asis'}
@@ -459,7 +318,7 @@ results_relig2 <- pool_re_models(mclapply(analytic_samples, function(x) {
 #the function for converting back for knitreg will need to be model specific so 
 #it goes here and not useful functions - going to ignore random effects summaries
 #here because religiosity is changing
-convert_model_re <- function(model) {
+convert_model_re_relig <- function(model) {
   tr <- createTexreg(
     coef.names = names(model$fixef$beta), 
     coef = model$fixef$beta, 
@@ -472,7 +331,7 @@ convert_model_re <- function(model) {
 }
 
 knitreg(lapply(list(results_attitudes, results_relig_sep, results_relig2),
-               convert_model_re),
+               convert_model_re_relig),
         digits=3,
         custom.coef.names=c("Intercept","Religiosity","Education quantile",
                             "Income quantile","Age 25-29","Age 30-34","Age 35-39",
@@ -493,106 +352,23 @@ knitreg(lapply(list(results_attitudes, results_relig_sep, results_relig2),
         dcolumn=TRUE,
         caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
         caption.above=TRUE,
-        custom.note="%stars Notes: All models include random country-level intercepts and slopes for religiosity measures and education. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for religiosity measures and education. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.")
 ```
 
+In general the results are consistent with the single religiosity scale. Regardless of how they are done, all scales have a positive association with support for violent practices. The wakest effect is for the religion important scale, but its still one of the larger effects in the whole model. BIC does prefer the least parsimonious model 2 but I dont think much is added in terms of overall findings and it will definitely complicate the country level models that follow.
+
+
+We can also look at the correlation between the random components of each effect and the intercept.
 ```{r}
 round(results_relig_sep$ranef_cor, 3)
 ```
 
+Something is definitely funny with these models. We see large negative effects with education for two scales (attendance and religion important) and a giaant positive effect for the other (attendance). This raises some red flags for me about multicollinearity/overdetermination in these measures. Lets stick with a single religiosity measure.
 
-```{r}
-temp <- as_tibble(results_relig_sep$country_effects)
-colnames(temp)[1] <- "intercept"
-temp <- subset(temp, select=c("intercept","attend.scale","relig_important.scale",
-                              "prayer.scale","educqq_scl"))
-colnames(temp) <- c("intercept.relig_sep","attend.scale","relig_important.scale",
-                    "prayer.scale","educqq_scl.relig_sep")
-country_effects <- cbind(country_effects, temp)
-```
 
-```{r}
-ggplot(country_effects, aes(x=attend.scale, y=religiosity))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="attendance scale","combined religiosity scale")+
-  theme_bw()
-```
+#### Alternative education measures
 
-```{r}
-ggplot(country_effects, aes(x=prayer.scale, y=religiosity))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="prayer scale","combined religiosity scale")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=relig_important.scale, y=religiosity))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="religion important scale","combined religiosity scale")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=intercept.relig_sep, y=attend.scale))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="average support in country", y="attendance scale effect")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=intercept.relig_sep, y=prayer.scale))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="average support in country", y="prayer scale effect")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=intercept.relig_sep, y=relig_important.scale))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="average support in country", y="religion important scale effect")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=educqq_scl.relig_sep, y=relig_important.scale))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="educational effect", y="religion important scale effect")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=educqq_scl.relig_sep, y=attend.scale))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="educational effect", y="attendance scale effect")+
-  theme_bw()
-```
-
-```{r}
-ggplot(country_effects, aes(x=educqq_scl.relig_sep, y=prayer.scale))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country))+
-  labs(x="educational effect", y="prayer scale effect")+
-  theme_bw()
-```
-
-### Alternative education measures
+As an alternative education measure, we have the categorical variavble for highest attainment of secondary, or post-secondary. Lets see how these terms do instead of the education quantile.
 
 ```{r education_sensitivity_models, echo=FALSE, results='asis'}
 formula_baseline_educ_lvl <- formula(violence~(1+religiosity+Secondary+Post_Secondary|country)+
@@ -618,7 +394,7 @@ results_attitudes_educ_lvl <- pool_re_models(mclapply(analytic_samples, function
 
 #the function for converting back for knitreg will need to be model specific so 
 #it goes here and not useful functions
-convert_model_re <- function(model) {
+convert_model_re_educ <- function(model) {
   tr <- createTexreg(
     coef.names = names(model$fixef$beta), 
     coef = model$fixef$beta, 
@@ -644,7 +420,7 @@ convert_model_re <- function(model) {
 
 knitreg(lapply(list(results_demog_educ_lvl, results_theocons_educ_lvl, 
                     results_attitudes_educ_lvl),
-               convert_model_re),
+               convert_model_re_educ),
         digits=3,
         custom.coef.names=c("Intercept","Religiosity","Secondary","Post-Secondary",
                             "Income quantile","Age 25-29","Age 30-34","Age 35-39",
@@ -665,6 +441,9 @@ knitreg(lapply(list(results_demog_educ_lvl, results_theocons_educ_lvl,
         custom.note="%stars Notes: All models include random country-level intercepts and slopes for religiosity and education. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
 ```
 
+The results are pretty similar to those for th education quantile. We get similar negative effects on both secondary and post-secondary. The correlations with religiosity and the intercept are also pretty similar. They are also highly correlated with one another. BIC is preferred for the education quantile by a pretty high degree.
+
+Lets look at that correlation between the random effects for the  two educational measures.
 ```{r}
 temp <- as_tibble(results_attitudes_educ_lvl$country_effects)
 colnames(temp)[1] <- "intercept"
@@ -677,13 +456,16 @@ country_effects <- cbind(country_effects, temp)
 ggplot(country_effects, aes(x=Secondary, y=Post_Secondary))+
   geom_hline(yintercept=0, linetype=2)+
   geom_vline(xintercept=0, linetype=2)+
-  geom_abline(slope=1, color="grey")+
+  geom_abline(slope=1, color="blue", linetype=2)+
   geom_point()+
   geom_text_repel(aes(label=country))+
   labs(x="secondary education slope", y="post-secondary education slope")+
   theme_bw()
 ```
 
+Pretty tight correlation. Ghana and Egypt are the most notable outliers. Only a couple cases of effects in opposite direction but all when estimated effects are very small anyway.
+
+Lets go ahead and see how the random effects for the two education variables correlated with the random effects for the education quantile. 
 ```{r}
 ggplot(country_effects, aes(x=educqq_scl, y=Secondary))+
   geom_hline(yintercept=0, linetype=2)+
@@ -705,4 +487,369 @@ ggplot(country_effects, aes(x=educqq_scl, y=Post_Secondary))+
   labs(x="education quantile slope", y="post-secondary education slope")+
   theme_bw()
 ```
+
+
+the results for post-secondary are better than for secondary, but both are pretty close. Overall, I think its a fine victory for parsimony to use the educational quantile approach.
+
+### Country-level effects
+<a href="#top">Back to top</a>
+
+I now turn to models that include country-level variables. We want to measure development here and we want to do this parsimoniously, so my preferred measure is the Human Development Index (HDI) which is a composite scale of GDP per capita, life expectancy, and educational attainment in a country. In the set of models below, I first include the HDI as a predictor of the intercept alone to see how HDI affects the average support for violent practices in a country. In the second model, I also include it as a predictor of the slopes for education and religiosity. This allows me to see how HDI might affect the association between support for violent practices and religiosity/education. I think one perspective on modernization theory would expect high HDI to make the educational slope more negative and the religiosity slope less positive. 
+
+```{r hdi_models, echo=FALSE, results='asis'}
+formula_hdi_intercept <- update(formula_attitudes, .~.+hdi_scaled)
+formula_hdi_full <- update(formula_attitudes, .~.+(religiosity+educqq_scl)*hdi_scaled)
+
+results_hdi_intercept <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_hdi_intercept, data=x)
+}))
+results_hdi_full <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_hdi_full, data=x)
+}))
+
+knitreg(lapply(list(results_attitudes, results_hdi_intercept, results_hdi_full),
+               convert_model_re),
+        digits=3,
+        custom.coef.names=c("Intercept","Religiosity","Education quantile",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Anti-Westernization scale",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale",
+                            "Human development index",
+                            "HDI x religiosity", "HDI x education quantile"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
+        caption.above=TRUE,
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.")
+```
+
+In model 2, we can see that the HDI has a big negative effect on support for violent practices. More developed countries have much less support on average for these beliefs. Thats a win for modernization theory, I think. It doesn't do much to the individual level relationships, but we didn't expect it to do so. Interestingly it increases the correlation between the intercept and the education slope substantially. We might want to try to understand what is going on there better. 
+
+Things get interesting in model 3. Both interaction terms are *positive*. The religiosity case is fairly small substantively relative to the average religiosity effect and not stat sig, so not much going on there. The education effect on the other hand is pretty substantial and stat sig. This is not the expectation we had. It implies that the correlation between education and support for violent practices is less negative and possibly more positive in more developed countries. 
+
+To understand this a little better, lets look at the scatterplot of the education slopes from our full individual model and the HDI index for each country. 
+
+```{r}
+temp <- subset(analytic_samples[[1]], !duplicated(country),
+               select=c("country","hdi"))
+country_effects <- merge(country_effects, temp)
+ggplot(country_effects, aes(x=hdi, y=educqq_scl))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="human development index",
+       y="random education slopes, full individual model")+
+  theme_bw()
+```
+
+Yes, there is definitely a positive correlation here. Tunisia is again an outlier ("why can't you all be like Tunisia?"). One might argue that there is some regionalism going on here. A lot of African countries in the low HDI range and more MENA countries at the high HDI range. But I think there are enough other countries mixed in there that its not simply a regionalism story, or a "Bad Arab" story. 
+
+While we are at it, lets go ahead and look at the intercept/HDI correlation.
+
+```{r}
+ggplot(country_effects, aes(x=hdi, y=intercept))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="human development index",
+       y="random intercepts, full individual model")+
+  theme_bw()
+```
+
+As expected, a pretty strong negative correlation there. Its interesting how there is a group of countries with the highest intercept that seem to float above the rest of the scatterplot (like Afghanistan, Pakistan, Egypt, Malaysia, Algeria). However even among this group we see the same downward trend. Its like there is some invisible dummy variable separating two parallel lines. However, its hard to easily classify those countries. 
+
+
+Ok, now lets see how the correlations between slopes and intercepts compare in our model with HDI compared to the individual-level models.
+```{r add-effects-country, echo=FALSE}
+temp <- as_tibble(results_hdi_intercept$country_effects)
+colnames(temp)[1] <- "intercept"
+temp$country <- rownames(results_hdi_intercept$country_effects)
+temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
+colnames(temp) <- c("intercept_hdi_intercept","religiosity_hdi_intercept","educqq_hdi_intercept")
+country_effects <- cbind(country_effects, temp)
+temp <- as_tibble(results_hdi_full$country_effects)
+colnames(temp)[1] <- "intercept"
+temp$country <- rownames(results_hdi_full$country_effects)
+temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
+colnames(temp) <- c("intercept_hdi_full","religiosity_hdi_full","educqq_hdi_full")
+country_effects <- cbind(country_effects, temp)
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept_hdi_full, 
+                            y=religiosity_hdi_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept in country", y="religiosity slope in country",
+       caption="Based on model with HDI as a variable on random intercept and slopes")+
+  theme_bw()
+```
+
+
+```{r}
+ggplot(country_effects, aes(x=intercept_hdi_full, 
+                            y=educqq_hdi_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept in country", y="education slope in country",
+       caption="Based on model with HDI as a variable on random intercept and slopes")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=religiosity_hdi_full, 
+                            y=educqq_hdi_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="religiosity slope in country", y="education slope in country",
+       caption="Based on model with HDI as a variable on random intercept and slopes")+
+  theme_bw()
+```
+
+In general, these look pretty similar to the graphs above. The education effect has gotten stronger, and the correlation between eduation and religiosity is weaker, but I don't see any big differences in country placement. I also notice we get a slight negative effect of religiosity for Azerbaijan now. 
+
+Another way to check this is by graphing up the random components for the full model with HDI to the same random component in the individual level model.
+
+
+```{r}
+ggplot(country_effects, aes(x=intercept, 
+                            y=intercept_hdi_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_abline(slope=1, linetype=2, color="blue")+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept in country from individual model", 
+       y="intercept in country from model with HDI on intercept\nand slope")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=religiosity, 
+                            y=religiosity_hdi_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_abline(slope=1, linetype=2, color="blue")+
+  geom_text_repel(aes(label=country))+
+  labs(x="religiosity slope in country from individual model", 
+       y="religiosity slope in country from model with HDI on intercept\nand slope")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=educqq_scl, 
+                            y=educqq_hdi_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_abline(slope=1, linetype=2, color="blue")+
+  geom_text_repel(aes(label=country))+
+  labs(x="education slope in country from individual model", 
+       y="education slope in country from model with HDI on intercept\nand slope")+
+  theme_bw()
+```
+
+
+Those correlations all look pretty tight. Its not like we would tell a substantially different story depending on which one we chose. 
+
+#### Alternative variables
+<a href="#top">Back to top</a>
+
+We consider two changes to the country-level model above. 
+
+1. Instead of using HDI we use GDP per capita (logged) to get a straight measure of economic development. 
+2. Some concern in literature over the oil resource "curse." Countries may have high GDP due to oil extractive industries, but little development outside of this industry - it may even retard general development. So we control for oil revenue as percentage of GDP in models with both HDI and GDP to make sure we are not just picking up oil dependency. 
+
+```{r gdp_models, echo=FALSE, results='asis'}
+formula_gdp <- update(formula_attitudes, .~.+(religiosity+educqq_scl)*lgdpcap_scaled)
+formula_oil_rent <- update(formula_attitudes, 
+                           .~.+(religiosity+educqq_scl)*(hdi_scaled+oil_rent_pct_scaled))
+formula_oil_rent_gdp <- update(formula_attitudes,
+                               .~.+(religiosity+educqq_scl)*(lgdpcap_scaled+oil_rent_pct_scaled))
+
+
+results_gdp <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_gdp, data=x)
+}))
+results_oil_rent <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_oil_rent, data=x)
+}))
+results_oil_rent_gdp <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_oil_rent_gdp, data=x)
+}))
+
+knitreg(lapply(list(results_hdi_full, results_gdp, results_oil_rent, results_oil_rent_gdp),
+               convert_model_re),
+        digits=3,
+        custom.coef.names=c("Intercept","Religiosity","Education quantile",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Anti-Westernization scale",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale",
+                            "Human development index",
+                            "HDI x religiosity", "HDI x education quantile",
+                            "GDP per capita (logged)",
+                            "log GDP x religiosity", "log GDP x education quantile",
+                            "Oil rents as percent of GDP",
+                            "Oil rents x religiosity", "Oil rents x education quantile"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
+        caption.above=TRUE,
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.")
+```
+
+The results pretty strongly support our basic conclusions with the HDI measure. The results for GDP when used in Model 2 are substantively similar but a little smaller. There is not much effect of oil rents in either model 3 or model 4 and it doesnt have much of an effect on the estimated effects of HDI/GDP. It actually increases two out of the three measures, rather than diminishes them. So this is a supplementary analysis we might want to provide to reviewers, but stick with basic HDI measures. 
+
+### Allowing more random slopes
+<a href="#top">Back to top</a>
+
+Lets now consider allowing the slopes of other independent variables to vary by country. We may not effectively control for other variables if there effects vary substantially across countries. It is computationally impossible to allow everything to vary, but after experimentation we fit the fullest model that we felt was theoretically justified. For the demographic variables, we wanted to allow income and urbanicity to vary because of strong relationships between these variables and education. We also wanted to allow all the variables on theological conservatism and other attitudes to vary. However, we found that the models ran into problems with singular results when including the variables on Islam being the one true faith and the social conservatism scale, so we removed these from the results (check that on all analytical data). We do not allow age, gender, and denomination to vary. Denomination is heavily dependent on country and would therefore would almost certainly run into computational problems. Age had very small effects and general and the number of dummies presented problems, and gender we do not expect to see have strong correlations with our key variables. 
+
+
+```{r more_random_models, echo=FALSE, results='asis'}
+formula_full <- formula(violence~(1+religiosity+educqq_scl+incomeqq_scl+Urban+
+                                    NecessarytobelieveinGodtobemoral+
+                                    islam_oneway_ctr+
+                                    conflict_modern_ctr+
+                                    anti_western+anti_democratic_ctr|country)+
+                          (religiosity+educqq_scl)*hdi_scaled+incomeqq_scl+
+                          age25_29+age30_34+age35_39+age40_44+
+                          age45_49+age50_54+age55_59+ageAge60orover+
+                          Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr+
+                          NecessarytobelieveinGodtobemoral+
+                          islam_truth_ctr+islam_oneway_ctr+
+                          conflict_modern_ctr+anti_western+anti_democratic_ctr+
+                          social_cons)
+
+results_full <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_full, data=x)
+}))
+
+knitreg(lapply(list(results_hdi_full, results_full),
+               convert_model_re),
+        digits=3,
+        custom.model.names=c("Restricted","Full"),
+        custom.coef.names=c("Intercept","Religiosity","Education quantile",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Anti-Westernization scale",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale",
+                            "Human development index",
+                            "HDI x religiosity", "HDI x education quantile"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
+        caption.above=TRUE,
+        custom.note="%stars Notes: All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.")
+```
+
+The restricted model only varies the slope of education and religiosity, while the full model varies the slopes of most independent variables across countries. Results are pretty consistent across the two models. Average religiosity and education effects are very slightly smaller but the interaction between HDI and education is even stronger. The SD on religiosity is also a bit smaller.
+
+Lets take a look at our scatterplots between random components in this fuller model.
+
+```{r add-full-effects, echo=FALSE}
+temp <- as_tibble(results_full$country_effects)
+colnames(temp)[1] <- "intercept"
+temp$country <- rownames(results_full$country_effects)
+temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
+colnames(temp) <- c("intercept_full","religiosity_full","educqq_scl_full")
+country_effects <- cbind(country_effects, temp)
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept_full, y=religiosity_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept in country", y="religiosity slope (full) in country")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=intercept_full, y=educqq_scl_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept in country", y="education slope (full) in country")+
+  theme_bw()
+```
+
+```{r}
+ggplot(country_effects, aes(x=religiosity_full, y=educqq_scl_full))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country))+
+  labs(x="religiosity slope (full) in country", y="education slope (full) in country")+
+  theme_bw()
+```
+
+
+The most notable difference is that Kenya and Guinea Bissau really jumped up to positive education effects. Lets look at scatterplots of the same random component across the two models to see how close things are.
+
+```{r}
+ggplot(country_effects, aes(x=intercept, y=intercept_full))+
+  geom_abline(slope=1, color="blue", linetype=2)+
+  geom_point()+
+  geom_text_repel(aes(label=country))+
+  labs(x="intercept, restricted model", y="intercept, full model")+
+  theme_bw()
+```
+
+Intercepts look pretty good.
+
+```{r}
+ggplot(country_effects, aes(x=religiosity, y=religiosity_full))+
+  geom_abline(slope=1, color="blue", linetype=2)+
+  geom_point()+
+  geom_text_repel(aes(label=country))+
+  labs(x="religiosity slope, restricted model", 
+       y="religiosity slope, full model")+
+  theme_bw()
+```
+
+Ghana and Lebanon are the big outliers here.
+
+```{r}
+ggplot(country_effects, aes(x=educqq_scl, y=educqq_scl_full))+
+  geom_abline(slope=1, color="grey")+
+  geom_point()+
+  geom_text_repel(aes(label=country))+
+  labs(x="education slope, restricted model", 
+       y="education slope, full model")+
+  theme_bw()
+```
+
+Egypt actually stands out here the most. Its the most positive in our original models, but not with other controls.
+
+Overall, there are a few differences here for specific countries, but since our major results are not changed much at all by the less restricted model, I think we should go for the more parsimonious model in the analysis.
 
