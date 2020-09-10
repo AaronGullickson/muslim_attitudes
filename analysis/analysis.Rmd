@@ -127,7 +127,7 @@ The random effects models are random intercept and random slope models that allo
 
 We begin with a model which only allows the religiosity and education slopes to vary across countries. These models are more parsimonious and are much faster computationally. They have the disadvantage of not fully controlling for the effects of other variables if those effects vary across countries. 
 
-```{r random_models, echo=FALSE}
+```{r random_models, echo=FALSE, results='asis'}
 formula_baseline <- formula(violence~(1+religiosity+educqq_scl|country)+
                               religiosity+educqq_scl)
 formula_demog <- update(formula_baseline, .~.+incomeqq_scl+
@@ -139,16 +139,16 @@ formula_theocons <- update(formula_demog, .~.+NecessarytobelieveinGodtobemoral+
 formula_attitudes <- update(formula_theocons, .~.+conflict_modern_ctr+
                               anti_western+anti_democratic_ctr+social_cons)
 
-results_baseline <- pool_re_models(lapply(analytic_samples, function(x) {
+results_baseline <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_baseline, data=x)
 }))
-results_demog <- pool_re_models(lapply(analytic_samples, function(x) {
+results_demog <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_demog, data=x)
 }))
-results_theocons <- pool_re_models(lapply(analytic_samples, function(x) {
+results_theocons <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_theocons, data=x)
 }))
-results_attitudes <- pool_re_models(lapply(analytic_samples, function(x) {
+results_attitudes <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_attitudes, data=x)
 }))
 
@@ -239,7 +239,7 @@ ggplot(country_effects, aes(x=religiosity, y=educqq_scl))+
 Lets now consider allowing other slopes to vary. Its computationally impossible to allow everything to vary, but after experimentation we fit the fullest model that we felt was theoretically justified. For the demographic variables, we wanted to allow income and urbanicity to vary because of strong relationships between these variables and education. We also wanted to allow all the variables on theological conservatism and other attitudes to vary. However, we found that the models ran into problems with singular results when including the variables on Islam being the one true faith and the social conservatism scale, so we removed these from the results (check that on all analytical data). We do not allow age, gender, and denomination to vary. Denomination is heavily dependent on country and would therefore would almost certainly run into computational problems. Age had very small effects and general and the number of dummies presented problems, and gender we do not expect to see have strong correlations with our key variables. 
 
 
-```{r more_random_models, echo=FALSE}
+```{r more_random_models, echo=FALSE, results='asis'}
 formula_full <- formula(violence~(1+religiosity+educqq_scl+incomeqq_scl+Urban+
                                     NecessarytobelieveinGodtobemoral+
                                     islam_oneway_ctr+
@@ -254,7 +254,7 @@ formula_full <- formula(violence~(1+religiosity+educqq_scl+incomeqq_scl+Urban+
                           conflict_modern_ctr+anti_western+anti_democratic_ctr+
                           social_cons)
 
-results_full <- pool_re_models(lapply(analytic_samples, function(x) {
+results_full <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_full, data=x)
 }))
 
@@ -354,14 +354,14 @@ ggplot(country_effects, aes(x=religiosity_full, y=educqq_scl_full))+
 ### Country-level effects
 
 
-```{r hdi_models, echo=FALSE}
+```{r hdi_models, echo=FALSE, results='asis'}
 formula_hdi_intercept <- update(formula_attitudes, .~.+hdi_scaled)
 formula_hdi_full <- update(formula_attitudes, .~.+(religiosity+educqq_scl)*hdi_scaled)
 
-results_hdi_intercept <- pool_re_models(lapply(analytic_samples, function(x) {
+results_hdi_intercept <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_hdi_intercept, data=x)
 }))
-results_hdi_full <- pool_re_models(lapply(analytic_samples, function(x) {
+results_hdi_full <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_hdi_full, data=x)
 }))
 
@@ -425,7 +425,7 @@ I want to look closely at the components of the religiosity scale. For each outc
 1. A model which treats the three polytmous variables as three separate continuous variables. This is more parsimonious but creates no composite religiosity measure.
 2. A model which treats the first two components (prayer, relig_important) as a single scale, and attendance as a separate scale
 
-```{r religiosity_sensitivity_models, echo=FALSE}
+```{r religiosity_sensitivity_models, echo=FALSE, results='asis'}
 formula_relig_sep <- formula(violence~(1+attend.scale+relig_important.scale+prayer.scale+
                                            educqq_scl|country)+
                                  attend.scale+relig_important.scale+prayer.scale+
@@ -448,11 +448,11 @@ formula_relig2 <- formula(violence~(1+religiosity2+attend.scale+educqq_scl|count
                             conflict_modern_ctr+anti_western+anti_democratic_ctr+
                             social_cons)
 
-results_relig_sep <- pool_re_models(lapply(analytic_samples, function(x) {
+results_relig_sep <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_relig_sep, data=x)
 }))
 
-results_relig2 <- pool_re_models(lapply(analytic_samples, function(x) {
+results_relig2 <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_relig2, data=x)
 }))
 
@@ -594,7 +594,7 @@ ggplot(country_effects, aes(x=educqq_scl.relig_sep, y=prayer.scale))+
 
 ### Alternative education measures
 
-```{r education_sensitivity_models, echo=FALSE}
+```{r education_sensitivity_models, echo=FALSE, results='asis'}
 formula_baseline_educ_lvl <- formula(violence~(1+religiosity+Secondary+Post_Secondary|country)+
                               religiosity+Secondary+Post_Secondary)
 formula_demog_educ_lvl <- update(formula_baseline_educ_lvl, .~.+incomeqq_scl+
@@ -606,13 +606,13 @@ formula_theocons_educ_lvl <- update(formula_demog_educ_lvl, .~.+Necessarytobelie
 formula_attitudes_educ_lvl <- update(formula_theocons_educ_lvl, .~.+conflict_modern_ctr+
                               anti_western+anti_democratic_ctr+social_cons)
 
-results_demog_educ_lvl <- pool_re_models(lapply(analytic_samples, function(x) {
+results_demog_educ_lvl <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_demog_educ_lvl, data=x)
 }))
-results_theocons_educ_lvl <- pool_re_models(lapply(analytic_samples, function(x) {
+results_theocons_educ_lvl <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_theocons_educ_lvl, data=x)
 }))
-results_attitudes_educ_lvl <- pool_re_models(lapply(analytic_samples, function(x) {
+results_attitudes_educ_lvl <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_attitudes_educ_lvl, data=x)
 }))
 
