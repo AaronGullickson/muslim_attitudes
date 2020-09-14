@@ -41,8 +41,6 @@ summary(hdi$`2010`)
 hdi <- subset(hdi, select=c("Country","2010"))
 colnames(hdi) <- c("country","hdi")
 
-hdi$hdi_scaled <- scaleIndVariable(hdi$hdi)
-
 # WDI Data from World Bank ------------------------------------------------
 
 wdi <- read_csv(here("analysis","input","wdi",
@@ -72,11 +70,86 @@ wdi <- subset(wdi, year==2010,
               select=c("country","gdpcap","oil_rent_pct"))
 
 wdi$lgdpcap <- log(wdi$gdpcap)
-wdi$lgdpcap_scaled <- scaleIndVariable(wdi$lgdpcap)
-wdi$oil_rent_pct_scaled <- scaleIndVariable(wdi$oil_rent_pct)
+
+# Religious Distributions -------------------------------------------------
+
+# The raw data come from the Pew Report on the Global Religious Landscape.
+# The raw distributions of religious affiliation by country were extracted
+# from the PDF report using Tabula. Tabula did a good job but there is 
+# still considerable cleaning to be done from within R.
+#
+# http://www.pewforum.org/2012/12/18/global-religious-landscape-exec/
+
+
+# extract table from first page of example PDF
+#the tabulizer package is awesome. The stream method here solved my problem
+#with cutting off country names
+extract <- extract_tables(here("analysis","input","pew_data_orig",
+                               "global-religion-full.pdf"), 
+                          pages = 45:50, method="stream")
+#this comes back as a list with a table per page. Lets check the dimensions
+lapply(extract, dim)
+
+#looks good and interactive exploration looked good as well, so lets combine
+global_relig <- NULL
+for(page in extract) {
+  global_relig <- rbind(global_relig, page)
+}
+#remove header rows that are either "" or "COUNTRY" in first column
+global_relig <- global_relig[global_relig[,1]!="" 
+                             & global_relig[,1]!="COUNTRY",]
+
+#now variable names
+colnames(global_relig) <- c("country","population","christian","muslim",
+                            "unaffiliated","hindu","buddhist","folk","other",
+                            "jewish")
+
+
+#now clean up the strings so I can convert to numeric values
+global_relig[,"population"] <- gsub("< 10,000","10000",
+                                    global_relig[,"population"])
+global_relig[,"population"] <- gsub(",","",
+                                    global_relig[,"population"])
+global_relig[,3:10] <-  gsub(" %","", global_relig[,3:10])
+global_relig[,3:10] <-  gsub("< 0.1","0", global_relig[,3:10])
+global_relig[,3:10] <-  gsub(">99.0","100", global_relig[,3:10])
+global_relig <- as_tibble(global_relig)
+global_relig[,2:10] <- lapply(global_relig[,2:10], as.numeric)
+
+#check for missing values
+lapply(global_relig, function(x) {sum(is.na(x))})
+
+#How do country names match up?
+sample_countries[!(sample_countries %in% global_relig$country)]
+
+#A few name changes are necessary for matching
+global_relig$country[global_relig$country=="Bosnia-Herzegovina"] <- "Bosnia and Herzegovina"
+global_relig$country[global_relig$country=="Palestinian territories"] <- "Palestinian Territories"
+
+#drop regions
+global_relig <- subset(global_relig,
+                       country!="Asia-Pacific" & country!="Europe" &
+                         country!="Latin America-Caribbean" & 
+                         country!= "Middle East-North Africa" &
+                         country!="North America" &
+                         country!="Sub-Saharan Africa" & 
+                         country!="World")
+
+#get key variable
+global_relig$pct_muslim <- global_relig$muslim
+global_relig$muslim_pop <- (global_relig$pct_muslim/100)*global_relig$population
+
+#what percent of the global Muslim population is in our dataset
+sum(global_relig$muslim_pop[global_relig$country %in% sample_countries])/
+  sum(global_relig$muslim_pop)
+
+global_relig <- subset(global_relig, country %in% sample_countries,
+                       select=c("country", "pct_muslim"))
 
 # Save data ---------------------------------------------------------------
 
 country_data <- merge(hdi, wdi, all.x=TRUE, all.y=TRUE)
+country_data <- merge(country_data, global_relig, all.x=TRUE, all.y=TRUE)
+
 
 save(country_data, file=here("analysis","output","country_data.RData"))

@@ -42,6 +42,11 @@ scaleIndVariable <- function(variable) {
   return((variable-mean(variable))/(2*sd(variable)))
 }
 
+scale_group_center <- function(variable, group) {
+  group_means <- tapply(variable, group, mean)
+  return((variable-group_means[as.character(group)])/(2*sd(variable)))
+}
+
 #find region based on shortened country name
 findRegion <- function(country_names) {
   region <- factor(c("South Asia","Europe","MENA","Central Asia","South Asia",

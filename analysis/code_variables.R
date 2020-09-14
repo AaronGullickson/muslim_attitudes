@@ -22,9 +22,10 @@ load(here("analysis","output","country_data.RData"))
 analytic_samples <- lapply(analytic_samples, function(asample) {
   
   #scales from constructs
-  asample$religiosity <- scaleIndVariable(scale(as.numeric(asample$prayer))
-                                          +scale(as.numeric(asample$relig_important))
-                                          +scale(as.numeric(asample$attend)))
+  temp <- 
+  asample$religiosity <- scaleIndVariable(scale(as.numeric(asample$prayer))[,1]
+                                            +scale(as.numeric(asample$relig_important))[,1]
+                                            +scale(as.numeric(asample$attend))[,1])
   asample$social_cons <- scaleIndVariable(apply(asample[,c("moral_alcohol","moral_euthanasia",
                                                            "moral_suicide","moral_abortion",
                                                            "moral_prostitution","moral_premar_sex",
@@ -33,12 +34,12 @@ analytic_samples <- lapply(analytic_samples, function(asample) {
                                            +as.numeric(asample$western_immoral=="Western culture has hurt morality"))
   
   #also create scales for some sensitivity variables for religiosity variables
-  asample$religiosity2 <- scaleIndVariable(scale(as.numeric(asample$prayer))
-                                           +scale(as.numeric(asample$relig_important)))
-  asample$religiosity3 <- scaleIndVariable(scale(as.numeric(asample$prayer))
-                                           +scale(as.numeric(asample$relig_important))
-                                           +scale(as.numeric(asample$attend))
-                                           +scale(as.numeric(asample$believe_moral)))
+  asample$religiosity2 <- scaleIndVariable(scale(as.numeric(asample$prayer))[,1]
+                                           +scale(as.numeric(asample$relig_important))[,1])
+  asample$religiosity3 <- scaleIndVariable(scale(as.numeric(asample$prayer))[,1]
+                                           +scale(as.numeric(asample$relig_important))[,1]
+                                           +scale(as.numeric(asample$attend))[,1]
+                                           +scale(as.numeric(asample$believe_moral))[,1])
   asample$attend.scale <- scaleIndVariable(as.numeric(asample$attend))
   asample$prayer.scale <- scaleIndVariable(as.numeric(asample$prayer))
   asample$relig_important.scale <- scaleIndVariable(as.numeric(asample$relig_important))
@@ -50,13 +51,32 @@ analytic_samples <- lapply(analytic_samples, function(asample) {
   #Dependent Variable
   asample$violence <- scale(as.numeric(asample$death_apostasy=="Favor") 
                             +as.numeric(asample$stone_adultery=="Favor")
-                            +as.numeric(asample$severe_corporal=="Favor"))
-  asample$terrorism <- scale(as.numeric(asample$civilian_target))
-  
-  #add in country level HDI measure
-  asample <- merge(asample, country_data, all.x=TRUE, all.y=FALSE)
+                            +as.numeric(asample$severe_corporal=="Favor"))[,1]
+  asample$terrorism <- scale(as.numeric(asample$civilian_target))[,1]
   
   return(asample)
+})
+
+
+# Add country level variables ---------------------------------------------
+
+#I want each country variable to be scaled by country level standard 
+#deviation but re-centered by individual level mean
+scale_country_var <- function(variable, country) {
+  sd.country <- sd(variable[!duplicated(country)])
+  return((variable-mean(variable))/(2*sd.country))
+}
+
+analytic_samples <- lapply(analytic_samples, function(asample) {
+ 
+  #merge country data
+  asample <- merge(asample, country_data, all.x=TRUE, all.y=FALSE)
+  asample$hdi_scaled <- scale_country_var(asample$hdi, asample$country)
+  asample$lgdpcap_scaled <- scale_country_var(asample$lgdpcap, asample$country)
+  asample$oil_rent_pct_scaled <- scale_country_var(asample$oil_rent_pct, 
+                                                   asample$country)
+  
+  return(asample) 
 })
 
 
