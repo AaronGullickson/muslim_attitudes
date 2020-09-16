@@ -16,6 +16,19 @@ load(here("analysis","output","analytic_samples.RData"))
 load(here("analysis","output","country_data.RData"))
 ```
 
+```{r theme, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, include=FALSE}
+theme_mine <- function() {
+  theme_bw()+
+    theme(axis.title = element_text(size=8), 
+          axis.text = element_text(size=7),
+          legend.text=element_text(size=7),
+          legend.title=element_text(size=8),
+          legend.key.size = unit(0.8,"line"),
+          strip.text = element_text(size=7),
+          legend.position = "right")
+}
+```
+
 ```{r run_models}
 formula_individual <- formula(violence~(1+religiosity+educqq_scl|country)+
                                 religiosity+educqq_scl+incomeqq_scl+
@@ -91,51 +104,7 @@ knitreg(lapply(list(results_individual, results_hdi_intercept, results_hdi_full)
         custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
 ```
 
-```{r build-country-effects, echo=FALSE}
-country_effects <- as_tibble(results_hdi_full$country_effects)
-colnames(country_effects)[1] <- "intercept"
-country_effects$country <- rownames(results_hdi_full$country_effects)
-temp <- as_tibble(results_individual$country_effects)
-colnames(temp)[1] <- "intercept"
-temp$country <- rownames(results_individual$country_effects)
-temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
-colnames(temp) <- c("intercept_ind","religiosity_ind","educqq_ind")
-country_effects <- cbind(country_effects, temp)
-temp <- subset(analytic_samples[[1]], !duplicated(country),
-               select=c("country","hdi"))
-country_effects <- merge(country_effects, temp)
-country_effects <- as_tibble(country_effects)
-```
-
-
-```{r country_averages, fig.cap="Dotplot of percentage of Muslim respondents who support three different questions measuring support for violent practices for the violation of norms. Countries are ordered from lowest to highest average level of support across all three questions."}
-country_agg <- 100*with(analytic_samples[[1]],
-     cbind(death_apostasy=tapply(death_apostasy=="Favor",country,mean,na.rm=TRUE),
-           stone_adultery=tapply(stone_adultery=="Favor",country,mean,na.rm=TRUE),
-           severe_corporal=tapply(severe_corporal=="Favor",country,mean,na.rm=TRUE)))
-country.scores <- sort(apply(country_agg,1,mean, na.rm=TRUE))
-temp <- as.data.frame.table(country_agg)
-
-colnames(temp) <- c("country","variable","percent")
-temp$country <- factor(temp$country,
-                       levels=names(country.scores),
-                       labels=shortenCountryNames(names(country.scores)))
-ncountry <- length(unique(temp$country))
-temp$variable <- factor(temp$variable,
-                        levels=c("death_apostasy","severe_corporal","stone_adultery"),
-                        labels=c("Death for apostasy",
-                                 "Severe corporal punishment",
-                                 "Adulterers should be stoned"))
-ggplot(temp, aes(x=country, y=percent,group=variable))+
-  geom_point(aes(colour=variable, shape=variable))+coord_flip()+
-  #scale_colour_brewer(palette = "Dark2", name="Value")+
-  scale_color_viridis_d(name="Variable", end=0.75)+
-  scale_shape_manual(values=c(15,16,17,7,9,10), name="Variable")+
-  ylab("Percentage in support")+
-  xlab("")+
-  ylim(0,100)+
-  theme_bw()
-```
+\newpage
 
 ```{r figure_world_map, fig.cap="Map showing countries included in the analysis by percent Muslim. Mollweide projection used to preserve area proportions."}
 proj_chosen <- "mollweide"
@@ -182,7 +151,98 @@ ggplot(map.world, aes(x=long, y=lat))+
         legend.position = "right")
 ```
 
-```{r intercept-slope-plot, fig.cap="A caption"}
+```{r build-country-effects, echo=FALSE}
+country_effects <- as_tibble(results_hdi_full$country_effects)
+colnames(country_effects)[1] <- "intercept"
+country_effects$country <- shortenCountryNames(rownames(results_hdi_full$country_effects))
+temp <- as_tibble(results_individual$country_effects)
+colnames(temp)[1] <- "intercept"
+temp$country <- rownames(results_individual$country_effects)
+temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
+colnames(temp) <- c("intercept_ind","religiosity_ind","educqq_ind")
+country_effects <- cbind(country_effects, temp)
+temp <- subset(analytic_samples[[1]], !duplicated(country),
+               select=c("country","hdi"))
+country_effects <- merge(country_effects, temp)
+country_effects <- as_tibble(country_effects)
+country_effects$region <- findRegion(country_effects$country)
+```
+
+
+```{r country_averages, fig.cap="Dotplot of percentage of Muslim respondents who support three different questions measuring support for violent practices for the violation of norms. Countries are ordered from lowest to highest average level of support across all three questions."}
+country_agg <- 100*with(analytic_samples[[1]],
+     cbind(death_apostasy=tapply(death_apostasy=="Favor",country,mean,na.rm=TRUE),
+           stone_adultery=tapply(stone_adultery=="Favor",country,mean,na.rm=TRUE),
+           severe_corporal=tapply(severe_corporal=="Favor",country,mean,na.rm=TRUE)))
+country.scores <- sort(apply(country_agg,1,mean, na.rm=TRUE))
+temp <- as.data.frame.table(country_agg)
+
+colnames(temp) <- c("country","variable","percent")
+temp$country <- factor(temp$country,
+                       levels=names(country.scores),
+                       labels=shortenCountryNames(names(country.scores)))
+ncountry <- length(unique(temp$country))
+temp$variable <- factor(temp$variable,
+                        levels=c("death_apostasy","severe_corporal","stone_adultery"),
+                        labels=c("Death for apostasy",
+                                 "Severe corporal punishment",
+                                 "Adulterers should be stoned"))
+ggplot(temp, aes(x=country, y=percent,group=variable))+
+  geom_point(aes(colour=variable, shape=variable))+coord_flip()+
+  #scale_colour_brewer(palette = "Dark2", name="Value")+
+  scale_color_viridis_d(name="Variable", end=0.75)+
+  scale_shape_manual(values=c(15,16,17,7,9,10), name="Variable")+
+  ylab("Percentage in support")+
+  xlab("")+
+  ylim(0,100)+
+  theme_mine()
+```
+
+```{r hdi-effect, fig.cap="Scatterplot showing the relationship between the Human Development Index in a country and the association between education and support for violence practices in a country. The association is estimated from Model 1 of Table 1 and controls for differences in individual-level characteristics across countries. Lines show the best OLS fit to the scatterplot." }
+country_effects$ss_africa <- factor(country_effects$region=="Africa",
+                                    levels=c(TRUE,FALSE),
+                                    labels=c("Sub-Saharan Africa",
+                                             "All Other Countries"))
+ggplot(country_effects, aes(x=hdi, y=educqq_ind))+
+  geom_point(aes(color=ss_africa))+
+  geom_smooth(method="lm", se=FALSE, color="grey20")+
+  geom_smooth(method="lm", se=FALSE, aes(group=ss_africa, color=ss_africa),
+              linetype=2)+
+  geom_text_repel(aes(label=country), size=3)+
+  scale_color_viridis_d(end=0.75)+
+  labs(x="human development index",
+       y="education slope in country based on individual-level model",
+       color="Region")+
+  theme_mine()
+```
+
+```{r random-slope-lollipop, fig.cap="Lollipop plots of the association between religiosity/education and support for violent practices in each country. Values are based on random slopes from Model 3 of Table 1. Each panel is ordered from largest to smallest association. Values are color-coded by direction."}
+#lets try this full tidyverse
+#this useful post on how to reorder within facets was helpful
+#https://drsimonj.svbtle.com/ordering-categories-within-ggplot2-facets
+pd <- country_effects %>%
+  select("country","religiosity","educqq_scl") %>%
+  melt() %>% 
+  arrange(variable, value) %>%
+  mutate(variable=factor(variable, 
+                         levels=c("religiosity","educqq_scl"),
+                         labels=c("religiosity","education")),
+         order=row_number())
+
+ggplot(pd, aes(x=order, y=value))+
+  geom_hline(yintercept = 0, color="grey50")+
+  geom_lollipop(aes(color=(value<0)), show.legend=FALSE)+
+  facet_wrap(~variable, scales="free")+
+  scale_color_viridis_d(end=0.75)+
+  scale_x_continuous(breaks = pd$order,
+                     labels = pd$country,
+                     expand = expansion(mult = c(0.02, 0.02)))+
+  coord_flip()+
+  labs(x=NULL, y="association with support for violent practices")+
+  theme_mine()
+```
+
+```{r intercept-slope-plot, fig.cap="Scatterplot showing the relationship betwen a country's average level of support for violent practices and the association between education/religiosity and support for violent practices in a country. Values are based on random intercepts and slopes from Model 3 of Table 1. Best fitting OLS line is shown for both panels."}
 temp <- subset(country_effects, 
                select=c("country","intercept","religiosity"))
 temp$variable <- "religiosity"
@@ -199,27 +259,19 @@ ggplot(temp, aes(x=intercept,
   geom_text_repel(aes(label=country), size=2)+
   facet_wrap(~variable)+
   labs(x="average support for violent practices in country (intercept)", y="association (slope) between education/religiosity and\nsupport for violent practices in country")+
-  theme_bw()
+  theme_mine()
 ```
 
 
-```{r slope-compare-plot, fig.cap="A caption"}
+```{r slope-compare-plot, fig.cap="Scatterplot showing the relationship between country-level associations of education and religiosity with support for violent practices. Values based on random slopes from Model 3 of Table 1. Best-fitting OLS line is shown."}
 ggplot(country_effects, aes(x=religiosity, 
                             y=educqq_scl))+
   geom_hline(yintercept=0, linetype=2)+
+  geom_vline(xintercept=0, linetype=2)+
   geom_point()+
   geom_smooth(method="lm", se=FALSE)+
   geom_text_repel(aes(label=country), size=3)+
   labs(x="religiosity slope in country", y="education slope in country")+
-  theme_bw()
+  theme_mine()
 ```
 
-```{r hdi-effect, fig.cap="A caption" }
-ggplot(country_effects, aes(x=hdi, y=educqq_ind))+
-  geom_point()+
-  geom_smooth(method="lm", se=FALSE)+
-  geom_text_repel(aes(label=country), size=3)+
-  labs(x="human development index",
-       y="education slope in country based on individual-level model")+
-  theme_bw()
-```
