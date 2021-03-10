@@ -30,7 +30,11 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, error = FALSE, warning = FA
 
 # Introduction
 
+Here are some words. 
+
 # Background
+
+Make some changes to the text.
 
 # Data and Methods
 
