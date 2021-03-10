@@ -171,11 +171,11 @@ Finally, we look at the relationship between the two measures of association. Do
 
 # Conclusions
 
-The average effects of education and religiosity are as expected from prior work and expectations of modernization theory, but the effects of religiosity are much stronger.
+1. The average effects of education and religiosity are as expected from prior work and expectations of modernization theory, but the effects of religiosity are much stronger.
 
-The religiosity effects are not a surrogate for theological literalism -- the “duh” argument. We control for theological conservatism/literalism in the models. More importantly, while the average effects of religiosity are strongly positive, the results by country are highly variable. In some countries, there is virtually no correlation between religiosity and support for violent practices. Islamic conservatism is not destiny, but its also not irrelevant. 
+2. The religiosity effects are not a surrogate for theological literalism -- the “duh” argument. We control for theological conservatism/literalism in the models. More importantly, while the average effects of religiosity are strongly positive, the results by country are highly variable. In some countries, there is virtually no correlation between religiosity and support for violent practices. Islamic conservatism is not destiny, but its also not irrelevant. 
 
-There is some evidence in support of the socialization hypothesis. Both education and religiosity had more positive/less negative association with support for violent practices in countries that were more supportive of these practices overall. The finding for education is expected, but the correlation is actually much stronger for religiosity. This suggests that religious institutions may also be socialized to the norms of society. 
+3. There is some evidence in support of the socialization hypothesis. Both education and religiosity had more positive/less negative association with support for violent practices in countries that were more supportive of these practices overall. The finding for education is expected, but the correlation is actually much stronger for religiosity. This suggests that religious institutions may also be socialized to the norms of society. 
 Somewhat surprisingly, there is very little correlation in the effects of religiosity and education across countries. This implies that there is not necessarily a greater singular force (e.g. “modernization”) driving change in both religious and educational institutions, but rather that these two institutions are affected disparately by factors unique to each country. 
 
 
