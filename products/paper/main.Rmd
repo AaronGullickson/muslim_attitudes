@@ -107,7 +107,9 @@ We constructed the dependent variable for our models by counting the number of f
 
 ## Measuring Development
 
-==TODO==
+At the country-level, we considered two different possibilities for a measure of overall development. Gross domestic product (GDP) per capita is often used as a purely economic measure of the level of development. On the other hand, the Human Development Index (HDI), developed by the United Nations Development Program ==(CITATION)==, offers a more holistic measure of development. The HDI considers three separate components in its overall measure: life expectancy at birth, overall educational attainment, and gross national income per capita. These three components are combined into a single composite index. 
+
+These two measures are highly correlated among the countries used in the analysis ($r=0.78$). All models reported here use the HDI. We chose the HDI as our primary measure of development because it allows us to parsimoniously capture mutiple dimensions of development. As a sensitivity analysis, we constructed identical models with a logged GDP per capita measure. The results were similar, although the logged GDP variable tended to produce slightly smaller overall effects than HDI. All sensitivity analyses are available in the supplementary documentation. 
 
 ## Independent Variables
 
