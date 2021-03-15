@@ -161,6 +161,7 @@ temp$country <- rownames(results_individual$country_effects)
 temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
 colnames(temp) <- c("intercept_ind","religiosity_ind","educqq_ind")
 country_effects <- cbind(country_effects, temp)
+country_effects$educqq_model2 <- results_hdi_intercept$country_effects[,"educqq_scl"]
 temp <- subset(analytic_samples[[1]], !duplicated(country),
                select=c("country","hdi"))
 country_effects <- merge(country_effects, temp)
@@ -198,20 +199,21 @@ ggplot(temp, aes(x=country, y=percent,group=variable))+
   theme_mine()
 ```
 
-```{r hdi-effect, fig.cap="Scatterplot showing the relationship between the Human Development Index in a country and the association between education and support for violence practices in a country. The association is estimated from Model 1 of Table 1 and controls for differences in individual-level characteristics across countries. Lines show the best OLS fit to the scatterplot." }
+```{r hdi-effect, fig.cap="Scatterplot showing the relationship between the Human Development Index in a country and the association between education and support for violence practices in a country. The association is estimated from Model 2 of Table 1 and controls for differences in individual-level characteristics across countries. Lines show the best OLS fit to the scatterplot." }
 country_effects$ss_africa <- factor(country_effects$region=="Africa",
                                     levels=c(TRUE,FALSE),
                                     labels=c("Sub-Saharan Africa",
                                              "All Other Countries"))
-ggplot(country_effects, aes(x=hdi, y=educqq_ind))+
+ggplot(country_effects, aes(x=hdi, y=educqq_model2))+
   geom_point(aes(color=ss_africa))+
-  geom_smooth(method="lm", se=FALSE, color="grey20")+
+  geom_hline(yintercept = 0, linetype=2)+
+  #geom_smooth(method="lm", se=FALSE, color="grey20")+
   geom_smooth(method="lm", se=FALSE, aes(group=ss_africa, color=ss_africa),
               linetype=2)+
   geom_text_repel(aes(label=country), size=3)+
   scale_color_viridis_d(end=0.75)+
   labs(x="human development index",
-       y="education slope in country based on individual-level model",
+       y="education slope in country",
        color="Region")+
   theme_mine()
 ```
