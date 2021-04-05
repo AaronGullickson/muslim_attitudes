@@ -129,19 +129,21 @@ country_names <- aggregate(cbind(long, lat)~region,
                            data=subset(map.world, !is.na(pct_muslim_cat)), FUN=mean)
 
 ggplot(map.world, aes(x=long, y=lat))+
-  geom_polygon(aes(group=group, fill=pct_muslim), 
-               col="grey80", size=0.1)+
+  geom_polygon(aes(group=group, fill=pct_muslim/100), 
+               col="grey50", size=0.1)+
   geom_text_repel(data=country_names, aes(label=shortenCountryNames(region)), 
             col="black", size=1.75, force=1, 
             segment.colour = "grey20", arrow = arrow(length=unit(0.05, "lines")))+
-  # scale_fill_manual(values=c("#c2e699",
-  #                            "#78c679",
-  #                            "#31a354",
-  #                            "#006837"),
-  #                   na.value = "grey90",
-  #                   name="Percent Muslim",
-  #                   labels=c(levels(map.world$pct_muslim_cat), "Not in sample"))+
-  scale_fill_viridis_c(begin=0.25, direction = -1)+
+  # scale_fill_manual(values=c("#7b3294",
+  #                             "#c2a5cf",
+  #                             "#a6dba0",
+  #                             "#008837"),
+  #                    na.value = "grey90",
+  #                    name="Percent Muslim",
+  #                    labels=c(levels(map.world$pct_muslim_cat), "Not in sample"))+
+  #scale_fill_viridis_c(begin=0.25, direction = -1, na.value = "grey80")+
+  scale_fill_gradient2(low="#7b3294", high="#008837", mid="white", midpoint=0.5,
+                       na.value="grey90", name="Percent Muslim", labels=scales::percent)+
   theme(panel.background = element_rect(fill = "white"),
         plot.background = element_rect(fill = "white"),
         panel.grid = element_blank(),
@@ -149,6 +151,11 @@ ggplot(map.world, aes(x=long, y=lat))+
         axis.title = element_blank(),
         axis.ticks = element_blank(),
         legend.position = "right")
+
+
+
+
+
 ```
 
 ```{r build-country-effects, echo=FALSE}
@@ -196,25 +203,6 @@ ggplot(temp, aes(x=country, y=percent,group=variable))+
   ylab("Percentage in support")+
   xlab("")+
   ylim(0,100)+
-  theme_mine()
-```
-
-```{r hdi-effect, fig.cap="Scatterplot showing the relationship between the Human Development Index in a country and the association between education and support for violence practices in a country. The association is estimated from Model 2 of Table 1 and controls for differences in individual-level characteristics across countries. Lines show the best OLS fit to the scatterplot." }
-country_effects$ss_africa <- factor(country_effects$region=="Africa",
-                                    levels=c(TRUE,FALSE),
-                                    labels=c("Sub-Saharan Africa",
-                                             "All Other Countries"))
-ggplot(country_effects, aes(x=hdi, y=educqq_model2))+
-  geom_point(aes(color=ss_africa))+
-  geom_hline(yintercept = 0, linetype=2)+
-  #geom_smooth(method="lm", se=FALSE, color="grey20")+
-  geom_smooth(method="lm", se=FALSE, aes(group=ss_africa, color=ss_africa),
-              linetype=2)+
-  geom_text_repel(aes(label=country), size=3)+
-  scale_color_viridis_d(end=0.75)+
-  labs(x="human development index",
-       y="education slope in country",
-       color="Region")+
   theme_mine()
 ```
 
