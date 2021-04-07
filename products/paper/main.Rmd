@@ -25,6 +25,72 @@ bibliography: ../project.bib
 biblio-style: ./resources/ajs.bst
 ---
 
+```{r setup, echo=FALSE, warning=FALSE, error=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, error = FALSE, warning = FALSE,
+                      fig.height=3.5)
+library(here)
+source(here("analysis","useful_functions.R"))
+source(here("analysis","check_packages.R"))
+load(here("analysis","output","analytic_samples.RData"))
+load(here("analysis","output","country_data.RData"))
+```
+
+```{r theme, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, include=FALSE}
+theme_mine <- function() {
+  theme_bw()+
+    theme(axis.title = element_text(size=8), 
+          axis.text = element_text(size=7),
+          legend.text=element_text(size=7),
+          legend.title=element_text(size=8),
+          legend.key.size = unit(0.8,"line"),
+          strip.text = element_text(size=7),
+          legend.position = "right")
+}
+```
+
+```{r run_models}
+formula_individual <- formula(violence~(1+religiosity+educqq_scl|country)+
+                                religiosity+educqq_scl+incomeqq_scl+
+                                age25_29+age30_34+age35_39+age40_44+
+                                age45_49+age50_54+age55_59+ageAge60orover+
+                                Female+Urban+
+                                Shia+Other+Nothinginparticular+sufi_ctr+
+                                NecessarytobelieveinGodtobemoral+
+                                islam_truth_ctr+islam_oneway_ctr+
+                                conflict_modern_ctr+anti_western+
+                                anti_democratic_ctr+social_cons)
+formula_hdi_intercept <- update(formula_individual, .~.+hdi_scaled)
+formula_hdi_full <- update(formula_individual, .~.+(religiosity+educqq_scl)*hdi_scaled)
+
+results_individual <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_individual, data=x)
+}))
+results_hdi_intercept <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_hdi_intercept, data=x)
+}))
+results_hdi_full <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_hdi_full, data=x)
+}))
+```
+
+```{r build-country-effects, echo=FALSE}
+country_effects <- as_tibble(results_hdi_full$country_effects)
+colnames(country_effects)[1] <- "intercept"
+country_effects$country <- shortenCountryNames(rownames(results_hdi_full$country_effects))
+temp <- as_tibble(results_individual$country_effects)
+colnames(temp)[1] <- "intercept"
+temp$country <- rownames(results_individual$country_effects)
+temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
+colnames(temp) <- c("intercept_ind","religiosity_ind","educqq_ind")
+country_effects <- cbind(country_effects, temp)
+country_effects$educqq_model2 <- results_hdi_intercept$country_effects[,"educqq_scl"]
+temp <- subset(analytic_samples[[1]], !duplicated(country),
+               select=c("country","hdi"))
+country_effects <- merge(country_effects, temp)
+country_effects <- as_tibble(country_effects)
+country_effects$region <- findRegion(country_effects$country)
+```
+
 # Introduction
 
 In a viral appearance on the HBO Show “Real Time with Bill Maher” in 2014, actor Ben Affleck became embroiled in an unexpected debate with host Bill Maher and fellow guest, Sam Harris, over the allegedly authoritarian and violent tendencies of Islamic doctrine. Harris, one of the leading figures in the New Atheist movement, argued that Islam "at this moment is the motherlode of bad ideas." To support this view, Maher offered data from a recent poll of Muslims worldwide conducted by the Pew Research Center which showed that  "like 90%" of Egyptian Muslims supported death as a punishment for leaving the faith.
@@ -45,17 +111,17 @@ Second, the large sample of countries here allows us to more systematically exam
 
 Prior work on values and attitudes in Muslim populations has focused on a variety of such attitudes including support for democracy (==CITATIONS==), political violence (==CITATIONS==), and women's rights (==CITATIONS==). While a summary of this work is beyond the scope of this article, such studies are often framed around modernization theory and its closely related cousin, secularization theory, as well as critiques of these theories [@jamal_reassessing_2006; @ciftci_modernization_2010]. 
 
-Modernization theory treats cultural and value change as largely a by-product of structural development [@lerner_passing_1958; @parsons_social_1964; @inkeles_becoming_1974]. Industrialization and economic growth bring about greater differentiation in the occupational workforce, urbanization, and higher standards of living [@rostow_stages_1960]. All of these factors contribute to a shift from conservative and authoritarian values to liberal values that promote individual autonomy and self-determination [@parsons_social_1964]. Concomitantly, rationalization, individualism, and cultural pluralism reduce the significance of religious institutions in favor of secular institutions, diminishing the role of religion in social life [@wilson_religion_1966; @bruce_secularization_2011; @emerson_rising_2006].
+Modernization theory treats cultural and value change as largely a by-product of structural development [@lerner_passing_1958; @parsons_social_1964; @inkeles_becoming_1974]. Industrialization and economic growth bring about greater differentiation in the occupational workforce, urbanization, and higher standards of living [@rostow_stages_1960]. All of these factors contribute to a shift from conservative and authoritarian values to liberal values that promote individual autonomy and self-determination [@parsons_social_1964]. Concomitantly, rationalization, individualism, and cultural pluralism reduce the significance of religious institutions in favor of secular institutions, diminishing the role of religion in social life [@wilson_religion_1966; @bruce_secularization_2011; @emerson_rise_2006].
 
 For this article, we focus on two important threads within this framework. First, scholars often treat education and religiosity as key variables at the individual level connected to processes of modernization and value change [@scheepers_education_2002a]. Second, contemporary critiques of modernization theory have often pointed to the heterogeneity and variation in the experience of development across countries rather than its uniformity and standardization [@smith_future_2008]. 
 
 ## The Role of Education and Religiosity in Value Change
 
-Education is often seen as a crucial fulcrum at the individual level for processes of modernization [@meyer_effects_1977; @chabbott_development_2000; @depaepe_educationalization_2008]. In terms of value change, research has repeatedly shown that education is positively related to liberal values [@hyman_educations_1979; @bobo_education_1989; @weakliem_effects_2002; @kingston_why_2003]. 
+Education is often seen as a crucial fulcrum at the individual level for processes of modernization [@meyer_effects_1977; @chabbott_development_2000; @depaepe_educationalization_2008]. In terms of value change, research has repeatedly shown that education is positively related to liberal values [@hyman_education_1979; @bobo_education_1989; @weakliem_effects_2002; @kingston_why_2003]. 
 
 While these results are broadly consistent with modernization theory, significant debate has persisted on how to understand this finding. The development perspective holds that education is linked to  fundamental cognitive changes in the way people view the world that leads to more tolerance and less authoritarianism [@adorno_authoritarian_1950; @mcclosky_dimensions_1983]. On the other hand, the socialization perspective argues that educational institutions socialize individuals to the prevailing norms of a society [@selznick_tenacity_1969; @jackman_education_1984; phelan_education_1995]. Therefore, the liberalizing effects of education will only exist in countries where liberal values are commonplace. Consistent with the socialization perspective, cross-national results in Western countries show that the positive effect of education is greatest in countries with more liberal values overall [@weil_variable_1985]. 
 
-Social scientists have often treated religiosity as the anti-modern counterweight to education [@schwadel_explaining_2015]. High levels of religiosity are seen to indicate commitments to conservative and authoritarian values [@rokeach_part_1969; @rokeach_part_1969-1; @wilcox_evangelicals_1990, p. 27]. Although there is significant heterogeneity across countries, research has shown that religious identification tends to be associated with support for right-wing parties and more conservative attitudes [@wilcox_evangelicals_1990; @kelley_class_1995; @scheepers_religion_1998; @karpov_religiosity_2002; @norris_sacred_2011, pp. 201-212].
+Social scientists have often treated religiosity as the anti-modern counterweight to education [@schwadel_explaining_2015]. High levels of religiosity are seen to indicate commitments to conservative and authoritarian values [@rokeach_part_1969; @rokeach_part_1969a; @wilcox_evangelicals_1990, p. 27]. Although there is significant heterogeneity across countries, research has shown that religious identification tends to be associated with support for right-wing parties and more conservative attitudes [@wilcox_evangelicals_1990; @kelley_class_1995; @scheepers_religion_1998; @karpov_religiosity_2002; @norris_sacred_2011, pp. 201-212].
 
 However, the relationship between religiosity and conservative values may be partially tautological depending on how religiosity is defined. Given that the core religious texts of the major Western religions are frequently conservative and authoritarian, it is not surprising that strong believers with a tendency for theological literalism would themselves be more conservative and authoritarian. Therefore, in analyzing the effect of religiosity on values and attitudes, it is imperative to distinguish the effects of theological conservatism and literalism from the effects of variables that measure how important religion and religious practices are in a person’s life. 
 
@@ -63,7 +129,7 @@ Although less widely discussed than for the case of education, the effect of rel
 
 ## Heterogeneity and Multiple Modernities
 
-Modernization theorists have viewed modernization as a fundamental process that would evolve similarly across countries, ultimately producing a global cosmopolitan society through the broad convergence in social and cultural systems [@fukuyama_end_1992]. Many scholars today criticize this view for privileging the historical experience of the West as a universal model. These “multiple modernities” scholars argue that while modernity will likely lead to changes in social and cultural systems, these changes will materialize in multiple dissimilar and non-convergent forms because countries develop within various historical and cultural contexts [@hefner_multiple_1998; @eisenstadt_multiple_2000; @kamali_multiple_2006; @bachika_cosmopolitanism_2011]. 
+Modernization theorists have viewed modernization as a fundamental process that would evolve similarly across countries, ultimately producing a global cosmopolitan society through the broad convergence in social and cultural systems [@fukuyama_end_1992]. Many scholars today criticize this view for privileging the historical experience of the West as a universal model. These “multiple modernities” scholars argue that while modernity will likely lead to changes in social and cultural systems, these changes will materialize in multiple dissimilar and non-convergent forms because countries develop within various historical and cultural contexts [@hefner_multiple_1998; @eisenstadt_multiple_2000; @kamali_multiple_2006; @casanova_cosmopolitanism_2011]. 
 
 In the present study, consideration of such heterogeneity is relevant to studying values in Muslim populations in two ways. First, the "civilizational" argument proposed by @huntington_clash_1996 suggests that heterogeneity across countries will largely correspond to civilizational blocs defined primarily along religious lines. According to Huntington, Western liberal traditions such as individualism, support for pluralism, and secularism are not intrinsic to the process of modernity but rather a specific inheritance of Western civilization [@huntington_clash_1996, pp. 69-72, 114]. If this is the case, then we we should not expect to see that development, education, and religiosity have the same effect on values and attitudes in Muslim societies as those observed elsewhere.
 
@@ -103,7 +169,47 @@ Data for this analysis come primarily from two cross-national surveys conducted 
 
 We combine Muslim respondents from these surveys together to construct our full analytical dataset. Five sub-Saharan African countries (Democratic Republic of Congo, Botswana, Rwanda, South Africa, and Zambia) were excluded from analysis because of minuscule (2% or less) Muslim populations. Four other countries were excluded because key questions for the analysis were not asked in those countries (Iran, Morocco, Mozambique, and Uzbekistan). Finally, Thailand was excluded because the sample was not nationally representative. Figure 1 shows a map of the countries included in our analysis with shading by the percent Muslim in each country.  The countries in the sample cover all regions of the world with substantial Muslim populations. In total, we use data from 35 countries and 35,400 respondents. The average sample size per country was 1,011 respondents with a minimum size of 245 respondents in Cameroon and a maximum size of 1,918 respondents in Bangladesh.
 
-Because the country-level surveys were designed to be nationally representative, the data should be representative of within-country populations, but not necessarily the global Muslim population. Collectively, the countries in the sample roughly account for sixty-five percent of the global Muslim population [@pew_forum_on_religion_and_public_life_global_2012], but some important countries both symbolically (e.g. Saudi Arabia, Iran) and by population weight (e.g. India) are absent.
+
+```{r figure_world_map, fig.cap="Map showing countries included in the analysis by percent Muslim. Mollweide projection used to preserve area proportions."}
+proj_chosen <- "mollweide"
+map.world <- map_data("world", projection=proj_chosen, xlim=c(-15,160), ylim=c(-43,90))
+#get rid of greenland for map niceness
+map.world <- subset(map.world, region!="Greenland")
+
+#merge in country data to get percent Muslim
+#change a couple of names to match world map
+country_data$country <- as.character(country_data$country)
+country_data$country[country_data$country=="Palestinian Territories"] <- "Palestine"
+country_data$country[country_data$country=="Guinea Bissau"] <- "Guinea-Bissau"
+country_data$country <- as.factor(country_data$country)
+map.world <- merge(map.world, country_data, by.x="region", by.y="country", all.x=TRUE, all.y=FALSE)
+map.world <- map.world[order(map.world$order),]
+map.world$pct_muslim_cat <- cut(map.world$pct_muslim, breaks=c(0,25,50,75,100),
+                                right=FALSE,
+                                labels=c("0-24%","25-49%","50-74%","75-100%"))
+
+#calculate centroids for plotting names
+country_names <- aggregate(cbind(long, lat)~region, 
+                           data=subset(map.world, !is.na(pct_muslim_cat)), FUN=mean)
+
+ggplot(map.world, aes(x=long, y=lat))+
+  geom_polygon(aes(group=group, fill=pct_muslim/100), 
+               col="grey50", size=0.1)+
+  geom_text_repel(data=country_names, aes(label=shortenCountryNames(region)), 
+            col="black", size=1.75, force=1, 
+            segment.colour = "grey20", arrow = arrow(length=unit(0.05, "lines")))+
+  scale_fill_gradient2(low="#7b3294", high="#008837", mid="white", midpoint=0.5,
+                       na.value="grey90", name="Percent Muslim", labels=scales::percent)+
+  theme(panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "right")
+```
+
+Because the country-level surveys were designed to be nationally representative, the data should be representative of within-country populations, but not necessarily the global Muslim population. Collectively, the countries in the sample roughly account for sixty-five percent of the global Muslim population [@pewforumonreligionandpubliclife_global_2012], but some important countries both symbolically (e.g. Saudi Arabia, Iran) and by population weight (e.g. India) are absent.
 
 Several variables used in this analysis are constructs made up of multiple individual items, including the dependent variable and the measure of religiosity. All constructs were developed through an exploratory factor analysis that identified points of separation and correlation between items. A full report of this exploratory factor analysis is available in the supplementary materials.
 
@@ -112,6 +218,35 @@ Several variables used in this analysis are constructs made up of multiple indiv
 We develop our measures of support for violent practices based on multiple questions that were fielded in both surveys. Respondents were asked yes/no questions for whether they favored (a) the death penalty for people who leave Islam, (b) harsh punishments like whipping and cutting off hands for crimes like theft and robbery, and (c) stoning people who committed adultery. These three measures were highly correlated with one another (Cronbach's $\alpha=0.83$) and exploratory factor analysis indicated that a single scale worked well for all three variables. We also considered a likert-scale question on the justifiability of violence against civilians in defense of religion, but this variable had a much weaker correlation with the three other measures and so we dropped it from analysis.
 
 Figure 2 shows the average level of support by country for the three items that make up our measure of support for violent practices. Countries tend to have similar levels of support for all items within the construct, but the variation across countries is substantial. Support for these values ranges from virtually no support in countries such as Azerbaijan and Kazakhstan to nearly universal support in countries such as Afghanistan and Egypt.
+
+```{r country_averages, fig.cap="Dotplot of percentage of Muslim respondents who support three different questions measuring support for violent practices for the violation of norms. Countries are ordered from lowest to highest average level of support across all three questions."}
+country_agg <- 100*with(analytic_samples[[1]],
+     cbind(death_apostasy=tapply(death_apostasy=="Favor",country,mean,na.rm=TRUE),
+           stone_adultery=tapply(stone_adultery=="Favor",country,mean,na.rm=TRUE),
+           severe_corporal=tapply(severe_corporal=="Favor",country,mean,na.rm=TRUE)))
+country.scores <- sort(apply(country_agg,1,mean, na.rm=TRUE))
+temp <- as.data.frame.table(country_agg)
+
+colnames(temp) <- c("country","variable","percent")
+temp$country <- factor(temp$country,
+                       levels=names(country.scores),
+                       labels=shortenCountryNames(names(country.scores)))
+ncountry <- length(unique(temp$country))
+temp$variable <- factor(temp$variable,
+                        levels=c("death_apostasy","severe_corporal","stone_adultery"),
+                        labels=c("Death for apostasy",
+                                 "Severe corporal punishment",
+                                 "Adulterers should be stoned"))
+ggplot(temp, aes(x=country, y=percent,group=variable))+
+  geom_point(aes(colour=variable, shape=variable))+coord_flip()+
+  #scale_colour_brewer(palette = "Dark2", name="Value")+
+  scale_color_viridis_d(name="Variable", end=0.75)+
+  scale_shape_manual(values=c(15,16,17,7,9,10), name="Variable")+
+  ylab("Percentage in support")+
+  xlab("")+
+  ylim(0,100)+
+  theme_mine()
+```
 
 We constructed the dependent variable for our models by counting the number of favorable responses to each question and then re-scaling this tally to have a mean of zero and a standard deviation of one.
 
@@ -147,10 +282,56 @@ To facilitate comparisons between variables in the models, all quantitative vari
 
 Table 1 shows the results of three multilevel models predicting support for violent practices. Model 1 includes only individual level variables. Model 2 adds in the country-level Human Development Indicator (HDI) as a predictor of average support for violent practices in a country. Model 3 additionally allows HDI to be a predictor of the association between religiosity/education and support for violent practices within a country.
 
+```{r model-table, results='asis'}
+#the function for converting back for knitreg from pooled model results
+convert_model_re <- function(model) {
+  tr <- createTexreg(
+    coef.names = names(model$fixef$beta), 
+    coef = model$fixef$beta, 
+    se = model$fixef$se, 
+    pvalues = model$fixef$pvalue,
+    gof.names = c("N (individual)","N (country)", "BIC",
+                  "SD (religiosity)","SD (education quantile)",
+                  "r(intercept, religiosity)","r(intercept, education)",
+                  "r(religiosity, education)"),
+    gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC,
+            model$ranef_sd["religiosity"], model$ranef_sd["educqq_scl"],
+            model$ranef_cor["(Intercept)","religiosity"],
+            model$ranef_cor["(Intercept)","educqq_scl"],
+            model$ranef_cor["religiosity","educqq_scl"]), 
+    gof.decimal = c(F,F,F,T,T,T,T,T)
+  )
+}
+
+
+knitreg(lapply(list(results_individual, results_hdi_intercept, results_hdi_full),
+               convert_model_re),
+        digits=3,
+        custom.coef.names=c("Intercept","Religiosity","Education quantile",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi",
+                            "Believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Anti-Westernization scale",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale",
+                            "Human development index (HDI)",
+                            "HDI x religiosity", 
+                            "HDI x education quantile"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
+        caption.above=TRUE,
+        custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+```
+
 The individual-level variables are highly consistent across models. Although we focus primarily on the effects of education and religiosity, we first briefly summarize the effects of other variables on support for violent practices. Income has little effect on support for violent practices. Similarly, we observe no difference between men and women in support for violent practices. Age differences are relatively small and do not demonstrate a consistent trend when comparing younger to older respondents. Rather, the results suggest specific cohort effects where the cohorts between ages 35-44 and 50-59 are less supportive of  violent practices than adjacent cohorts. Urban residents are less likely to support violent practices than those in rural areas. In terms of denomination, Sunnis are the most supportive of violent practices and Shias the least supportive, with other denominations and “just a Muslim” respondents falling in between. Self-identifying as a member of a Sufi order is associated with greater support for violent practices. All of the variables measuring theological conservatism are positively associated with support for violent practices. Respondents with more anti-Western views were also more supportive of violent practices. Preferences for democracy and social conservatism have little association with support for violent practices.
 
 Religiosity is more strongly associated with support for violent practices than any of the other individual-level independent variables. A two standard deviation increase in religiosity is associated with roughly a 0.24 standard deviation increase in the support for violent practices scale, even when holding constant a variety of demographic and ideational variables. On average, across countries, Muslims who are more religiously observant and devout are more likely to support violent practices and this result is not simply a function of demography, theological conservatism, social conservatism, or anti-Western sentiment. 
-
 
 The education quantile measure has a smaller negative association with support for violent practices. A two standard deviation increase in the education quantile is associated with a 0.062 standard deviation reduction in the support for violent practices scale.
 
@@ -162,11 +343,69 @@ We now turn to the random country effects estimated by the models. The variance 
 
 Figure 3 shows the religiosity and education slopes for all countries as estimated in Model 3 of Table 1. Six countries (Egypt, Algeria, Afghanistan, Malaysia, Kenya, Pakistan, and Liberia) have estimated slopes that indicate a positive association between educational quantile and support for violent practices. The effects are very close to zero for Pakistan and Liberia, but substantial for the other countries. In these countries, individuals with more education tend to be more supportive of violent practices. Significant variation exists among countries with negative slopes as well. Tunisia stands out as an outlier in the negative direction with a slope that is nearly double the size of its nearest neighbor, Ghana. 
 
+```{r random-slope-lollipop, fig.cap="Lollipop plots of the association between religiosity/education and support for violent practices in each country. Values are based on random slopes from Model 3 of Table 1. Each panel is ordered from largest to smallest association. Values are color-coded by direction."}
+#lets try this full tidyverse
+#this useful post on how to reorder within facets was helpful
+#https://drsimonj.svbtle.com/ordering-categories-within-ggplot2-facets
+pd <- country_effects %>%
+  select("country","religiosity","educqq_scl") %>%
+  melt() %>% 
+  arrange(variable, value) %>%
+  mutate(variable=factor(variable, 
+                         levels=c("religiosity","educqq_scl"),
+                         labels=c("religiosity","education")),
+         order=row_number())
+
+ggplot(pd, aes(x=order, y=value))+
+  geom_hline(yintercept = 0, color="grey50")+
+  geom_lollipop(aes(color=(value<0)), show.legend=FALSE)+
+  facet_wrap(~variable, scales="free")+
+  scale_color_viridis_d(end=0.75)+
+  scale_x_continuous(breaks = pd$order,
+                     labels = pd$country,
+                     expand = expansion(mult = c(0.02, 0.02)))+
+  coord_flip()+
+  labs(x=NULL, y="association with support for violent practices")+
+  theme_mine()
+```
+
 In contrast, all of the estimated slopes for religiosity are consistently positive, with the exception of Azerbaijan where religiosity effectively has no association with support for violent practices. While the variation in these positive effects is substantial, the results suggest that a reversal of direction for the religiosity effect is unlikely. 
 
 Table 1 also shows the correlations between these random country effects. Both slopes are positively related to the intercept. To explore these correlations in more detail, Figure 4 shows the relationship between the country-specific intercepts and the country-specific slopes for religiosity and education. As Table 1 indicated, there is a strong positive correlation in both cases. In countries with less support for violent practices overall, the association between education and support for violent practices tends to be more negative and the association between religiosity and support for violent practices tends to be less positive. The correlation here suggests a substantial socialization effect on both religious and educational institutions. In more liberal countries (those with less support for violent practices overall), education has more of a liberalizing influence and religiosity has less of a conservatizing influence. 
 
+```{r intercept-slope-plot, fig.cap="Scatterplot showing the relationship betwen a country's average level of support for violent practices and the association between education/religiosity and support for violent practices in a country. Values are based on random intercepts and slopes from Model 3 of Table 1. Best fitting OLS line is shown for both panels."}
+temp <- subset(country_effects, 
+               select=c("country","intercept","religiosity"))
+temp$variable <- "religiosity"
+temp2 <- subset(country_effects, 
+               select=c("country","intercept","educqq_scl"))
+temp2$variable <- "education"
+colnames(temp) <- colnames(temp2) <- c("country","intercept","slope","variable")
+temp <- rbind(temp, temp2)
+ggplot(temp, aes(x=intercept, 
+                            y=slope))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country), size=2)+
+  facet_wrap(~variable)+
+  labs(x="average support for violent practices in country (intercept)", y="association (slope) between education/religiosity and\nsupport for violent practices in country")+
+  theme_mine()
+```
+
 Finally, we look at the relationship between the two measures of association. Do the effects of religiosity and education within a country tend to work in synchronicity or are they polarized? As Table 1 shows, the correlation between the two measures of association is very low, albeit slightly positive. Figure 5 shows the relationship between the two slopes on a scatterplot, confirming the low correlation. In short, there does not seem to be any connection between educational and religious divisions within a country on this outcome measure. For example, Tunisia and Egypt have similar associations between religiosity and support for violent practices, but radically different associations between education and support for violent practices. Tunisia has by the far most negative association of any country while Egypt has the most positive. The results here indicate that while religiosity and education have somewhat predictable effects on support for violent practices, the particular constellation of these two effects varies in non-predictable ways across countries. 
+
+```{r slope-compare-plot, fig.cap="Scatterplot showing the relationship between country-level associations of education and religiosity with support for violent practices. Values based on random slopes from Model 3 of Table 1. Best-fitting OLS line is shown."}
+ggplot(country_effects, aes(x=religiosity, 
+                            y=educqq_scl))+
+  geom_hline(yintercept=0, linetype=2)+
+  geom_vline(xintercept=0, linetype=2)+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)+
+  geom_text_repel(aes(label=country), size=3)+
+  labs(x="religiosity slope in country", y="education slope in country")+
+  theme_mine()
+```
 
 # Conclusions
 
