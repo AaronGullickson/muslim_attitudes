@@ -366,7 +366,8 @@ ggplot(pd, aes(x=order, y=value))+
                      expand = expansion(mult = c(0.02, 0.02)))+
   coord_flip()+
   labs(x=NULL, y="association with support for violent practices")+
-  theme_mine()
+  theme_mine()+
+  theme(panel.grid.minor.y = element_blank())
 ```
 
 In contrast, all of the estimated slopes for religiosity are consistently positive, with the exception of Azerbaijan where religiosity effectively has no association with support for violent practices. While the variation in these positive effects is substantial, religiosity does not contributes substantially to lower support for violent practices for any country within our sample. 
