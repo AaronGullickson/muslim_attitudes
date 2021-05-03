@@ -729,9 +729,11 @@ Lets now consider allowing the slopes of other independent variables to vary by 
 ```{r more_random_models, echo=FALSE, results='asis'}
 formula_full <- formula(violence~(1+religiosity+educqq_scl+incomeqq_scl+Urban+
                                     NecessarytobelieveinGodtobemoral+
+                                    islam_truth_ctr+
                                     islam_oneway_ctr+
                                     conflict_modern_ctr+
-                                    anti_western+anti_democratic_ctr|country)+
+                                    anti_western+anti_democratic_ctr+
+                                    social_cons|country)+
                           (religiosity+educqq_scl)*hdi_scaled+incomeqq_scl+
                           age25_29+age30_34+age35_39+age40_44+
                           age45_49+age50_54+age55_59+ageAge60orover+
