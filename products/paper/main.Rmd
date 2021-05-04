@@ -204,7 +204,10 @@ ggplot(map.world, aes(x=long, y=lat))+
         axis.text = element_blank(),
         axis.title = element_blank(),
         axis.ticks = element_blank(),
-        legend.position = "right")
+        legend.position = "right",
+        legend.text=element_text(size=7),
+        legend.title=element_text(size=8),
+        legend.key.size = unit(0.8,"line"))
 ```
 
 Because the country-level surveys were designed to be nationally representative, the data should be representative of within-country populations, but not necessarily the global Muslim population. Collectively, the countries in the sample roughly account for sixty-five percent of the global Muslim population [@pewforumonreligionandpubliclife_global_2012], but some important countries both symbolically (e.g. Saudi Arabia, Iran) and by population weight (e.g. India) are absent.
