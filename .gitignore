@@ -4,3 +4,7 @@
 **/*.bbl
 **/*.ent
 .Rproj.user
+**/*.aux
+**/*.out
+**/*.log
+products/submissions/plos_one/figures/*.pdf
