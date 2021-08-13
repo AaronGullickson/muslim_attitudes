@@ -9,8 +9,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(here)
-library(psych)
-library(corrgram)
+source(here("analysis","check_packages.R"))
 load(here("analysis","output","pewdata_combined.RData"))
 rotation_choice <- "oblimin"
 ```
@@ -39,41 +38,46 @@ This is a classic measure in studies of religion in the Western context, but is 
 +------------------------+--------------------------------------+---------------------------+
 | prayer (Q61)           | How often do you pray?               |                           |
 +------------------------+--------------------------------------+---------------------------+
-| read_koran (Q65)       | How often read/listen to Koran?      | - Sub-saharan Africa      |
-+------------------------+--------------------------------------+---------------------------+
-| follow_prophet (Q59)   |How much does the way you live        | - Sub-saharan Africa     |
-|                        |reflect saying and actions of Mohammed|                          |
-+------------------------+--------------------------------------+--------------------------+
 
 The Koran and follow the prophet variables will likely have to be removed for the full analysis because they were not measured in the African sample. I am also a little concerned about the attendance variable. It is a common component of religiosity measures in the west but mosque attendance is not as regularized in Islam as church attendance is in Christianity. Furthermore, mosque attendance prescriptions are different for men and women.
 
 ```{r religiosity}
 religiosity <- cbind(attend=as.numeric(pew$attend), 
                      relig_important=as.numeric(pew$relig_important),
-                     prayer=as.numeric(pew$prayer), 
-                     read_koran=as.numeric(pew$read_koran),
-                     follow_prophet=as.numeric(pew$follow_prophet))
+                     prayer=as.numeric(pew$prayer))
 corrgram(religiosity, upper.panel="panel.cor", order="PCA")
 
-alpha(cor(religiosity, use="pairwise.complete.obs"))
+cor_relig <- polychoric(religiosity)$rho
 
-nfactors(cor(religiosity, use="pairwise.complete.obs"))
+psych::alpha(cor_relig)
 
-loadings(fa(cor(religiosity, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(religiosity, use="pairwise.complete.obs"),1,rotate=rotation_choice))
+loadings(fa(cor_relig,1,rotate=rotation_choice))
+fa.diagram(fa(cor_relig,1,rotate=rotation_choice))
 
-loadings(fa(cor(religiosity, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-fa.diagram(fa(cor(religiosity, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-
-#follow the prophet stands out as a bit different, what if we removed it?
-loadings(fa(cor(religiosity[,-5], use="pairwise.complete.obs"),1,rotate=rotation_choice))
-
-#given that read_koran is not available for SS African, how does it look without it
-alpha(cor(religiosity[,c(-4,-5)], use="pairwise.complete.obs"))
-loadings(fa(cor(religiosity[,c(-4,-5)], use="pairwise.complete.obs"),1,rotate=rotation_choice))
+loadings(fa(cor_relig,2,rotate=rotation_choice))
+fa.diagram(fa(cor_relig,2,rotate=rotation_choice))
 
 #check on gender issue with attendance
 100*round(prop.table(table(pew$attend, pew$gender),2),3)
+```
+
+```{r religiosity-country}
+#temp <- droplevels(subset(pew, country!="Azerbaijan"))
+temp <- sapply(split(pew, pew$country),
+       function(x) {
+         religiosity <- cbind(attend=as.numeric(x$attend), 
+                              relig_important=as.numeric(x$relig_important),
+                              prayer=as.numeric(x$prayer))
+         as.numeric(psych::alpha(polychoric(religiosity, correct=.1, global=FALSE)$rho)$total["std.alpha"])
+       })
+temp <- enframe(sort(temp),"country","alpha")
+ggplot(temp, aes(x=reorder(country, alpha, mean), y=alpha))+
+  geom_lollipop()+
+  geom_hline(yintercept = 0.7, linetype=2)+
+  coord_flip()+
+  labs(x=NULL, y="ordinal alpha",
+       title="Ordinal alpha of religiosity measure by country")+
+  theme_bw()
 ```
 
 ### Summary
@@ -98,44 +102,24 @@ Theological conservatism is a common characteristic in studies of religion in th
 +------------------------+---------------------------------------+---------------------------+
 | islam_oneway (Q57)     |One way to interpret religious teaching| - Iran                    |
 +------------------------+---------------------------------------+---------------------------+
-| follow_prophet (Q59)   |How much does the way you live         | - Sub-saharan Africa      |
-|                        |reflect saying and actions of Mohammed |                           |
-+------------------------+---------------------------------------+---------------------------+
-| sharia_god (Q66)       | Sharia is the revealed word of God    | - Iran                    |
-|                        | (SS African sample asks similar       |                           |
-|                        | question about Koran)                 |                           |
-+------------------------+---------------------------------------+---------------------------+
-| sharia_oneway (Q67)    | There is only one true understanding  | - Iran                    |
-|                        | of Sharia                             | - Sub-saharan Africa      |
-|                        | (SS African sample asks similar       |                           |
-|                        | question about Koran)                 |                           |
-+------------------------+---------------------------------------+---------------------------+
+
 
 Note that follow_prophet shows up as a candidate variable here as well as for religiosity. Also note that we are missing two of these variables for SS Africa and the sharia_god question also had a different question wording in the SS Africa sample. 
 
 ```{r theocons}
 theocons <- cbind(believe_moral=as.numeric(pew$believe_moral),
                   islam_truth=as.numeric(pew$islam_truth), 
-                  islam_oneway=as.numeric(pew$islam_oneway),
-                  follow_prophet=as.numeric(pew$follow_prophet),
-                  sharia_god=as.numeric(pew$sharia_god),
-                  sharia_oneway=as.numeric(pew$sharia_oneway))
+                  islam_oneway=as.numeric(pew$islam_oneway))
 corrgram(theocons, upper.panel="panel.cor", order="PCA")
 
-alpha(cor(theocons, use="pairwise.complete.obs"))
+cor_theocons <- polychoric(theocons)$rho
 
-nfactors(cor(theocons, use="pairwise.complete.obs"))
+psych::alpha(cor_theocons)
 
-loadings(fa(cor(theocons, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(theocons, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-loadings(fa(cor(theocons, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-fa.diagram(fa(cor(theocons, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-loadings(fa(cor(theocons, use="pairwise.complete.obs"),3,rotate=rotation_choice))
-fa.diagram(fa(cor(theocons, use="pairwise.complete.obs"),3,rotate=rotation_choice))
-
-#what if I just limit it to the three with full data and fairly high loadings together
-alpha(cor(theocons[,1:3], use="pairwise.complete.obs"))
-loadings(fa(cor(theocons[,1:3], use="pairwise.complete.obs"),1,rotate=rotation_choice))
+loadings(fa(cor_theocons,1,rotate=rotation_choice))
+fa.diagram(fa(cor_theocons,1,rotate=rotation_choice))
+loadings(fa(cor_theocons,2,rotate=rotation_choice))
+fa.diagram(fa(cor_theocons,2,rotate=rotation_choice))
 ```
 
 ### Summary
@@ -176,32 +160,58 @@ morality <- cbind(moral_divorce=as.numeric(pew$moral_divorce),
                   moral_gay=as.numeric(pew$moral_gay))
 corrgram(morality, upper.panel="panel.cor", order="PCA")
 
-alpha(cor(morality, use="pairwise.complete.obs"))
+cor_morality <- polychoric(morality)$rho
 
-nfactors(cor(morality, use="pairwise.complete.obs"))
+psych::alpha(cor_morality)
 
-loadings(fa(cor(morality, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-loadings(fa(cor(morality, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-loadings(fa(cor(morality, use="pairwise.complete.obs"),3,rotate=rotation_choice))
+nfactors(cor_morality)
+
+loadings(fa(cor_morality,1,rotate=rotation_choice))
+loadings(fa(cor_morality,2,rotate=rotation_choice))
+loadings(fa(cor_morality,3,rotate=rotation_choice))
 
 #lets diagram two vs three factor solutions
-fa.diagram(fa(cor(morality, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(morality, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-fa.diagram(fa(cor(morality, use="pairwise.complete.obs"),3,rotate=rotation_choice))
+fa.diagram(fa(cor_morality,1,rotate=rotation_choice))
+fa.diagram(fa(cor_morality,2,rotate=rotation_choice))
+fa.diagram(fa(cor_morality,3,rotate=rotation_choice))
 
 #first two seem a bit problematic - what if we take out?
-alpha(cor(morality[,-1*1:2], use="pairwise.complete.obs"))
-nfactors(cor(morality[,-1*1:2], use="pairwise.complete.obs"))
-loadings(fa(cor(morality[,-1*1:2], use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(morality[,-1*1:2], use="pairwise.complete.obs"),1,rotate=rotation_choice))
-loadings(fa(cor(morality[,-1*1:2], use="pairwise.complete.obs"),2,rotate=rotation_choice))
-fa.diagram(fa(cor(morality[,-1*1:2], use="pairwise.complete.obs"),2,rotate=rotation_choice))
+cor_morality <- polychoric(morality[,-1*1:2])$rho
 
+psych::alpha(cor_morality)
+nfactors(cor_morality)
+loadings(fa(cor_morality,1,rotate=rotation_choice))
+fa.diagram(fa(cor_morality,1,rotate=rotation_choice))
+loadings(fa(cor_morality,2,rotate=rotation_choice))
+fa.diagram(fa(cor_morality,2,rotate=rotation_choice))
+
+```
+
+```{r morality-country}
+temp <- sapply(split(pew, pew$country),
+       function(x) {
+         morality <- cbind(moral_alcohol=as.numeric(x$moral_alcohol),
+                           moral_euthansia=as.numeric(x$moral_euthanasia),
+                           moral_suicide=as.numeric(x$moral_suicide),
+                           moral_abortion=as.numeric(x$moral_abortion),
+                           moral_prostitution=as.numeric(x$moral_prostitution),
+                           moral_premar_sex=as.numeric(x$moral_premar_sex),
+                           moral_gay=as.numeric(x$moral_gay))
+         as.numeric(psych::alpha(polychoric(morality)$rho)$total["std.alpha"])
+       })
+temp <- enframe(sort(temp),"country","alpha")
+ggplot(temp, aes(x=reorder(country, alpha, mean), y=alpha))+
+  geom_lollipop()+
+  geom_hline(yintercept = 0.7, linetype=2)+
+  coord_flip()+
+  labs(x=NULL, y="ordinal alpha",
+       title="Ordinal alpha of morality measure by country")+
+  theme_bw()
 ```
 
 ### Summary
 
-The morality variables seem to hold together well as a single construct, except for the moral_divorce and moral_fertility items which seem to be tapping something else. There is also a secondary split between the items involving "life and death" (suicide, euthanasia, and abortion) but I don't think there is a need for the complexity of two separate constructs here as the factor loadings and Cronbach's $\alpha$ for a single factor are quite good. I would recommend we these items wihout moral_divorce and moral_fertility to construct a single scale. 
+The morality variables seem to hold together well as a single construct, except for the moral_divorce and moral_fertility items which seem to be tapping something else. There is also a secondary split between the items involving "life and death" (suicide, euthanasia, and abortion) but I don't think there is a need for the complexity of two separate constructs here as the factor loadings and Cronbach's $\alpha$ for a single factor are quite good. I would recommend we these items without moral_divorce and moral_fertility to construct a single scale. 
 
 
 ## Attitude toward the west
@@ -231,60 +241,34 @@ western <- cbind(western_culture=as.numeric(pew$western_culture=="I dislike west
                   conflict_modern=as.numeric(pew$conflict_modern))
 corrgram(western, upper.panel="panel.cor", order="PCA")
 
-alpha(cor(western, use="pairwise.complete.obs"))
+cor_western <- polychoric(western)$rho
 
-loadings(fa(cor(western, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-loadings(fa(cor(western[,-3], use="pairwise.complete.obs"),1,rotate=rotation_choice))
+psych::alpha(cor_western)
+
+loadings(fa(cor_western,1,rotate=rotation_choice))
+```
+
+```{r west-country}
+temp <- droplevels(subset(pew, country!="Lebanon"))
+temp <- sapply(split(temp, temp$country),
+       function(x) {
+         western <- cbind(western_culture=as.numeric(x$western_culture=="I dislike western music, movies and television"),
+                  western_immoral=as.numeric(x$western_immoral))
+         as.numeric(psych::alpha(polychoric(western)$rho)$total["std.alpha"])
+       })
+temp <- enframe(sort(temp),"country","alpha")
+ggplot(temp, aes(x=reorder(country, alpha, mean), y=alpha))+
+  geom_lollipop()+
+  geom_hline(yintercept = 0.7, linetype=2)+
+  coord_flip()+
+  labs(x=NULL, y="ordinal alpha",
+       title="Ordinal alpha of western attitude measure by country")+
+  theme_bw()
 ```
 
 ### Summary
 
 The two westernization questions are reasonably correlated with each other but not with conflict_modern. I would recommend that we combine them into a single scale and keep conflict_modern as a separate variable.
-
-## Separation of Independent Variables
-<a href="#top">Back to top</a>
-
-If I combine all four sets of independent variables together after cutting out variables that are missing for SS Africa, how well do they separate into the underlying constructs that I am exploring? 
-
-```{r separate_independent_corrgram, echo=FALSE}
-iv <- cbind(religiosity[,1:3],theocons[,1:3],morality,western)
-
-corrgram(iv, upper.panel="panel.cor", order="PCA", cex.labels=0.5)
-```
-
-```{r separate_independent_loadings, echo=FALSE}
-nfactors(cor(iv, use="pairwise.complete.obs"))
-
-fa_iv <- fa(cor(iv, use="pairwise.complete.obs"),4, rotate = rotation_choice)
-
-loadings(fa_iv)
-
-plot(fa_iv, labels=colnames(iv),
-     cluster=c(rep(1,3),rep(2,3),rep(3,9),rep(4,3)))
-fa.diagram(fa_iv)
-```
-
-When I split them into four factors, they more or less split in the expecterd direction with all the same weak variables as we found earlier (conflict_modern, morality_fertility, morality_divorce) and with poorer results for the theological conservartism variable. If we remove the weak variables and theological conservatism variables, we get very clean results with a three-factor solution (shown below).
-
-```{r separate_independent_loadings2, echo=FALSE}
-
-#take out the problematic cases
-iv <- iv[,-c(4,5,6,7,8,18)]
-fa_iv <- fa(cor(iv, use="pairwise.complete.obs"), 3, rotate = rotation_choice)
-
-plot(fa_iv, labels=colnames(iv), show.points=FALSE,
-     cluster=c(rep(1,3),rep(3,7),rep(4,2)))
-fa.diagram(fa_iv)
-```
-
-### Summary
-
-The results show the strong separation of the religiosity and morality measures, with the exception of moral_divorce and moral_fertility. It also shows the relative weakness of the theological conservativism variables and the uniqueness of the conflict with modernity. Based on this we will do the following:
-
-- Create a religiosity scale based on attend, prayer, and relig_important. 
-- Create a social conservatism scale based on the answer to the morality questions except for moral_fertility and moral_divorce. 
-- Create an anti-western culture scale based on western_immoral and western_cultural.
-- Include islam_oneway, islam_truth, believe_moral, and conflict_modern in the models as separate variables. 
 
 ## Support for violent practices
 <a href="#top">Back to top</a>
@@ -294,20 +278,6 @@ Here we want to capture whether respondents favor harsh and violent responses to
 +------------------------+---------------------------------------+---------------------------+
 | Name                   | Question                              | Missing Countries         |
 +========================+=======================================+===========================+
-| honorkill_man (Q53)    | Justified for family members to kill  | - Iran                    |
-|                        |man who dishonors family by premarital | - In Afghanistan, Iraq,   |
-|                        |sex or adultery.                       |and Uzbekistan, no ref.    |
-|                        |                                       |to permarital sex or       |
-|                        |                                       |adultery                   |
-|                        |                                       | - Sub-Saharan Africa      |
-+------------------------+---------------------------------------+---------------------------+
-| honorkill_woman (Q53)  | Justified for family members to kill  | - Iran                    |
-|                        |woman who dishonors family by          | - In Afghanistan, Iraq,   |
-|                        |premarital sex or adultery.            |and Uzbekistan, no ref.    |
-|                        |                                       |to permarital sex or       |
-|                        |                                       |adultery                   |
-|                        |                                       | - Sub-Saharan Africa      |
-+------------------------+---------------------------------------+---------------------------+
 | death_apostasy (Q92b)  |Favor the death penalty for people who | - Iran                    |
 |                        |leave the Muslim religion              | - Morocco                 |
 |                        |                                       | - Uzbekistan              |
@@ -328,15 +298,13 @@ Here we want to capture whether respondents favor harsh and violent responses to
 +------------------------+---------------------------------------+---------------------------+
 
 ```{r violent_practices}
-violent <- cbind(honorkill_man=as.numeric(pew$honorkill_man),
-                  honorkill_woman=as.numeric(pew$honorkill_woman),
-                  death_apostasy=as.numeric(pew$death_apostasy),
-                  severe_corporal=as.numeric(pew$severe_corporal),
-                  stone_adultery=as.numeric(pew$stone_adultery),
-                  civilian_target=as.numeric(pew$civilian_target))
+violent <- cbind(death_apostasy=as.numeric(pew$death_apostasy),
+                 severe_corporal=as.numeric(pew$severe_corporal),
+                 stone_adultery=as.numeric(pew$stone_adultery),
+                 civilian_target=as.numeric(pew$civilian_target))
 corrgram(violent, upper.panel="panel.cor", order="PCA")
 
-alpha(cor(violent, use="pairwise.complete.obs"))
+psych::alpha(cor(violent, use="pairwise.complete.obs"))
 
 nfactors(cor(violent, use="pairwise.complete.obs"))
 
@@ -349,10 +317,28 @@ fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),3,rotate=rotation_choice
 fa.diagram(pca(cor(violent, use="pairwise.complete.obs"),3,rotate=rotation_choice))
 
 
-#remove honor killings and civilian targets
-alpha(cor(violent[,c(-1,-2,-6)], use="pairwise.complete.obs"))
-vss(cor(violent[,c(-1,-2,-6)], use="pairwise.complete.obs"))
-loadings(fa(cor(violent[,c(-1,-2,-6)], use="pairwise.complete.obs"),1,rotate=rotation_choice))
+#rcivilian targets
+psych::alpha(cor(violent[,c(-4)], use="pairwise.complete.obs"))
+vss(cor(violent[,c(-4)], use="pairwise.complete.obs"))
+loadings(fa(cor(violent[,c(-4)], use="pairwise.complete.obs"),1,rotate=rotation_choice))
+```
+
+```{r violence-country}
+temp <- sapply(split(pew, pew$country),
+       function(x) {
+         violence <- cbind(death_apostasy=as.numeric(x$death_apostasy),
+                              severe_corporal=as.numeric(x$severe_corporal),
+                              stone_adultery=as.numeric(x$stone_adultery))
+         as.numeric(psych::alpha(tetrachoric(violence)$rho)$total["std.alpha"])
+       })
+temp <- enframe(sort(temp),"country","alpha")
+ggplot(temp, aes(x=reorder(country, alpha, mean), y=alpha))+
+  geom_lollipop()+
+  geom_hline(yintercept = 0.7, linetype=2)+
+  coord_flip()+
+  labs(x=NULL, y="ordinal alpha",
+       title="Ordinal alpha of violence measure by country")+
+  theme_bw()
 ```
 
 ### Summary
