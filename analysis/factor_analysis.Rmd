@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Factor Analysis"
+title: "Testing Reliability and Validity of Constructed Variables"
 output: 
   html_document: 
     toc: yes
@@ -7,7 +7,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE, error=FALSE)
 library(here)
 source(here("analysis","check_packages.R"))
 load(here("analysis","output","pewdata_combined.RData"))
@@ -16,13 +16,184 @@ rotation_choice <- "oblimin"
 
 ## Introduction
 
-This document will describe and analyze the variables we are using to create several different constructs for key independent and dependent variables. Each section will describe a specific construct and what variables we initially considered as candidates for loading into the construct. It will then perform an exploratory factor analysis to see how well the variables actually load into a single factor. 
+This document will describe the candidate constructs that we considered creating for purposes of data reduction and model simplification. Each section will describe a specific construct and what variables we initially considered as candidates for loading into the construct. We then consider several rather complicated issues that need to be addressed when considering the creation of constructs in a cross-national context.
 
-Four of the factors (support for violent practices, anti-secularism, and support for women's rights) represent potential dependent variables for the analysis, while four other constructs (religiosity, theological conservatism, social conservatism, and attitudes toward the west) represent potential independent variables.
+We first analyzed the reliability and validity of each construct at the global level, without consideration for particular countries. We estimated alpha parameters to test reliability and then conducted an exploratory factor analysis (EFA) to ensure that a single factor fit was satisfactory. The construction of alpha and the EFA were estimated based on tetrachoric/polychoric correlations between variablers rather than Pearson corrrelations to adjust for the categorical nature of all the variables under consideration here. This initial global analysis helped us refine the list of variables that might make up the construct.
 
-In each case, we use a correlogram to graphically examine correlations between variables and a cronbach's $\alpha$ to test the adequacy of a single common factor across all items. We then run a full exploratory factor analysis where we look at several diagnostics (VSS, empirical Bayes, etc.) for the optimal number of factors and then examine factor loadings across models with different numbers of factor loadings. We also include a final section for the independent and dependent variables where we load all of our candidate variables across all constructs into a single factor analysis to see if the results separate in the expected manner.  
+The next step of the analysis was to investigate potential invariance across countries. Ideally, our construct should not just fit well across all countries but within each and every country. However, addressing this issue of measurement invariance is complex and evolving in the literature, both in terms of how to test for invariance and what to do in the face of invariance. Much of the literature uses multigroup confirmatory factor analysis to test for configural, metric, and scalar equivalence. An alternative and arguably better approach is to use item response theory (IRT). Given the categorical nature of the variables we consider, IRT is a more suitable approach, so we apply the techniques of Tay et. al. (2015) to test for invariance.
 
-We use EFA with oblimin (oblique) rotation rather than PCA for the analysis. There is considerable debate about which technique is more appropriate, a lot of which hinges on whether the goal is to truly identify a latent construct or just provide a simple data reduction of collinear terms - which strike me as theoretical not always separable. In most cases, the techniques produce similar resuls. We have also repeated the anlalysis here with PCA and reached the same conclusion. We note below the only case where PCA produced a notable difference. 
+
+## Support for violent practices
+<a href="#top">Back to top</a>
+
+Here we want to capture whether respondents favor harsh and violent responses to violations of the social fabric/religious norms.  We considered the following variables for this construct:
+
++------------------------+---------------------------------------+---------------------------+
+| Name                   | Question                              | Missing Countries         |
++========================+=======================================+===========================+
+| death_apostasy (Q92b)  |Favor the death penalty for people who | - Iran                    |
+|                        |leave the Muslim religion              | - Morocco                 |
+|                        |                                       | - Uzbekistan              |
++------------------------+---------------------------------------+---------------------------+
+| severe_corporal (Q92c) |Favor punishments like whipping or     | - Iran                    |
+|                        |cutting off hands for crimes like theft| - Morocco                 |
+|                        |and robbery.                           | - Uzbekistan              |
++------------------------+---------------------------------------+---------------------------+
+| stone_adultery (Q92d)  |Favor stoning people who commit        | - Iran                    |
+|                        |adultery.                              | - Morocco                 |
+|                        |                                       | - Uzbekistan              |
++------------------------+---------------------------------------+---------------------------+
+| civilian_targets (Q89) | Violence against civilian targets in  | - Iran                    |
+|                        | defense of Islam justified.           | - Thailand                |
+|                        | I don't think this really goes        | - Uzbekistan              |
+|                        | here but may want to consider it      | - Lebanon                 |
+|                        | separately.                           |                           |
++------------------------+---------------------------------------+---------------------------+
+
+There are also question about the justifiability of honor killings for sexual impropriety (separately for men and women), but these variables is missing for the majority of countries and se do not consider them here. 
+
+First, we look at the correlations, alpha, and factor loadings across all respondents, regardless of country.
+
+```{r violent_practices}
+violent <- cbind(death_apostasy=as.numeric(pew$death_apostasy),
+                 severe_corporal=as.numeric(pew$severe_corporal),
+                 stone_adultery=as.numeric(pew$stone_adultery),
+                 civilian_target=as.numeric(pew$civilian_target))
+corrgram(violent, upper.panel="panel.cor", order="PCA")
+
+psych::alpha(cor(violent, use="pairwise.complete.obs"))
+
+loadings(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
+fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
+loadings(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
+fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
+loadings(fa(cor(violent, use="pairwise.complete.obs"),3,rotate=rotation_choice))
+fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),3,rotate=rotation_choice))
+```
+
+The results here all suggest strong reliability and a single factor for the first three items and that the targeting of civilians question does not fit as well. Therefore, we removed the last item. which led to a good fit and a clear preference for a single factor.
+
+```{r}
+#without civilian targets
+violent <- violent[,-4]
+psych::alpha(cor(violent, use="pairwise.complete.obs"))
+vss(cor(violent, use="pairwise.complete.obs"))
+loadings(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
+fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
+loadings(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
+fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
+```
+
+Next, we calculated our ordinal alpha measure separately in each country in order to test whether the construct is reliable in each country.
+
+```{r violence-country}
+temp <- sapply(split(pew, pew$country),
+               function(x) {
+                 violence <- cbind(death_apostasy=as.numeric(x$death_apostasy),
+                                   severe_corporal=as.numeric(x$severe_corporal),
+                                   stone_adultery=as.numeric(x$stone_adultery))
+                 as.numeric(psych::alpha(polychoric(violence)$rho)$total["std.alpha"])
+               })
+temp <- enframe(sort(temp),"country","alpha")
+ggplot(temp, aes(x=reorder(country, alpha, mean), y=alpha))+
+  geom_lollipop()+
+  geom_hline(yintercept = 0.7, linetype=2)+
+  coord_flip()+
+  labs(x=NULL, y="ordinal alpha",
+       title="Ordinal alpha of violence measure by country")+
+  theme_bw()
+```
+
+The results here indicate that the construct passes the tests for good reliability (>0.7) in almost all countries. The results for Egypt and Jordan were a little below this level but had alpha>0.6 in both cases. 
+
+We next apply multigroup item response theory. Specifically we apply the standard 2PL IRT model. We first estimate a model that allows slopes and intercepts to vary freely. We then compare this to a model that force slopes to be invariant, and then to a model that forces slopes and intercepts to be invariant. These two models are functionally the same as testing metric and scalar invariance in MGCFA. We compare these models using the BIC statistic rather than chi-squared tests because on samples this large across so many countries, chi-squared tests will pick up even very small, but meaningless, deviations from invariance.
+
+
+```{r irt-violence2}
+violent <- na.omit(data.frame(death_apostasy=as.numeric(pew$death_apostasy),
+                              severe_corporal=as.numeric(pew$severe_corporal),
+                              stone_adultery=as.numeric(pew$stone_adultery),
+                              country=pew$country))
+mod_configural <- multipleGroup(violent[,1:3], 1, group = violent$country,
+                                itemtype="2PL", verbose=FALSE)
+mod_metric <- multipleGroup(violent[,1:3], 1, group = violent$country, 
+                            invariance=c('slopes'),
+                            itemtype="2PL", verbose=FALSE)
+mod_scalar <- multipleGroup(violent[,1:3], 1, group = violent$country, 
+                            invariance=c('slopes','intercepts'),
+                            itemtype="2PL", verbose=FALSE)
+bic <- sapply(list(mod_configural,mod_metric,mod_scalar), 
+              function(x) {x@Fit$BIC})
+names(bic) <- c("free","metric","scalar")
+bic
+```
+
+The preferred model is the one that allows slopes and intercepts to vary freely, suggesting some degree of metric and scalar invariance. The results do suggest that the preference for the free model rather than the metric model is relatively small.
+
+We address the issue of metric invariance fist. To investigate this issue more closely, we analyzed the results of the fully free model more closely and discovered that two countries, Egypt and Jordan, had significantly different results for the death for apostasy variable. The issue can be seen below in the correlograms for each country:
+
+```{r}
+x <- subset(pew, country=="Egypt")
+violent <- cbind(death_apostasy=as.numeric(x$death_apostasy),
+                 severe_corporal=as.numeric(x$severe_corporal),
+                 stone_adultery=as.numeric(x$stone_adultery))
+corrgram(violent, upper.panel="panel.cor", main="Egypt")
+x <- subset(pew, country=="Jordan")
+violent <- cbind(death_apostasy=as.numeric(x$death_apostasy),
+                 severe_corporal=as.numeric(x$severe_corporal),
+                 stone_adultery=as.numeric(x$stone_adultery))
+corrgram(violent, upper.panel="panel.cor", main="Jordan")
+```
+
+In both cases, death for apostasy is only weakly correlated with the other two measures. Notably, in both of these countries the percentage of people who supported death for apostasy is *higher* than support for the other two items. This is in sharp contrast to all other countries where overall support for death for apostasy was the lowest of the three. This suggests greater universalism in support for death for apostasy in Jordan and Egypt which weakens the underlying construct somewhat.
+
+To test out the effect of these countries on the metric invariance, we tested the same IRT models by excluding those countries.
+
+```{r irt-violence}
+violent_full <- na.omit(data.frame(death_apostasy=as.numeric(pew$death_apostasy),
+                                   severe_corporal=as.numeric(pew$severe_corporal),
+                                   stone_adultery=as.numeric(pew$stone_adultery),
+                                   country=pew$country))
+violent <- subset(violent_full, country!="Jordan")
+mod_configural <- multipleGroup(violent[,1:3], 1, group = violent$country,
+                                itemtype="2PL", verbose=FALSE)
+mod_metric <- multipleGroup(violent[,1:3], 1, group = violent$country, 
+                            invariance=c('slopes'),
+                            itemtype="2PL", verbose=FALSE)
+mod_scalar <- multipleGroup(violent[,1:3], 1, group = violent$country, 
+                            invariance=c('slopes','intercepts'),
+                            itemtype="2PL", verbose=FALSE)
+bic_nojordan <- sapply(list(mod_configural,mod_metric,mod_scalar), 
+              function(x) {x@Fit$BIC})
+violent <- subset(violent_full, country!="Egypt")
+mod_configural <- multipleGroup(violent[,1:3], 1, group = violent$country,
+                                itemtype="2PL", verbose=FALSE)
+mod_metric <- multipleGroup(violent[,1:3], 1, group = violent$country, 
+                            invariance=c('slopes'),
+                            itemtype="2PL", verbose=FALSE)
+mod_scalar <- multipleGroup(violent[,1:3], 1, group = violent$country, 
+                            invariance=c('slopes','intercepts'),
+                            itemtype="2PL", verbose=FALSE)
+bic_noegypt <- sapply(list(mod_configural,mod_metric,mod_scalar), 
+              function(x) {x@Fit$BIC})
+violent <- subset(violent_full, country!="Egypt" & country!="Jordan")
+mod_configural <- multipleGroup(violent[,1:3], 1, group = violent$country,
+                                itemtype="2PL", verbose=FALSE)
+mod_metric <- multipleGroup(violent[,1:3], 1, group = violent$country, 
+                            invariance=c('slopes'),
+                            itemtype="2PL", verbose=FALSE)
+mod_scalar <- multipleGroup(violent[,1:3], 1, group = violent$country, 
+                            invariance=c('slopes','intercepts'),
+                            itemtype="2PL", verbose=FALSE)
+bic_both <- sapply(list(mod_configural,mod_metric,mod_scalar), 
+                   function(x) {x@Fit$BIC})
+cbind("full_sample"=bic, "w/o Jordan"=bic_nojordan, "w/o Egypt"=bic_noegypt,
+      "w/o Jordan and Egypt"=bic_both)
+```
+
+The results here show clearly that removing either Jordan or Egypt is sufficient to make BIC prefer the model assuming metric equivalence. One solution to this problem would be to remove Jordan and Egypt entirely from our analysis. However, scholars have noted invariance does not necessarily invalidate the functional equivalence of items. In this case, the issue seems to be a somewhat different way that one of the items in the construct works suggesting we may have partial equivalence. I think the best way to handle this is to leave the cases in, but to note that our models may not estimate coefficients in as comparable a way for Egypt and Jordan as the other cases, and so care should be taken when interpreting those results.
+
+The bigger problem here is the lack of scalar equivalence. The size of the difference in BIC here does not suggest that this will be fixed by identifying a handful of problematic countries. However, it is also not clear how much this should be corrected in the context of multilevel models but rather treated as an important part of cross-national differences. The argument goes that lack of scalar invariance *may* make comparison of levels (in our case random intercepts) across countries problematic. However, its also clear that in many cases it will not, as the substantive impacts of this difference may be quite small. My guess based on the figure showing the correspondence in average levels of support across countries suggests to me that our intercepts are going to be well-estimated. So on the whole I think we can probably defend our decision to proceed in the face of scalar invariance. On a very basic level, I somewhat question what the hell all this means. 
 
 ## Religiosity 
 <a href="#top">Back to top</a>
@@ -39,7 +210,7 @@ This is a classic measure in studies of religion in the Western context, but is 
 | prayer (Q61)           | How often do you pray?               |                           |
 +------------------------+--------------------------------------+---------------------------+
 
-The Koran and follow the prophet variables will likely have to be removed for the full analysis because they were not measured in the African sample. I am also a little concerned about the attendance variable. It is a common component of religiosity measures in the west but mosque attendance is not as regularized in Islam as church attendance is in Christianity. Furthermore, mosque attendance prescriptions are different for men and women.
+We also have question on the importance of the Koran and whether the repsondent triees to "follow the prophet" but these questions were not asked in the African sample. I am also a little concerned about the attendance variable. It is a common component of religiosity measures in the west but mosque attendance is not as regularized in Islam as church attendance is in Christianity. Furthermore, mosque attendance prescriptions are different for men and women.
 
 ```{r religiosity}
 religiosity <- cbind(attend=as.numeric(pew$attend), 
@@ -47,7 +218,7 @@ religiosity <- cbind(attend=as.numeric(pew$attend),
                      prayer=as.numeric(pew$prayer))
 corrgram(religiosity, upper.panel="panel.cor", order="PCA")
 
-cor_relig <- polychoric(religiosity)$rho
+cor_relig <- polychoric(religiosity, global=FALSE)$rho
 
 psych::alpha(cor_relig)
 
@@ -56,13 +227,20 @@ fa.diagram(fa(cor_relig,1,rotate=rotation_choice))
 
 loadings(fa(cor_relig,2,rotate=rotation_choice))
 fa.diagram(fa(cor_relig,2,rotate=rotation_choice))
+```
 
+So over the whole sample the religiosity items seems to hold up well as a single factor. Lets check on the gender issue with attendance:
+
+```{r}
 #check on gender issue with attendance
 100*round(prop.table(table(pew$attend, pew$gender),2),3)
 ```
 
+We can clearly see the differential effects for men and women. Women had overall much lower attendance than men, but that is built into cultural practices and should not be considered an intrinsic part of religiosity.
+
+Next we look at the alpha level of this construct across each country.
+
 ```{r religiosity-country}
-#temp <- droplevels(subset(pew, country!="Azerbaijan"))
 temp <- sapply(split(pew, pew$country),
        function(x) {
          religiosity <- cbind(attend=as.numeric(x$attend), 
@@ -80,11 +258,9 @@ ggplot(temp, aes(x=reorder(country, alpha, mean), y=alpha))+
   theme_bw()
 ```
 
-### Summary
+The results here are not great. While the construct is reliable in some countries, we are seeing somewhere around a third of countries with reliability well below any standard rule of thumb. 
 
-As the analysis above shows, the religiosity measures did hang together pretty well as a single factor. Cronbach's $\alpha$ was reasonably high and the factor loadings from the EFA were also strong, although somewhat weaker for the follow_prophet variable. Additionally, when split into two factors, the follow_prophet variable seems to have some distinctiveness. There is also a potential issue with attendance, because the expectation about mosque attendance is different for men and women. This expectation shows up in the data where women attend mosque far less regularly. This may make attendance slightly problematic for measuring religiosity, because women will incorrectly look like they have less religiosity.
-
-Based on these results and data availability, I recommend that we construct a scale using attend, relig_important, and prayer in order to maximize sample size.  These variables are available across all countries and hang together well as a single factor.  
+Based on the lack of reliability across countries and the issue with gender for the attendance variable, I think the best approach here would be to include each measure of religiosity separately into the models.
 
 
 ## Theological Conservatism
@@ -104,8 +280,6 @@ Theological conservatism is a common characteristic in studies of religion in th
 +------------------------+---------------------------------------+---------------------------+
 
 
-Note that follow_prophet shows up as a candidate variable here as well as for religiosity. Also note that we are missing two of these variables for SS Africa and the sharia_god question also had a different question wording in the SS Africa sample. 
-
 ```{r theocons}
 theocons <- cbind(believe_moral=as.numeric(pew$believe_moral),
                   islam_truth=as.numeric(pew$islam_truth), 
@@ -122,11 +296,7 @@ loadings(fa(cor_theocons,2,rotate=rotation_choice))
 fa.diagram(fa(cor_theocons,2,rotate=rotation_choice))
 ```
 
-### Summary
-
-The variables for theological conservatism did not hold together well. Cronback's $\alpha$ is low and a lot of the factor loadings are low as well. When split into two or three factors, nothing really holds together in a meaningful way. 
-
-Based on these results, I would recommend that we not create a scale here, but that we consider including islam_truth, islam_oneway, and believe_moral as separate independent variables. 
+The results here are not great. Its clear that the believe_moral variable does not really belong in the same construct. I could still consider the two variables on one way and truth of Islam, but the data reduction value here does not seem to justify the combination of these variables. I think the sensible solution is to include them separately in the model.
 
 ## Social conservatism
 <a href="#top">Back to top</a>
@@ -159,12 +329,20 @@ morality <- cbind(moral_divorce=as.numeric(pew$moral_divorce),
                   moral_premar_sex=as.numeric(pew$moral_premar_sex),
                   moral_gay=as.numeric(pew$moral_gay))
 corrgram(morality, upper.panel="panel.cor", order="PCA")
+```
 
-cor_morality <- polychoric(morality)$rho
+The initial correlogram clearly suggests that the fertility and divorce measure do not relate much to the remaining items and so I drop them from the analysis.
+
+```{r}
+cor_morality <- polychoric(morality[,-1*1:2])$rho
 
 psych::alpha(cor_morality)
+```
 
-nfactors(cor_morality)
+The alpha is strong here and suggests that dropping any of the remaining items would not improve reliability. Lets investigate factor loadings in a couple of different models.
+
+```{r}
+vss(cor_morality)
 
 loadings(fa(cor_morality,1,rotate=rotation_choice))
 loadings(fa(cor_morality,2,rotate=rotation_choice))
@@ -174,18 +352,11 @@ loadings(fa(cor_morality,3,rotate=rotation_choice))
 fa.diagram(fa(cor_morality,1,rotate=rotation_choice))
 fa.diagram(fa(cor_morality,2,rotate=rotation_choice))
 fa.diagram(fa(cor_morality,3,rotate=rotation_choice))
-
-#first two seem a bit problematic - what if we take out?
-cor_morality <- polychoric(morality[,-1*1:2])$rho
-
-psych::alpha(cor_morality)
-nfactors(cor_morality)
-loadings(fa(cor_morality,1,rotate=rotation_choice))
-fa.diagram(fa(cor_morality,1,rotate=rotation_choice))
-loadings(fa(cor_morality,2,rotate=rotation_choice))
-fa.diagram(fa(cor_morality,2,rotate=rotation_choice))
-
 ```
+
+Its possible that some more complex model structure would be preferred here, namely one that separates the questions about "death stuff" (suicide, euthansia, and abortion) from everything else. Nonetheless a single factor model also works pretty well and meets my goals of data reduction on this variable.
+
+Lets look at reliability of this measure across countries.
 
 ```{r morality-country}
 temp <- sapply(split(pew, pew$country),
@@ -209,144 +380,58 @@ ggplot(temp, aes(x=reorder(country, alpha, mean), y=alpha))+
   theme_bw()
 ```
 
-### Summary
+The results look good here. Only Egypt falls below the 0.7 threshold, but not by much. 
 
-The morality variables seem to hold together well as a single construct, except for the moral_divorce and moral_fertility items which seem to be tapping something else. There is also a secondary split between the items involving "life and death" (suicide, euthanasia, and abortion) but I don't think there is a need for the complexity of two separate constructs here as the factor loadings and Cronbach's $\alpha$ for a single factor are quite good. I would recommend we these items without moral_divorce and moral_fertility to construct a single scale. 
+I next analyzed measurement invariance. The IRT models for polytomous outcomes failed to run, because for some countries there were zero respondents in the morally acceptable column. Most of the variation is between the group that said "morally wrong" and those that said anything else. So, I collapsed the results into this binary outcome and then ran IRT models using a 2PL structure.
 
-
-## Attitude toward the west
-<a href="#top">Back to top</a>
-
-
-The pew data includes two questions that directly ask about the respondent's attitude towards "western movies, music, and television." There is also a third variable on whether there is a conflict between religion and modern society. I don't think this will correlate that well with the other two,but I want to check that here. 
-
-+------------------------+---------------------------------------+---------------------------+
-| Name                   | Question                              | Missing Countries         |
-+========================+=======================================+===========================+
-| western_culture (Q17)  |Like/Dislike Western movies, music and | - Wording slightly        |
-|                        |television?                            |   different in Iran       |
-|                        |                                       | - Lebanon                 |
-+------------------------+---------------------------------------+---------------------------+
-| western_immoral (Q26)  |Western movies, music, and television  | - Wording slightly        |
-|                        |have hurt morality in our country.     |   different in Iran       |
-|                        |                                       | - Lebanon                 |
-+------------------------+---------------------------------------+---------------------------+
-| conflict_modern (Q75)  | Natural conflict between religion and | - Wording slight          |
-|                        | modern society.                       |   different in Iran       |
-+------------------------+---------------------------------------+---------------------------+
-
-```{r western}
-western <- cbind(western_culture=as.numeric(pew$western_culture=="I dislike western music, movies and television"),
-                  western_immoral=as.numeric(pew$western_immoral),
-                  conflict_modern=as.numeric(pew$conflict_modern))
-corrgram(western, upper.panel="panel.cor", order="PCA")
-
-cor_western <- polychoric(western)$rho
-
-psych::alpha(cor_western)
-
-loadings(fa(cor_western,1,rotate=rotation_choice))
+```{r}
+morality <- na.omit(data.frame(moral_alcohol=as.numeric(pew$moral_alcohol=="Morally wrong"),
+                               moral_euthansia=as.numeric(pew$moral_euthanasia=="Morally wrong"),
+                               moral_suicide=as.numeric(pew$moral_suicide=="Morally wrong"),
+                               moral_abortion=as.numeric(pew$moral_abortion=="Morally wrong"),
+                               moral_prostitution=as.numeric(pew$moral_prostitution=="Morally wrong"),
+                               moral_premar_sex=as.numeric(pew$moral_premar_sex=="Morally wrong"),
+                               moral_gay=as.numeric(pew$moral_gay=="Morally wrong"),
+                               country=as.character(pew$country)))
+mod_configural <- multipleGroup(morality[,1:7], 1, group = morality$country,
+                                itemtype="2PL", verbose=FALSE)
+mod_metric <- multipleGroup(morality[,1:7], 1, group = morality$country, 
+                            invariance=c('slopes'),
+                            itemtype="2PL", verbose=FALSE)
+mod_scalar <- multipleGroup(morality[,1:7], 1, group = morality$country, 
+                            invariance=c('slopes','intercepts'),
+                            itemtype="2PL", verbose=FALSE)
+bic <- sapply(list(mod_configural,mod_metric,mod_scalar), 
+              function(x) {x@Fit$BIC})
+names(bic) <- c("free","metric","scalar")
+bic
 ```
 
-```{r west-country}
-temp <- droplevels(subset(pew, country!="Lebanon"))
-temp <- sapply(split(temp, temp$country),
-       function(x) {
-         western <- cbind(western_culture=as.numeric(x$western_culture=="I dislike western music, movies and television"),
-                  western_immoral=as.numeric(x$western_immoral))
-         as.numeric(psych::alpha(polychoric(western)$rho)$total["std.alpha"])
-       })
-temp <- enframe(sort(temp),"country","alpha")
-ggplot(temp, aes(x=reorder(country, alpha, mean), y=alpha))+
-  geom_lollipop()+
-  geom_hline(yintercept = 0.7, linetype=2)+
-  coord_flip()+
-  labs(x=NULL, y="ordinal alpha",
-       title="Ordinal alpha of western attitude measure by country")+
-  theme_bw()
+The results here suggest some important invariance. The results by country suggested that (a) the effect of alcohol was substantially variant across countries and (b) the results might work better in a two factor model that separated the remaining "death" items (euthansia, suicide, and abortion) from the "sex" items (prostitutions, premarital sex, and homosexuality). Thus, we tried another IRT that left out alcohol, and fit a two factor solution.
+
+
+```{r}
+morality <- na.omit(data.frame(moral_euthansia=as.numeric(pew$moral_euthanasia=="Morally wrong"),
+                               moral_suicide=as.numeric(pew$moral_suicide=="Morally wrong"),
+                               moral_abortion=as.numeric(pew$moral_abortion=="Morally wrong"),
+                               moral_prostitution=as.numeric(pew$moral_prostitution=="Morally wrong"),
+                               moral_premar_sex=as.numeric(pew$moral_premar_sex=="Morally wrong"),
+                               moral_gay=as.numeric(pew$moral_gay=="Morally wrong"),
+                               country=as.character(pew$country)))
+mod_configural <- multipleGroup(morality[,1:6], 2, group = morality$country,
+                                itemtype="2PL", verbose=FALSE)
+mod_metric <- multipleGroup(morality[,1:6], 2, group = morality$country, 
+                            invariance=c('slopes'),
+                            itemtype="2PL", verbose=FALSE)
+mod_scalar <- multipleGroup(morality[,1:6], 2, group = morality$country, 
+                            invariance=c('slopes','intercepts'),
+                            itemtype="2PL", verbose=FALSE)
+bic <- sapply(list(mod_configural,mod_metric,mod_scalar), 
+              function(x) {x@Fit$BIC})
+names(bic) <- c("free","metric","scalar")
+bic
 ```
 
-### Summary
-
-The two westernization questions are reasonably correlated with each other but not with conflict_modern. I would recommend that we combine them into a single scale and keep conflict_modern as a separate variable.
-
-## Support for violent practices
-<a href="#top">Back to top</a>
-
-Here we want to capture whether respondents favor harsh and violent responses to violations of the social fabric/religious norms. So stoning, cutting off hands, honor killings, death for apostasy and the like. There is also a question about whether it is justified to kill civilians in defense of Islam. That variable seems like the closest to a "support for terrorism" variable that we have. 
-
-+------------------------+---------------------------------------+---------------------------+
-| Name                   | Question                              | Missing Countries         |
-+========================+=======================================+===========================+
-| death_apostasy (Q92b)  |Favor the death penalty for people who | - Iran                    |
-|                        |leave the Muslim religion              | - Morocco                 |
-|                        |                                       | - Uzbekistan              |
-+------------------------+---------------------------------------+---------------------------+
-| severe_corporal (Q92c) |Favor punishments like whipping or     | - Iran                    |
-|                        |cutting off hands for crimes like theft| - Morocco                 |
-|                        |and robbery.                           | - Uzbekistan              |
-+------------------------+---------------------------------------+---------------------------+
-| stone_adultery (Q92d)  |Favor stoning people who commit        | - Iran                    |
-|                        |adultery.                              | - Morocco                 |
-|                        |                                       | - Uzbekistan              |
-+------------------------+---------------------------------------+---------------------------+
-| civilian_targets (Q89) | Violence against civilian targets in  | - Iran                    |
-|                        | defense of Islam justified.           | - Thailand                |
-|                        | I don't think this really goes        | - Uzbekistan              |
-|                        | here but may want to consider it      | - Lebanon                 |
-|                        | separately.                           |                           |
-+------------------------+---------------------------------------+---------------------------+
-
-```{r violent_practices}
-violent <- cbind(death_apostasy=as.numeric(pew$death_apostasy),
-                 severe_corporal=as.numeric(pew$severe_corporal),
-                 stone_adultery=as.numeric(pew$stone_adultery),
-                 civilian_target=as.numeric(pew$civilian_target))
-corrgram(violent, upper.panel="panel.cor", order="PCA")
-
-psych::alpha(cor(violent, use="pairwise.complete.obs"))
-
-nfactors(cor(violent, use="pairwise.complete.obs"))
-
-loadings(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-loadings(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-loadings(fa(cor(violent, use="pairwise.complete.obs"),3,rotate=rotation_choice))
-fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),3,rotate=rotation_choice))
-fa.diagram(pca(cor(violent, use="pairwise.complete.obs"),3,rotate=rotation_choice))
-
-
-#rcivilian targets
-psych::alpha(cor(violent[,c(-4)], use="pairwise.complete.obs"))
-vss(cor(violent[,c(-4)], use="pairwise.complete.obs"))
-loadings(fa(cor(violent[,c(-4)], use="pairwise.complete.obs"),1,rotate=rotation_choice))
-```
-
-```{r violence-country}
-temp <- sapply(split(pew, pew$country),
-       function(x) {
-         violence <- cbind(death_apostasy=as.numeric(x$death_apostasy),
-                              severe_corporal=as.numeric(x$severe_corporal),
-                              stone_adultery=as.numeric(x$stone_adultery))
-         as.numeric(psych::alpha(tetrachoric(violence)$rho)$total["std.alpha"])
-       })
-temp <- enframe(sort(temp),"country","alpha")
-ggplot(temp, aes(x=reorder(country, alpha, mean), y=alpha))+
-  geom_lollipop()+
-  geom_hline(yintercept = 0.7, linetype=2)+
-  coord_flip()+
-  labs(x=NULL, y="ordinal alpha",
-       title="Ordinal alpha of violence measure by country")+
-  theme_bw()
-```
-
-### Summary
-
-The results here suggest that while there are decent correlations between all variables, they seem to separate into two groupings. First, honor killings of men and women are highly correlated and are also reasonably correlated with civilian_target. Then death_apostasy, severe_corporal, and stone_adultery hang together well as a single factor. When split into three factors, death_apostasy seems a little different from the other two, but there is a high correlation between the two common factors. Its also worth nothing that when doing a PCA vs. EFA, it is civilian_target that shows up as different in the three factor solution (one of the only cases where EFA and PCA produces somewhat different results in our analysis). 
-
-Honor killing is a little more problematic as a treatment of our dependent variable in my view than death_apostasy, severe_corporal, and stone_adultery because while the other three all have a basis in Islamic scripture, honor killing does not and may be a more locality-specific act. Furthermore, honor killing data is missing for a lot of countries. There are also good theoretical reasons to keep civilian_target separate as a measure of support for more extremist jihadi beliefs. 
-
-Based on the results, my recommendation would be to combine death_apostasy, severe_corporal, and stone_adultery into a single scale of "support for violent practices" and treat civilian_target as a separate dependent variable measuring "support for terrorism." 
+The results here suggest metric invariance. We still do not achieve scalar invariance. This can be addressed in the model by allowing a random slope on each of the morality variables. 
 
 
