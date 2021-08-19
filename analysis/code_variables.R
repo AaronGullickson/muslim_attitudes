@@ -21,39 +21,35 @@ load(here("analysis","output","country_data.RData"))
 
 analytic_samples <- lapply(analytic_samples, function(asample) {
   
-  #scales from constructs
-  temp <- 
-  asample$religiosity <- scaleIndVariable(scale(as.numeric(asample$prayer))[,1]
-                                            +scale(as.numeric(asample$relig_important))[,1]
-                                            +scale(as.numeric(asample$attend))[,1])
-  asample$social_cons <- scaleIndVariable(apply(asample[,c("moral_alcohol","moral_euthanasia",
-                                                           "moral_suicide","moral_abortion",
-                                                           "moral_prostitution","moral_premar_sex",
-                                                           "moral_gay")]=="Morally wrong",1,sum))
-  asample$anti_western <- scaleIndVariable(as.numeric(asample$western_culture=="I dislike western music, movies and television") 
-                                           +as.numeric(asample$western_immoral=="Western culture has hurt morality"))
+  #Dependent Variable
+  asample$violence <- scale(as.numeric(asample$death_apostasy=="Favor") 
+                            +as.numeric(asample$stone_adultery=="Favor")
+                            +as.numeric(asample$severe_corporal=="Favor"))[,1]
   
-  #also create scales for some sensitivity variables for religiosity variables
-  asample$religiosity2 <- scaleIndVariable(scale(as.numeric(asample$prayer))[,1]
-                                           +scale(as.numeric(asample$relig_important))[,1])
-  asample$religiosity3 <- scaleIndVariable(scale(as.numeric(asample$prayer))[,1]
-                                           +scale(as.numeric(asample$relig_important))[,1]
-                                           +scale(as.numeric(asample$attend))[,1]
-                                           +scale(as.numeric(asample$believe_moral))[,1])
+  #convert morality questions into two constructs
+  asample$social_cons_death <- scaleIndVariable(
+    apply(asample[,c("moral_euthanasia","moral_suicide","moral_abortion")]=="Morally wrong",1,sum))
+  asample$social_cons_sex <- scaleIndVariable(
+    apply(asample[,c("moral_prostitution","moral_premar_sex","moral_gay")]=="Morally wrong",1,sum))
+  
+  
+  #convert religiosity variables into scale variables
   asample$attend.scale <- scaleIndVariable(as.numeric(asample$attend))
   asample$prayer.scale <- scaleIndVariable(as.numeric(asample$prayer))
   asample$relig_important.scale <- scaleIndVariable(as.numeric(asample$relig_important))
+  #also create a single religiosity scale, even though we probably will no longer use this
+  asample$religiosity <- scaleIndVariable(scale(as.numeric(asample$prayer))[,1]
+                                          +scale(as.numeric(asample$relig_important))[,1]
+                                          +scale(as.numeric(asample$attend))[,1])
   
   #also re-scale income and education quantiles
   asample$incomeqq_scl <- scaleIndVariable(asample$incomeqq)
   asample$educqq_scl <- scaleIndVariable(asample$educqq)
   
-  #Dependent Variable
-  asample$violence <- scale(as.numeric(asample$death_apostasy=="Favor") 
-                            +as.numeric(asample$stone_adultery=="Favor")
-                            +as.numeric(asample$severe_corporal=="Favor"))[,1]
-  asample$terrorism <- scale(as.numeric(asample$civilian_target))[,1]
-  
+  #turn western variables into booleans 
+  asample$western_culture <- asample$western_culture=="I dislike western music, movies and television"
+  asample$western_immoral <- asample$western_immoral=="Western culture has hurt morality"
+
   return(asample)
 })
 
@@ -103,6 +99,10 @@ analytic_samples <- lapply(analytic_samples, function(x) {
     mean(as.numeric(x$conflict_modern)==2, na.rm=TRUE)
   x$anti_democratic_ctr <- (as.numeric(x$democracy)==1) -
     mean(as.numeric(x$democracy)==1, na.rm=TRUE)
+  x$western_culture_ctr <- (as.numeric(x$western_culture)==1) -
+    mean(as.numeric(x$western_culture)==1, na.rm=TRUE)
+  x$western_immoral_ctr <- (as.numeric(x$western_immoral)==1) -
+    mean(as.numeric(x$western_immoral)==1, na.rm=TRUE)
   return(x)
 })
 
