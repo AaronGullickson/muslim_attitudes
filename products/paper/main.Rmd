@@ -7,11 +7,12 @@ author:
   name: Sarah Ahmed
 abstract: Despite widespread scholarly interest in values and attitudes among Muslim populations, relatively little work has focused on specific attitudes popularly thought to indicate anti-modern or anti-liberal tendencies within Islam. In this article, we use data from the Pew Research Center from 2008-2012 to examine support for violent practices among Muslims in thirty-five countries. Support for violent practices is defined by three questions on the acceptability of killing apostates, the stoning of adulterers, and severe corporal punishment for thieves. Using multilevel models that capture country-level variability, we analyze the relationship between support for violent practices and education, religiosity, and development. In general, we find that support for violent practices is less common among individuals with more education and less religiosity and who come from more developed countries. However, when we examine variation across countries, we see evidence of substantial heterogeneity in the association of education and religiosity with support for violent practices. We find that education and religiosity are less liberalizing in less liberal countries. Furthermore, there is no association between the effects of education and religiosity within a country. We discuss the implications of these findings more broadly based on prior work on liberal value systems in mostly Western countries. Overall, the variation we observe across countries calls into question a civilizational approach to studying values among Muslim populations and points to a more nuanced multiple modernities approach.
 output:
-  pdf_document: 
+  bookdown::pdf_document2: 
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
-    keep_tex: yes
+    keep_tex: no
+    toc: false
   word_document:
     reference_docx: ./resources/aog_word_style.docx
 fontfamily: mathpazo
@@ -31,6 +32,10 @@ source(here("analysis","useful_functions.R"))
 source(here("analysis","check_packages.R"))
 load(here("analysis","output","analytic_samples.RData"))
 load(here("analysis","output","country_data.RData"))
+#you need to load kableExtra in the doc
+options(kableExtra.latex.load_packages = FALSE)
+options(knitr.table.format = "latex")
+library(kableExtra)
 ```
 
 ```{r theme, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, include=FALSE}
@@ -47,46 +52,42 @@ theme_mine <- function() {
 ```
 
 ```{r run_models}
-formula_individual <- formula(violence~(1+religiosity+educqq_scl|country)+
-                                religiosity+educqq_scl+incomeqq_scl+
-                                age25_29+age30_34+age35_39+age40_44+
-                                age45_49+age50_54+age55_59+ageAge60orover+
-                                Female+Urban+
-                                Shia+Other+Nothinginparticular+sufi_ctr+
-                                NecessarytobelieveinGodtobemoral+
-                                islam_truth_ctr+islam_oneway_ctr+
-                                conflict_modern_ctr+anti_western+
-                                anti_democratic_ctr+social_cons)
-formula_hdi_intercept <- update(formula_individual, .~.+hdi_scaled)
-formula_hdi_full <- update(formula_individual, .~.+(religiosity+educqq_scl)*hdi_scaled)
+formula_no_interact <- formula(violence~(1+attend.scale+relig_important.scale+
+                                           prayer.scale+educqq_scl|country)+
+                                 attend.scale+relig_important.scale+
+                                 prayer.scale+educqq_scl+incomeqq_scl+
+                                 age25_29+age30_34+age35_39+age40_44+
+                                 age45_49+age50_54+age55_59+ageAge60orover+
+                                 Female+Urban+
+                                 Shia+Other+Nothinginparticular+sufi_ctr+
+                                 NecessarytobelieveinGodtobemoral+
+                                 islam_truth_ctr+islam_oneway_ctr+
+                                 conflict_modern_ctr+
+                                 western_culture+western_immoral+
+                                 anti_democratic_ctr+
+                                 social_cons_death+social_cons_sex+hdi_scaled)
+formula_interact_full <- update(formula_no_interact, 
+                                .~.+(attend.scale+relig_important.scale+
+                                       prayer.scale+educqq_scl)*hdi_scaled)
+formula_interact_restrained <- update(formula_no_interact, 
+                                      .~.+educqq_scl*hdi_scaled)
 
-results_individual <- pool_re_models(mclapply(analytic_samples, function(x) {
-  lmer.converge(formula_individual, data=x)
+
+results_no_interact <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_no_interact, data=x)
 }))
-results_hdi_intercept <- pool_re_models(mclapply(analytic_samples, function(x) {
-  lmer.converge(formula_hdi_intercept, data=x)
+results_interact_full <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_interact_full, data=x)
 }))
-results_hdi_full <- pool_re_models(mclapply(analytic_samples, function(x) {
-  lmer.converge(formula_hdi_full, data=x)
+results_interact_restrained <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_interact_restrained, data=x)
 }))
 ```
 
 ```{r build-country-effects, echo=FALSE}
-country_effects <- as_tibble(results_hdi_full$country_effects)
+country_effects <- as_tibble(results_interact_restrained$country_effects)
 colnames(country_effects)[1] <- "intercept"
-country_effects$country <- shortenCountryNames(rownames(results_hdi_full$country_effects))
-temp <- as_tibble(results_individual$country_effects)
-colnames(temp)[1] <- "intercept"
-temp$country <- rownames(results_individual$country_effects)
-temp <- subset(temp, select=c("intercept","religiosity","educqq_scl"))
-colnames(temp) <- c("intercept_ind","religiosity_ind","educqq_ind")
-country_effects <- cbind(country_effects, temp)
-country_effects$educqq_model2 <- results_hdi_intercept$country_effects[,"educqq_scl"]
-temp <- subset(analytic_samples[[1]], !duplicated(country),
-               select=c("country","hdi"))
-country_effects <- merge(country_effects, temp)
-country_effects <- as_tibble(country_effects)
-country_effects$region <- findRegion(country_effects$country)
+country_effects$country <- shortenCountryNames(rownames(results_interact_restrained$country_effects))
 ```
 
 # Introduction
@@ -292,23 +293,38 @@ convert_model_re <- function(model) {
     se = model$fixef$se, 
     pvalues = model$fixef$pvalue,
     gof.names = c("N (individual)","N (country)", "BIC",
-                  "SD (religiosity)","SD (education quantile)",
-                  "r(intercept, religiosity)","r(intercept, education)",
-                  "r(religiosity, education)"),
+                  "SD (education quantile)", "SD (attendance)",
+                  "SD (religion important)", "SD (prayer)"),
+#                  "r(intercept, education)","r(intercept, attendance)",
+#                  "r(intercept, religion important)","r(intercept, prayer)",
+#                  "r(education, attendance)","r(education, religion important)",
+#                  "r(education, prayer)","r(attendance, religion important)",
+#                  "r(attendance, prayer)","r(religion important, prayer)"),
     gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC,
-            model$ranef_sd["religiosity"], model$ranef_sd["educqq_scl"],
-            model$ranef_cor["(Intercept)","religiosity"],
-            model$ranef_cor["(Intercept)","educqq_scl"],
-            model$ranef_cor["religiosity","educqq_scl"]), 
-    gof.decimal = c(F,F,F,T,T,T,T,T)
+            model$ranef_sd["educqq_scl"], 
+            model$ranef_sd["attend.scale"], 
+            model$ranef_sd["relig_important.scale"], 
+            model$ranef_sd["prayer.scale"]), 
+#            model$ranef_cor["(Intercept)","educqq_scl"],
+#            model$ranef_cor["(Intercept)","attend.scale"],
+#            model$ranef_cor["(Intercept)","relig_important.scale"],
+#            model$ranef_cor["(Intercept)","prayer.scale"],
+#            model$ranef_cor["educqq_scl","attend.scale"],
+#            model$ranef_cor["educqq_scl","relig_important.scale"],
+#            model$ranef_cor["educqq_scl","prayer.scale"],
+#            model$ranef_cor["relig_important.scale","attend.scale"],
+#            model$ranef_cor["prayer.scale","attend.scale"],
+#            model$ranef_cor["relig_important.scale","prayer.scale"]),
+    gof.decimal = c(F,F,F,rep(T, 4))
   )
 }
 
-
-knitreg(lapply(list(results_individual, results_hdi_intercept, results_hdi_full),
+knitreg(lapply(list(results_no_interact, results_interact_full, 
+                    results_interact_restrained),
                convert_model_re),
         digits=3,
-        custom.coef.names=c("Intercept","Religiosity","Education quantile",
+        custom.coef.names=c("Intercept","Mosque attendance","Importance of religion",
+                            "Frequency of prayer","Education quantile",
                             "Income quantile","Age 25-29","Age 30-34","Age 35-39",
                             "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
                             "Age 60 and over", "Female", "Urban", "Shia",
@@ -317,12 +333,16 @@ knitreg(lapply(list(results_individual, results_hdi_intercept, results_hdi_full)
                             "Islam is the one true faith",
                             "One way to interpret relig. teachings",
                             "Religion in conflict with modernity",
-                            "Anti-Westernization scale",
+                            "Dislikes western culture",
+                            "Western culture is immoral",
                             "Prefers strong leader to democracy",
-                            "Socially conservative scale",
+                            "Socially conservative scale, death",
+                            "Socially conservative scale, sex",
                             "Human development index (HDI)",
-                            "HDI x religiosity", 
-                            "HDI x education quantile"),
+                            "HDI x Mosque attendance", 
+                            "HDI x Importance of relig",
+                            "HDI x Frequency of prayer",
+                            "HDI x Education quantile"),
         single.row=TRUE,
         dcolumn=TRUE,
         caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
@@ -344,17 +364,19 @@ We now turn to the random country effects estimated by the models. The variance 
 
 Figure 3 shows the religiosity and education slopes for all countries as estimated in Model 3 of Table 1. Six countries (Egypt, Algeria, Afghanistan, Malaysia, Kenya, Pakistan, and Liberia) have estimated slopes that indicate a positive association between educational quantile and support for violent practices. The effects are very close to zero for Pakistan and Liberia, but substantial for the other countries. In these countries, individuals with more education tend to be more supportive of violent practices. Significant variation exists among countries with negative slopes as well. Tunisia stands out as an outlier in the negative direction with a slope that is nearly double the size of its nearest neighbor, Ghana. 
 
-```{r random-slope-lollipop, fig.cap="Lollipop plots of the association between religiosity/education and support for violent practices in each country. Values are based on random slopes from Model 3 of Table 1. Each panel is ordered from largest to smallest association. Values are color-coded by direction."}
+```{r random-slope-lollipop, fig.cap="Lollipop plots of the association between religiosity/education and support for violent practices in each country. Values are based on random slopes from Model 3 of Table 1. Each panel is ordered from largest to smallest association. Values are color-coded by direction.", fig.height=7.5}
 #lets try this full tidyverse
 #this useful post on how to reorder within facets was helpful
 #https://drsimonj.svbtle.com/ordering-categories-within-ggplot2-facets
 pd <- country_effects %>%
-  select("country","religiosity","educqq_scl") %>%
+  select("country","attend.scale","relig_important.scale","prayer.scale","educqq_scl") %>%
   melt() %>% 
   arrange(variable, value) %>%
   mutate(variable=factor(variable, 
-                         levels=c("religiosity","educqq_scl"),
-                         labels=c("religiosity","education")),
+                         levels=c("attend.scale","relig_important.scale",
+                                  "prayer.scale","educqq_scl"),
+                         labels=c("Mosque attendance","Religion important",
+                                  "Frequency of prayer","Educational quantile")),
          order=row_number())
 
 ggplot(pd, aes(x=order, y=value))+
@@ -375,15 +397,41 @@ In contrast, all of the estimated slopes for religiosity are consistently positi
 
 Table 1 also shows the correlations between these random country effects. Both slopes are positively related to the intercept. To explore these correlations in more detail, Figure 4 shows the relationship between the country-specific intercepts and the country-specific slopes for religiosity and education. As Table 1 indicated, there is a strong positive correlation in both cases. In countries with less support for violent practices overall, the association between education and support for violent practices tends to be more negative and the association between religiosity and support for violent practices tends to be less positive. The correlation here suggests a substantial socialization effect on both religious and educational institutions. In more liberal countries (those with less support for violent practices overall), education has more of a liberalizing influence and religiosity has less of a conservatizing influence. 
 
-```{r intercept-slope-plot, fig.cap="Scatterplot showing the relationship betwen a country's average level of support for violent practices and the association between education/religiosity and support for violent practices in a country. Values are based on random intercepts and slopes from Model 3 of Table 1. Best fitting OLS line is shown for both panels."}
+```{r cor-table, results='asis'}
+temp <- round(results_interact_restrained$ranef_cor, 3)
+colnames(temp) <- rownames(temp) <- c("Intercept","Mosque attendance",
+                                      "Religion important","Frequency of prayer",
+                                      "Educational quantile")
+temp[upper.tri(temp)] <- NA
+diag(temp) <- NA
+temp <- temp[,-5]
+options(knitr.kable.NA = '')
+temp %>%
+  kbl(booktabs=TRUE, 
+      caption="Correlation between random intercepts and slopes for religiosity and education.") %>%
+  kable_styling(full_width = TRUE) %>%
+  column_spec(1, width = "5cm") %>%
+  footnote(general = "Correlation coefficients based on Model 3 of Table 1")
+```
+
+```{r intercept-slope-plot, fig.cap="Scatterplot showing the relationship betwen a country's average level of support for violent practices and the association between education/religiosity and support for violent practices in a country. Values are based on random intercepts and slopes from Model 3 of Table 1. Best fitting OLS line is shown for both panels.", fig.height=4}
 temp <- subset(country_effects, 
-               select=c("country","intercept","religiosity"))
-temp$variable <- "religiosity"
+               select=c("country","intercept","attend.scale"))
+temp$variable <- "Mosque attendance"
 temp2 <- subset(country_effects, 
+                select=c("country","intercept","relig_important.scale"))
+temp2$variable <- "Religion important"
+temp3 <- subset(country_effects, 
+                select=c("country","intercept","prayer.scale"))
+temp3$variable <- "Frequency of prayer"
+temp4 <- subset(country_effects, 
                select=c("country","intercept","educqq_scl"))
-temp2$variable <- "education"
-colnames(temp) <- colnames(temp2) <- c("country","intercept","slope","variable")
-temp <- rbind(temp, temp2)
+temp4$variable <- "Educational quantile"
+colnames(temp) <- colnames(temp2) <- colnames(temp3) <- colnames(temp4) <- c("country","intercept","slope","variable")
+temp <- rbind(temp, temp2, temp3, temp4)
+temp$variable <- factor(temp$variable,
+                        levels=c("Educational quantile","Mosque attendance",
+                                 "Religion important","Frequency of prayer"))
 ggplot(temp, aes(x=intercept, 
                             y=slope))+
   geom_hline(yintercept=0, linetype=2)+
@@ -397,15 +445,30 @@ ggplot(temp, aes(x=intercept,
 
 Finally, we look at the relationship between the two measures of association. Do the effects of religiosity and education within a country tend to work in synchronicity or are they polarized? As Table 1 shows, the correlation between the two measures of association is very low, albeit slightly positive. Figure 5 shows the relationship between the two slopes on a scatterplot, confirming the low correlation. In short, there does not seem to be any connection between educational and religious divisions within a country on this outcome measure. For example, Tunisia and Egypt have similar associations between religiosity and support for violent practices, but radically different associations between education and support for violent practices. Tunisia has by far the most negative association of any country while Egypt has the most positive. The results here indicate that while religiosity and education have somewhat predictable association with support for violent practices, the particular constellation of these two associations within a country varies in non-predictable ways. 
 
-```{r slope-compare-plot, fig.cap="Scatterplot showing the relationship between country-level associations of education and religiosity with support for violent practices. Values based on random slopes from Model 3 of Table 1. Best-fitting OLS line is shown."}
-ggplot(country_effects, aes(x=religiosity, 
-                            y=educqq_scl))+
+```{r slope-compare-plot, fig.cap="Scatterplot showing the relationship between country-level associations of education and religiosity with support for violent practices. Values based on random slopes from Model 3 of Table 1. Best-fitting OLS line is shown.", fig.height=2.5}
+temp <- subset(country_effects, 
+               select=c("country","educqq_scl","attend.scale"))
+temp$variable <- "Mosque attendance"
+temp2 <- subset(country_effects, 
+                select=c("country","educqq_scl","relig_important.scale"))
+temp2$variable <- "Religion important"
+temp3 <- subset(country_effects, 
+                select=c("country","educqq_scl","prayer.scale"))
+temp3$variable <- "Frequency of prayer"
+colnames(temp) <- colnames(temp2) <- colnames(temp3) <- c("country","educ","relig","variable")
+temp <- rbind(temp, temp2, temp3)
+temp$variable <- factor(temp$variable,
+                        levels=c("Mosque attendance","Religion important",
+                                 "Frequency of prayer"))
+
+ggplot(temp, aes(x=educ, y=relig))+
   geom_hline(yintercept=0, linetype=2)+
   geom_vline(xintercept=0, linetype=2)+
   geom_point()+
   geom_smooth(method="lm", se=FALSE)+
   geom_text_repel(aes(label=country), size=3)+
-  labs(x="religiosity slope in country", y="education slope in country")+
+  facet_wrap(~variable)+
+  labs(y="religiosity slope in country", x="education slope in country")+
   theme_mine()
 ```
 
