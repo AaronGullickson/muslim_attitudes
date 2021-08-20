@@ -92,6 +92,17 @@ lmer.converge <- function(formula, data) {
   return(model)
 }
 
+#wrapper for glmer that will check for convergence of model
+glmer.converge <- function(formula, data) {
+  #I will also use bobyqa optimizer and longer iterations
+  #to help convergence
+  model <- glmer(formula, data=data,
+                control=lmerControl(optimizer="bobyqa",
+                                    optCtrl=list(maxfun=2e5)))
+  model <- check.convergence(model, data)
+  return(model)
+}
+
 
 #A function to pool the random effects models and produce results for the fixed effects
 pool_re_models <- function(models) {
