@@ -480,7 +480,8 @@ cbind(&quot;full_sample&quot;=bic, &quot;w/o Jordan&quot;=bic_nojordan, &quot;w/
 ## metric    81052.94   78331.95  76830.98             74102.06
 ## scalar    98005.89   94405.52  91685.23             87960.98</code></pre>
 <p>The results here show clearly that removing either Jordan or Egypt is sufficient to make BIC prefer the model assuming metric equivalence. One solution to this problem would be to remove Jordan and Egypt entirely from our analysis. However, scholars have noted invariance does not necessarily invalidate the functional equivalence of items. In this case, the issue seems to be a somewhat different way that one of the items in the construct works suggesting we may have partial equivalence. I think the best way to handle this is to leave the cases in, but to note that our models may not estimate coefficients in as comparable a way for Egypt and Jordan as the other cases, and so care should be taken when interpreting those results.</p>
-<p>The bigger problem here is the lack of scalar equivalence. The size of the difference in BIC here does not suggest that this will be fixed by identifying a handful of problematic countries. However, it is also not clear how much this should be corrected in the context of multilevel models but rather treated as an important part of cross-national differences. The argument goes that lack of scalar invariance <em>may</em> make comparison of levels (in our case random intercepts) across countries problematic. However, its also clear that in many cases it will not, as the substantive impacts of this difference may be quite small. My guess based on the figure showing the correspondence in average levels of support across countries suggests to me that our intercepts are going to be well-estimated. So on the whole I think we can probably defend our decision to proceed in the face of scalar invariance. On a very basic level, I somewhat question what the hell all this means.</p>
+<p>The bigger problem here is the lack of scalar equivalence. The size of the difference in BIC here does not suggest that this will be fixed by identifying a handful of problematic countries. However, it is also not clear how much this should be corrected in the context of multilevel models but rather treated as an important part of cross-national differences. The argument goes that lack of scalar invariance <em>may</em> make comparison of levels (in our case random intercepts) across countries problematic. However, its also clear that in many cases it will not, as the substantive impacts of this difference may be quite small.</p>
+<p>I think the best way to handle this is to conduct a sensitivity analysis where we model each of the items in a separate multilevel logit model. We can then compare model output (fixed effect coefficients and the correlation between random components) to ensure that each of these models comes to largely the same conclusions. That will give much more weight to our decision to use a summated scale.</p>
 </div>
 <div id="religiosity" class="section level2">
 <h2>Religiosity</h2>
@@ -916,7 +917,7 @@ names(bic) &lt;- c(&quot;free&quot;,&quot;metric&quot;,&quot;scalar&quot;)
 bic</code></pre>
 <pre><code>##     free   metric   scalar 
 ## 126511.3 126099.5 135856.1</code></pre>
-<p>The results here suggest metric invariance. We still do not achieve scalar invariance. This can be addressed in the model by allowing a random slope on each of the morality variables.</p>
+<p>The results here suggest metric invariance. We still do not achieve scalar invariance. Given that the major goal here is to just reduce the complexity of the data and that scalar invariance is very difficult to obtain, I am ok with that.</p>
 </div>
 
 
