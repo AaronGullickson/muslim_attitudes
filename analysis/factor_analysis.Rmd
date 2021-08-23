@@ -439,4 +439,21 @@ bic
 
 The results here suggest metric invariance. We still do not achieve scalar invariance. Given that the major goal here is to just reduce the complexity of the data and that scalar invariance is very difficult to obtain, I am ok with that.
 
+Lets go back and calculate $\alpha$ for the two separate indices.
+
+```{r}
+cor_moral_death <- polychoric(morality[,c("moral_euthansia","moral_suicide",
+                                          "moral_abortion")])$rho
+
+psych::alpha(cor_moral_death)
+```
+
+```{r}
+cor_moral_sex <- polychoric(morality[,c("moral_prostitution","moral_premar_sex",
+                                          "moral_gay")])$rho
+
+psych::alpha(cor_moral_sex)
+
+```
+
 

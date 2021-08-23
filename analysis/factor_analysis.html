@@ -921,6 +921,51 @@ bic</code></pre>
 <pre><code>##     free   metric   scalar 
 ## 126511.3 126099.5 135856.1</code></pre>
 <p>The results here suggest metric invariance. We still do not achieve scalar invariance. Given that the major goal here is to just reduce the complexity of the data and that scalar invariance is very difficult to obtain, I am ok with that.</p>
+<p>Lets go back and calculate <span class="math inline">\(\alpha\)</span> for the two separate indices.</p>
+<pre class="r"><code>cor_moral_death &lt;- polychoric(morality[,c(&quot;moral_euthansia&quot;,&quot;moral_suicide&quot;,
+                                          &quot;moral_abortion&quot;)])$rho
+
+psych::alpha(cor_moral_death)</code></pre>
+<pre><code>## 
+## Reliability analysis   
+## Call: psych::alpha(x = cor_moral_death)
+## 
+##   raw_alpha std.alpha G6(smc) average_r S/N median_r
+##       0.82      0.82    0.76       0.6 4.5      0.6
+## 
+##  Reliability if an item is dropped:
+##                 raw_alpha std.alpha G6(smc) average_r S/N var.r med.r
+## moral_euthansia      0.75      0.75    0.60      0.60 3.0    NA  0.60
+## moral_suicide        0.69      0.69    0.53      0.53 2.2    NA  0.53
+## moral_abortion       0.80      0.80    0.67      0.67 4.1    NA  0.67
+## 
+##  Item statistics 
+##                    r r.cor r.drop
+## moral_euthansia 0.86  0.75   0.67
+## moral_suicide   0.88  0.81   0.73
+## moral_abortion  0.83  0.68   0.62</code></pre>
+<pre class="r"><code>cor_moral_sex &lt;- polychoric(morality[,c(&quot;moral_prostitution&quot;,&quot;moral_premar_sex&quot;,
+                                          &quot;moral_gay&quot;)])$rho
+
+psych::alpha(cor_moral_sex)</code></pre>
+<pre><code>## 
+## Reliability analysis   
+## Call: psych::alpha(x = cor_moral_sex)
+## 
+##   raw_alpha std.alpha G6(smc) average_r S/N median_r
+##        0.9       0.9    0.86      0.76 9.3     0.76
+## 
+##  Reliability if an item is dropped:
+##                    raw_alpha std.alpha G6(smc) average_r S/N var.r med.r
+## moral_prostitution      0.86      0.86    0.76      0.76 6.3    NA  0.76
+## moral_premar_sex        0.87      0.87    0.78      0.78 6.9    NA  0.78
+## moral_gay               0.85      0.85    0.74      0.74 5.6    NA  0.74
+## 
+##  Item statistics 
+##                       r r.cor r.drop
+## moral_prostitution 0.92  0.85   0.81
+## moral_premar_sex   0.91  0.83   0.79
+## moral_gay          0.92  0.87   0.82</code></pre>
 </div>
 
 
