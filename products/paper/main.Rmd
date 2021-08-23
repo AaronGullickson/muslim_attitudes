@@ -275,7 +275,7 @@ We include a variety of other individual-level variables in all models. We inclu
 
 We also include a measure of the respondent’s self-reported denomination. The primary division here is between Sunni and Shia, but many respondents also identified in a non-denominational way (e.g. “just a Muslim”) which we retain as a separate category. We combine all other denominations into a single “other” category. A separate item asked respondents whether they identified with any Sufi orders. We code this as a binary variable that is distinct from the denominational categories.
 
-We also control for non-religious ideological views. We constructed two indices of socially conservative views based on the respondent’s answers regarding the acceptability of several stigmatized behaviors. Exploratory factor analysis suggested a two factor solution that divided the items into those associated with death (euthanasia, suicide, abortion; $\alpha=0.77$) and those associated with sex (prostitution, homosexuality, and premarital sex; $\alpha=0.88$) provided the best fit. This two factor solution also was metrically invariant across countries, although not scalar invariant. We also include two questions that gauge respondents’ attitudes toward Western movies, music, and television. Finally, we include questions on whether religion is in conflict with modernity, and whether the country would be better off with a strong leader rather than a democratic government.
+We also control for non-religious ideological views. We constructed two indices of socially conservative views based on the respondent’s answers regarding the acceptability of several stigmatized behaviors. Exploratory factor analysis suggested a two factor solution that divided the items into those associated with death (euthanasia, suicide, abortion; $\alpha=0.82$) and those associated with sex (prostitution, homosexuality, and premarital sex; $\alpha=0.88$) provided the best fit. This two factor solution also was metrically invariant across countries, although not scalar invariant. We also include two questions that gauge respondents’ attitudes toward Western movies, music, and television. Finally, we include questions on whether religion is in conflict with modernity, and whether the country would be better off with a strong leader rather than a democratic government.
 
 ## Multiple Imputation
 
@@ -300,26 +300,11 @@ convert_model_re <- function(model) {
     gof.names = c("N (individual)","N (country)", "BIC",
                   "SD (education quantile)", "SD (attendance)",
                   "SD (religion important)", "SD (prayer)"),
-#                  "r(intercept, education)","r(intercept, attendance)",
-#                  "r(intercept, religion important)","r(intercept, prayer)",
-#                  "r(education, attendance)","r(education, religion important)",
-#                  "r(education, prayer)","r(attendance, religion important)",
-#                  "r(attendance, prayer)","r(religion important, prayer)"),
     gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC,
             model$ranef_sd["educqq_scl"], 
             model$ranef_sd["attend.scale"], 
             model$ranef_sd["relig_important.scale"], 
             model$ranef_sd["prayer.scale"]), 
-#            model$ranef_cor["(Intercept)","educqq_scl"],
-#            model$ranef_cor["(Intercept)","attend.scale"],
-#            model$ranef_cor["(Intercept)","relig_important.scale"],
-#            model$ranef_cor["(Intercept)","prayer.scale"],
-#            model$ranef_cor["educqq_scl","attend.scale"],
-#            model$ranef_cor["educqq_scl","relig_important.scale"],
-#            model$ranef_cor["educqq_scl","prayer.scale"],
-#            model$ranef_cor["relig_important.scale","attend.scale"],
-#            model$ranef_cor["prayer.scale","attend.scale"],
-#            model$ranef_cor["relig_important.scale","prayer.scale"]),
     gof.decimal = c(F,F,F,rep(T, 4))
   )
 }
@@ -333,7 +318,7 @@ knitreg(lapply(list(results_no_interact, results_interact_full,
                             "Income quantile","Age 25-29","Age 30-34","Age 35-39",
                             "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
                             "Age 60 and over", "Female", "Urban", "Shia",
-                            "Other denomination","Just a Muslim", "Sufi",
+                            "Other denomination","Just a Muslim", "Sufi (ref. non-Sufi)",
                             "Believe in god to be moral",
                             "Islam is the one true faith",
                             "One way to interpret relig. teachings",
@@ -352,7 +337,8 @@ knitreg(lapply(list(results_no_interact, results_interact_full,
         dcolumn=TRUE,
         caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
         caption.above=TRUE,
-        custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+        groups=list("Age (ref. 18-24)"=7:14, "Denomination (ref. Sunni)"=17:19),
+        custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and random slopes for education and religiosity variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
 ```
 
 The individual-level variables are highly consistent across models. Although we focus primarily on the effects of education and religiosity, we first briefly summarize the effects of other variables on support for violent practices. Income has little effect on support for violent practices. Similarly, we observe no difference between men and women in support for violent practices. Age differences are relatively small and do not demonstrate a consistent trend when comparing younger to older respondents. Rather, the results suggest specific cohort effects where the cohorts between ages 35-44 and 50-59 are less supportive of  violent practices than adjacent cohorts. Urban residents are less likely to support violent practices than those in rural areas. In terms of denomination, Sunnis are the most supportive of violent practices and Shias the least supportive, with other denominations and “just a Muslim” respondents falling in between. Self-identifying as a member of a Sufi order is associated with greater support for violent practices. All of the variables measuring theological conservatism are positively associated with support for violent practices. Respondents with more anti-Western views were also more supportive of violent practices. Preferences for democracy and social conservatism have little association with support for violent practices.
