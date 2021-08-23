@@ -61,14 +61,16 @@ violent <- cbind(death_apostasy=as.numeric(pew$death_apostasy),
                  civilian_target=as.numeric(pew$civilian_target))
 corrgram(violent, upper.panel="panel.cor", order="PCA")
 
-psych::alpha(cor(violent, use="pairwise.complete.obs"))
+cor_violent <- polychoric(violent, global=FALSE)$rho
 
-loadings(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-loadings(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-loadings(fa(cor(violent, use="pairwise.complete.obs"),3,rotate=rotation_choice))
-fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),3,rotate=rotation_choice))
+psych::alpha(cor_violent)
+
+loadings(fa(cor_violent,1,rotate=rotation_choice))
+fa.diagram(fa(cor_violent,1,rotate=rotation_choice))
+loadings(fa(cor_violent,2,rotate=rotation_choice))
+fa.diagram(fa(cor_violent,2,rotate=rotation_choice))
+loadings(fa(cor_violent,3,rotate=rotation_choice))
+fa.diagram(fa(cor_violent,3,rotate=rotation_choice))
 ```
 
 The results here all suggest strong reliability and a single factor for the first three items and that the targeting of civilians question does not fit as well. Therefore, we removed the last item. which led to a good fit and a clear preference for a single factor.
@@ -76,12 +78,13 @@ The results here all suggest strong reliability and a single factor for the firs
 ```{r}
 #without civilian targets
 violent <- violent[,-4]
-psych::alpha(cor(violent, use="pairwise.complete.obs"))
-vss(cor(violent, use="pairwise.complete.obs"))
-loadings(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),1,rotate=rotation_choice))
-loadings(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
-fa.diagram(fa(cor(violent, use="pairwise.complete.obs"),2,rotate=rotation_choice))
+cor_violent <- polychoric(violent, global=FALSE)$rho
+psych::alpha(cor_violent)
+vss(cor_violent)
+loadings(fa(cor_violent,1,rotate=rotation_choice))
+fa.diagram(fa(cor_violent,1,rotate=rotation_choice))
+loadings(fa(cor_violent,2,rotate=rotation_choice))
+fa.diagram(fa(cor_violent,2,rotate=rotation_choice))
 ```
 
 Next, we calculated our ordinal alpha measure separately in each country in order to test whether the construct is reliable in each country.
