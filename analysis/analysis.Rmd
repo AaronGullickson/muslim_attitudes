@@ -437,7 +437,21 @@ knitreg(lapply(list(results_hdi_restricted, results_apostasy,
 
 The results here are pretty clear. Almost all of the regression slopes and the random effect correlations are of similar relative magnitude and in the same direction. There is certainly some variation in the strength of parameters across items and occasionally things drop in and out of statistical significance, but overall the results are remarkably similar, particularly for the things we care about. The most notable difference is the correlation between attendance and religion important which goes from positive to negative across the items. However, this is not a correlation I am particularly interested in and all of the other correlations are very stable across items. 
 
-So, I think this sensitivity analysis should close the book on this measurement invariance oddysey. 
+As one final check, lets look at the correlation of the intercepts in the three separate models in comparison to the construct itself. 
+
+```{r cor-intercepts}
+intercepts <- tibble(intercept_construct=results_hdi_restricted$country_effects[,1],
+                     intercept_apostasy=results_apostasy$country_effects[,1],
+                     intercept_stoning=results_stoning$country_effects[,1],
+                     intercept_corporal=results_corporal$country_effects[,1])
+round(cor(intercepts), 3)
+```
+
+All three intercepts are strongly correlated with the construct and with each other. We do not get a different story about the levels of countries when we fit three separarte models as when we fit a single construct model. 
+
+So, I think this sensitivity analysis should close the book on this measurement invariance odyssey. 
+
+
 
 #### Alternate development measure
 
