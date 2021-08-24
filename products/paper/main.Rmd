@@ -287,7 +287,7 @@ To facilitate comparisons between variables in the models, all quantitative vari
 
 # Results
 
-Table 1 shows the results of three multilevel models predicting support for violent practices. Model 1 includes only individual level variables. Model 2 adds in the country-level Human Development Indicator (HDI) as a predictor of average support for violent practices in a country. Model 3 additionally allows HDI to be a predictor of the association between religiosity/education and support for violent practices within a country.
+Table 1 shows the results of three multilevel models predicting support for violent practices. Model 1 includes all independent variables, but no interaction term. Model 2 interacts the country-level HDI measure with the individual-level education and religiosity measures. Based on the results of Model 2, Model 3 removes the interaction between HDI and religiosity.
 
 ```{r model-table, results='asis'}
 #the function for converting back for knitreg from pooled model results
@@ -297,15 +297,15 @@ convert_model_re <- function(model) {
     coef = model$fixef$beta, 
     se = model$fixef$se, 
     pvalues = model$fixef$pvalue,
-    gof.names = c("N (individual)","N (country)", "BIC",
-                  "SD (education quantile)", "SD (attendance)",
-                  "SD (religion important)", "SD (prayer)"),
-    gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC,
-            model$ranef_sd["educqq_scl"], 
-            model$ranef_sd["attend.scale"], 
-            model$ranef_sd["relig_important.scale"], 
-            model$ranef_sd["prayer.scale"]), 
-    gof.decimal = c(F,F,F,rep(T, 4))
+    gof.names = c("N (individual)","N (country)", "BIC"),
+               #   "SD (education quantile)", "SD (attendance)",
+               #   "SD (religion important)", "SD (prayer)"),
+    gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC),
+          #  model$ranef_sd["educqq_scl"], 
+          #  model$ranef_sd["attend.scale"], 
+          #  model$ranef_sd["relig_important.scale"], 
+          #  model$ranef_sd["prayer.scale"]), 
+    gof.decimal = c(F,F,F)#,rep(T, 4))
   )
 }
 
@@ -341,19 +341,42 @@ knitreg(lapply(list(results_no_interact, results_interact_full,
         custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and random slopes for education and religiosity variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
 ```
 
-The individual-level variables are highly consistent across models. Although we focus primarily on the effects of education and religiosity, we first briefly summarize the effects of other variables on support for violent practices. Income has little effect on support for violent practices. Similarly, we observe no difference between men and women in support for violent practices. Age differences are relatively small and do not demonstrate a consistent trend when comparing younger to older respondents. Rather, the results suggest specific cohort effects where the cohorts between ages 35-44 and 50-59 are less supportive of  violent practices than adjacent cohorts. Urban residents are less likely to support violent practices than those in rural areas. In terms of denomination, Sunnis are the most supportive of violent practices and Shias the least supportive, with other denominations and “just a Muslim” respondents falling in between. Self-identifying as a member of a Sufi order is associated with greater support for violent practices. All of the variables measuring theological conservatism are positively associated with support for violent practices. Respondents with more anti-Western views were also more supportive of violent practices. Preferences for democracy and social conservatism have little association with support for violent practices.
+All of the independent variables are highly consistent across models. Although we focus primarily on the effects of education, religiosity, and development, we first briefly summarize the effects of other variables on support for violent practices. Income has little effect on support for violent practices. Similarly, we observe no difference between men and women in support for violent practices. Age differences are relatively small and do not demonstrate a consistent trend when comparing younger to older respondents. Rather, the results suggest specific cohort effects where the cohorts between ages 35-44 and 50-59 are less supportive of  violent practices than adjacent cohorts. Urban residents are less likely to support violent practices than those in rural areas. In terms of denomination, Sunnis are the most supportive of violent practices and Shias the least supportive, with other denominations and “just a Muslim” respondents falling in between. Self-identifying as a member of a Sufi order is associated with greater support for violent practices. Theological conservatism is generally associated with more support for violent practices, but the strongest effect among these items is the belief that Islam is the one true faith. Respondents with more anti-Western views were also more supportive of violent practices. Preferences for democracy has little to no association with support for violent practices. Social conservatism is not positively associated with support for violent practices, and may in fact be negatively associated.
 
-Religiosity is more strongly associated with support for violent practices than any of the other individual-level independent variables. A two standard deviation increase in religiosity is associated with roughly a 0.24 standard deviation increase in the support for violent practices scale, even when holding constant a variety of demographic and ideational variables. On average, across countries, Muslims who are more religiously observant and devout are more likely to support violent practices and this result is not simply a function of demography, theological conservatism, social conservatism, or anti-Western sentiment. 
+The three measures of religiosity are all strongly correlated with support for violent practices. In fact, frequency of prayer had the strongest association with support for violent practices among the individual-level variables and the other two measures of religiosity also exhibited some of the strongest associations. This strong association holds even when holding constant a variety of demographic and ideational variables. On average, across countries, Muslims who are more religiously observant and devout are more likely to support violent practices and this result is not simply a function of demography, theological conservatism, social conservatism, or anti-Western sentiment. 
 
-The education quantile measure has a smaller negative association with support for violent practices. A two standard deviation increase in the education quantile is associated with a 0.062 standard deviation reduction in the support for violent practices scale.
+The education quantile measure has a substantial negative association with support for violent practices, but the magnitude here is much smaller than for the religiosity variables. A two standard deviation increase in the education quantile is associated with roughly a 0.06 standard deviation reduction in the support for violent practices scale.
 
-Model 2 introduces the HDI measure as a predictor of support for violent practices. This country-level predictor has the largest association of any term in the model. A two standard deviation increase in the HDI is associated with a 0.417 standard deviation decrease in a country's average on the support for violent practices scale. Individuals from more developed countries are much less supportive of violent practices, on average.
+The results for the HDI measure in Model 1 also shows that the level of development in a country is strongly negatively associated with support for violent practices in that country. A two standard deviation increase in the HDI is associated with a 0.330 standard deviation decrease in a country's average on the support for violent practices scale. Individuals from more developed countries are much less supportive of violent practices, on average.
 
-In Model 3, we allow for an interaction between HDI and our measures of religiosity and education. Effectively, we are allowing the association between religiosity/education and support for violent practices to vary by the level of HDI. There is little evidence of variation in the effect of religiosity by HDI. However, the effect of education on support for violent practices varies substantially by HDI. In general, the results suggest a "flattening" effect in which the negative association between education and support for violent practices gets weaker as HDI increases. However, the effect is so large that "flattening" does not adequately account for the strengh of this interaction term. In countries that have HDI one standard deviation higher than the mean, the model expects the association to reverse direction and become positive. Thus, education is expected to be positively associated with support for violent practices in the most developed countries. 
+In Model 2, we allow for an interaction between HDI and our measures of religiosity and education. Effectively, we are allowing the association between religiosity/education and support for violent practices to vary by the level of HDI. There is little evidence of variation in the effect of any of the religiosity variables by HDI. However, the effect of education on support for violent practices varies substantially by HDI. This results is not statistically significant in Model 2, but as Model 3 shows this is largely a result of multicollinearity problems with the other interaction terms in Model 2. When these terms are removed in Model 3, the standard error on the education x HDI interaction is reduced substantially and the result is statistically significant.
 
-We now turn to the random country effects estimated by the models. The variance and correlation of these country effects is shown at the bottom of Table 1. The association between religiosity and support for violent practices is slightly more variable across countries than the association between education and support for violent practices, but both effects vary substantially.
+In general, the results of Model 2 and Model 3 suggest a "flattening" effect in which the negative association between education and support for violent practices gets weaker as HDI increases. However, the effect is so large that "flattening" does not adequately account for the strength of this interaction term. In countries that have HDI one standard deviation higher than the mean, the model expects the association to reverse direction and become positive. Thus, education is expected to be positively associated with support for violent practices in the most developed countries.
 
-Figure 3 shows the religiosity and education slopes for all countries as estimated in Model 3 of Table 1. Six countries (Egypt, Algeria, Afghanistan, Malaysia, Kenya, Pakistan, and Liberia) have estimated slopes that indicate a positive association between educational quantile and support for violent practices. The effects are very close to zero for Pakistan and Liberia, but substantial for the other countries. In these countries, individuals with more education tend to be more supportive of violent practices. Significant variation exists among countries with negative slopes as well. Tunisia stands out as an outlier in the negative direction with a slope that is nearly double the size of its nearest neighbor, Ghana. 
+We now turn to the random country effects estimated by the models. The variance and correlation of the random intercepts and slopes country effects is shown in Table 2. All of the slopes varied substantially across countries, but the largest variation was for the questions on whether religion is important and the frequency of prayer. 
+
+```{r cor-table, results='asis'}
+temp <- round(results_interact_restrained$ranef_cor, 3)
+temp[upper.tri(temp)] <- NA
+diag(temp) <- NA
+temp <- temp[,-5]
+temp <- cbind(round(results_interact_restrained$ranef_sd,3),temp)
+rownames(temp) <- c("Intercept","Mosque attendance",
+                    "Religion important","Frequency of prayer",
+                    "Educational quantile")
+colnames(temp) <- c("","Intercept","Mosque attendance",
+                    "Religion important","Frequency of prayer")
+options(knitr.kable.NA = '')
+temp %>%
+  kbl(booktabs=TRUE, 
+      caption="Standard deviation and correlation between random intercepts and slopes for religiosity and education.") %>%
+  kable_styling(full_width = TRUE) %>%
+  add_header_above(c(" " = 1, "SD"=1,  "Correlation" = 4)) %>%
+  column_spec(1, width = "5cm") %>%
+  footnote(general = "Correlation coefficients based on Model 3 of Table 1")
+```
+
+Before turning in more detail to the correlation between the random components, we first plot the random slopes for all countries in Figure 3. The substantial variation in the effects of these variables across countries is easy to see on the figure. As expected for most countries the religiosity slopes are positive and the education slopes are negative. However, we do see a small number of countries with estimated slopes in the opposite direction for all four variables. The number of countries with negative slopes for mosque attendance and frequency of prayer is small and the magnitude of these negative slopes is small. For the question on whether religion is important, we see more negative effects and a few (Kenya, Niger, Guinea-Bissau, and Kosovo) that are more substantial in magnitude. In these countries, individuals for whom religion is more important have are less supportive of violent practices.
 
 ```{r random-slope-lollipop, fig.cap="Lollipop plots of the association between religiosity/education and support for violent practices in each country. Values are based on random slopes from Model 3 of Table 1. Each panel is ordered from largest to smallest association. Values are color-coded by direction.", fig.height=7.5}
 #lets try this full tidyverse
@@ -373,7 +396,7 @@ pd <- country_effects %>%
 ggplot(pd, aes(x=order, y=value))+
   geom_hline(yintercept = 0, color="grey50")+
   geom_lollipop(aes(color=(value<0)), show.legend=FALSE)+
-  facet_wrap(~variable, scales="free")+
+  facet_wrap(~variable, scales="free_y")+
   scale_color_viridis_d(end=0.75)+
   scale_x_continuous(breaks = pd$order,
                      labels = pd$country,
@@ -384,26 +407,11 @@ ggplot(pd, aes(x=order, y=value))+
   theme(panel.grid.minor.y = element_blank())
 ```
 
-In contrast, all of the estimated slopes for religiosity are consistently positive, with the exception of Azerbaijan where religiosity effectively has no association with support for violent practices. While the variation in these positive effects is substantial, religiosity does not contributes substantially to lower support for violent practices for any country within our sample. 
+Six countries (Egypt, Algeria, Malaysia, Afghanistan, Kenya, Guinea-Bissau, Pakistan, and Liberia) have estimated slopes that indicate a positive association between educational quantile and support for violent practices. The positive effects are negligible for Guinea-Bissau, Pakistan, and Liberia, but substantial for the remaining countries. In these countries, individuals with more education tend to be more supportive of violent practices. 
 
-Table 1 also shows the correlations between these random country effects. Both slopes are positively related to the intercept. To explore these correlations in more detail, Figure 4 shows the relationship between the country-specific intercepts and the country-specific slopes for religiosity and education. As Table 1 indicated, there is a strong positive correlation in both cases. In countries with less support for violent practices overall, the association between education and support for violent practices tends to be more negative and the association between religiosity and support for violent practices tends to be less positive. The correlation here suggests a substantial socialization effect on both religious and educational institutions. In more liberal countries (those with less support for violent practices overall), education has more of a liberalizing influence and religiosity has less of a conservatizing influence. 
+Tunisia stands out as an outlier in several places in Figure 3. The negative effect of education on support for violent practices is the largest in Tunisia and almost double that of its nearest neighbor, Lebanon. Similarly, mosque attendance and the importance of religion had the most positive effects on support for violent practices among all countries.
 
-```{r cor-table, results='asis'}
-temp <- round(results_interact_restrained$ranef_cor, 3)
-colnames(temp) <- rownames(temp) <- c("Intercept","Mosque attendance",
-                                      "Religion important","Frequency of prayer",
-                                      "Educational quantile")
-temp[upper.tri(temp)] <- NA
-diag(temp) <- NA
-temp <- temp[,-5]
-options(knitr.kable.NA = '')
-temp %>%
-  kbl(booktabs=TRUE, 
-      caption="Correlation between random intercepts and slopes for religiosity and education.") %>%
-  kable_styling(full_width = TRUE) %>%
-  column_spec(1, width = "5cm") %>%
-  footnote(general = "Correlation coefficients based on Model 3 of Table 1")
-```
+Figure 3 displays the random slopes themselves, but we also want to better understand how these random slopes are correlated with each other and with the random intercept. Table 2 shows the correlations between the random components. Both slopes are positively related to the intercept. We begin by looking at the correlation of each of the random slopes with the random intercepts. This correlation tells us how the average level of support for violent practices in each country is related to the effects of education/religiousity on that support. To explore these correlations in more detail, Figure 4 plots these relationships using a scatterplot.
 
 ```{r intercept-slope-plot, fig.cap="Scatterplot showing the relationship betwen a country's average level of support for violent practices and the association between education/religiosity and support for violent practices in a country. Values are based on random intercepts and slopes from Model 3 of Table 1. Best fitting OLS line is shown for both panels.", fig.height=4}
 temp <- subset(country_effects, 
@@ -434,7 +442,13 @@ ggplot(temp, aes(x=intercept,
   theme_mine()
 ```
 
-Finally, we look at the relationship between the two measures of association. Do the effects of religiosity and education within a country tend to work in synchronicity or are they polarized? As Table 1 shows, the correlation between the two measures of association is very low, albeit slightly positive. Figure 5 shows the relationship between the two slopes on a scatterplot, confirming the low correlation. In short, there does not seem to be any connection between educational and religious divisions within a country on this outcome measure. For example, Tunisia and Egypt have similar associations between religiosity and support for violent practices, but radically different associations between education and support for violent practices. Tunisia has by far the most negative association of any country while Egypt has the most positive. The results here indicate that while religiosity and education have somewhat predictable association with support for violent practices, the particular constellation of these two associations within a country varies in non-predictable ways. 
+As Table 2 indicated, there is a substantial positive correlation ($r=0.429$) between education slopes and the average support for violent practices in a country. In countries with less support for violent practices overall, the association between education and support for violent practices tends to be more negative. The correlation here suggests a substantial socialization effect of educational institutions. In more liberal countries (those with less support for violent practices overall), education has more of a liberalizing influence and in more conservative countries, education has less of a liberalizing effect, and may even have a conservatizing effect.
+
+The correlation between each of the religiosity slopes and the average support in a country do not tell as consistent a story. For frequency of prayer, we observe a similar, and even stronger, positive relationship ($r=0.629$). In this case, however, frequency of prayer almost always has a positive effect. So we find that in more liberal countries, frequency of prayer has a less conservatizing effect on support for violent practices. These results suggest a similar socialization effect as for education. We observe a similar positive association for the importance of religion variable, but the correlation here is much weaker ($r=0.188$), indicating that the socialization effect here is weaker. 
+
+Mosque attendance operates differently than these other two religiosity variables. We observe a small negative correlation here ($r=-0.253$) indicating that the effects of mosque attendance become somewhat more positive in more liberal countries. Interestingly, this variable is most closely tied to the actual religious institution and suggests that this institution is somewhat resistant to the socialization effects that more strongly effect education and the other two measures of religiosity. 
+
+We finally turn to the correlation between the religiosity and education slopes themselves. Do the effects of religiosity and education within a country tend to work in synchronicity or are they polarized? As Table 2 shows, all three of these correlations are quite strong but do not operate in the same direction. Figure 5 further explores these relationships by drawing pairwise scatterplots between each of the religiosity random slopes and the educational quantile slopes. For both mosque attendance and the question on whether religion is important, we observe strong positive correlations ($r=-0.656$ and $r=-0.515$, respectively). These results indicate polarization between educational and religious institutions. In countries with the most negative effects of education on support for violent practices, we also tend to find the most positive effects of these religiosity measures on support for violent practices.
 
 ```{r slope-compare-plot, fig.cap="Scatterplot showing the relationship between country-level associations of education and religiosity with support for violent practices. Values based on random slopes from Model 3 of Table 1. Best-fitting OLS line is shown.", fig.height=2.5}
 temp <- subset(country_effects, 
@@ -462,6 +476,11 @@ ggplot(temp, aes(x=educ, y=relig))+
   labs(y="religiosity slope in country", x="education slope in country")+
   theme_mine()
 ```
+
+The frequency of prayer results tell a different story however. The random slopes here are strongly positive correlated ($r=0.0.758$), indicating synchronization. The countries where education has the most negative effect on support for violent practices also tend to be the countries where frequency of prayer has the smallest positive effects, or even occasionally negative effects on support for violent practices. 
+
+Overall, the results here reveal that the way in which religiosity effects support for violent practices is complex and depends on which aspect of religiosity we focus on. Overall, frequency of prayer seems the most "responsive" to aspects of modernization. The positive effect of frequency of prayer is substantially reduced and may even reverse direction in the most liberal countries and in countries where education has the strongest negative effects. In contrast, mosque attendance and the importance of religion seem quite stubbornly resistant to modernization. Neither case showed a strong correlation with overall support and both cases evidenced a strong polarization with regard to the effect of education. 
+
 
 # Conclusions
 
