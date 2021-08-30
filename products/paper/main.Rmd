@@ -121,9 +121,13 @@ Prior work on values and attitudes in Muslim populations has focused on a variet
 
 Modernization theory treats cultural and value change as largely a by-product of structural development [@lerner_passing_1958; @parsons_social_1964; @inkeles_becoming_1974]. Industrialization and economic growth bring about greater differentiation in the occupational workforce, urbanization, and higher standards of living [@rostow_stages_1960]. All of these factors contribute to a shift from conservative and authoritarian values to liberal values that promote individual autonomy and self-determination [@parsons_social_1964]. Concomitantly, rationalization, individualism, and cultural pluralism reduce the significance of religious institutions in favor of secular institutions, diminishing the role of religion in social life [@wilson_religion_1966; @bruce_secularization_2011; @emerson_rise_2006].
 
-==H1: The level of development in a country is negatively associated with support for violent practices. We will then need to segue a little better into the next section.==
+From the basic expectation of modernization theory, we develop our first hypothesis:
 
-For this article, we focus on two important themes within this framework. First, scholars often treat education and religiosity as key variables at the individual level connected to processes of modernization and value change [@scheepers_education_2002]. Second, contemporary critiques of modernization theory have often pointed to the heterogeneity and variation in the experience of development across countries rather than its uniformity and standardization [@smith_future_2008].
+> *H1:* The level of development in a country is negatively associated with support for violent practices.
+
+While classic modernization theorists have viewed modernization as a fundamental process that would evolve similarly across countries, many scholars today criticize this view for privileging the historical experience of the West as a universal model. These “multiple modernities” scholars argue that while modernity will likely lead to changes in social and cultural systems, these changes will materialize in multiple dissimilar and non-convergent forms because countries develop within various historical and cultural contexts [@hefner_multiple_1998; @eisenstadt_multiple_2000; @kamali_multiple_2006; @casanova_cosmopolitanism_2011]. 
+
+While such heterogeneity may weaken, or even reverse, the overall relationship between development and ideational change, we focus in this article on the role that heterogeneity may play in varying across countries the association between support for violent practices and individual level variables. Specifically, we look at the role of education and religiosity on value change, because scholars often treat education and religiosity as key variables at the individual level connected to processes of modernization and value change [@scheepers_education_2002]. The manner in which these variables affect support for violent practices informs us about the role of educational and religious systems in value change more broadly. 
 
 ## The Role of Education and Religiosity in Value Change
 
@@ -131,48 +135,48 @@ Education is often seen as a crucial fulcrum at the individual level for process
 
 While these results are broadly consistent with modernization theory, significant debate has persisted on how to understand this finding. The development perspective, often tied to modernization theory, holds that education is linked to fundamental cognitive changes in the way people view the world that leads to more tolerance and less authoritarianism [@adorno_authoritarian_1950; @mcclosky_dimensions_1983]. On the other hand, the socialization perspective argues that educational institutions socialize individuals to the prevailing norms of a society [@selznick_tenacity_1969; @jackman_education_1984; @phelan_education_1995]. Therefore, the liberalizing effects of education will only exist in countries where liberal values are commonplace. Consistent with the socialization perspective, cross-national results in Western countries show that the positive effect of education is greatest in countries with more liberal values overall [@weil_variable_1985]. 
 
-==H2a: The effect of education on support for violent practices is consistently negative across countries==
+From these arguments, we develop several hypotheses relating to the effects of education. First, the development perspective would expect education to have a similarly negative effect on support for violent practices across countries. Thus:
 
-==H2b: The effect of education on support for violent practices is positively correlated with overall support for violent practices in a country==
+> *H2a:* The effect of education on support for violent practices is consistently negative across countries.
 
-==H2c: The effect of education on support for violent practices is more negative in countries with higher levels of development. We need to put in some language to further develop this particular hypothesis, but I think it can be seen as a less stringent form of H2a - we don't expect education to have this effect in countries which are not modern==
+A less stringent version of this hypothesis would expect that the liberalizing effects of education are most substantial in countries that have developed a "modern" educational system. Thus, we should expect the negative effect of education to be greatest in countries with the highest level of development:
+
+> *H2b:* The effect of education on support for violent practices is more negative in countries with higher levels of development.
+
+Alternatively, the socialization perspective would expect that the effect of education will be the most negative in countries where support for violent practices is low and the negative effect of education will be weaker or even reverse direction in countries where support for violent practices is high. Thus: 
+
+> *H2c*: The effect of education on support for violent practices is positively correlated with overall support for violent practices in a country.
+
+Finally, according to Huntington's civilizational argument, Western liberal traditions such as individualism, support for pluralism, and secularism are not intrinsic to the process of modernity but rather a specific inheritance of Western civilization [@huntington_clash_1996, pp. 69-72, 114].  Thus, we should not expect to see education operate in a similar fashion outside of Western contexts. If this is the case, then we should not expect to see that development, education, and religiosity have the same effect on values and attitudes in Muslim societies as those observed elsewhere. Specifically, Huntington argued that the primary agents for the contemporary rise of Islamic fundamentalism were an urban and educated middle class [@huntington_clash_1996, pp. 112-113]. Rapid economic growth and urbanization dislocate individuals from traditional structures of social support and this dislocation is experienced most intensely by upwardly mobile, young, urban, and educated individuals. Therefore, contrary to research primarily in Western contexts showing a positive relationship between liberal values and education, Huntington expected a negative relationship in Muslim societies. Thus: 
+
+> *H2d:* The effects of education on support for violent practices will be consistently positive across countries.
 
 Social scientists have often treated religiosity as the anti-modern counterweight to education [@schwadel_explaining_2015]. High levels of religiosity are seen to indicate commitments to conservative and authoritarian values [@rokeach_part_1969; @rokeach_part_1969a; @wilcox_evangelicals_1990, p. 27]. Although there is significant heterogeneity across countries, research has shown that religious identification tends to be associated with support for right-wing parties and more conservative attitudes [@wilcox_evangelicals_1990; @kelley_class_1995; @scheepers_religion_1998; @karpov_religiosity_2002; @norris_sacred_2011, pp. 201-212].
 
-However, the relationship between religiosity and conservative values may be partially tautological depending on how religiosity is defined. Given that the core religious texts of the major Western religions are frequently conservative and authoritarian, it is not surprising that strong believers with a tendency for theological literalism would themselves be more conservative and authoritarian. Therefore, in analyzing the effect of religiosity on values and attitudes, it is imperative to distinguish the effects of theological conservatism and literalism from the effects of variables that measure how important religion and religious practices are in a person’s life. 
+Given this prior work, we develop a hypothesis that is analagous to H2a for education, but in the opposite direction:
 
-Although less widely acknowledged than for the case of education, the effect of religiosity may similarly be mediated by the role that religious institutions play as socialization agents [@scheepers_education_2002]. In particular, religious institutions may respond to the prevailing norms and beliefs in a society in one of two ways. Greater liberalism within a society may dampen the conservative effect of religiosity on liberal values or it may alternatively provoke a greater defense of religious values and increase the association between religiosity and conservative values [@kelley_national_1997]. 
+> *H3a:* The effect of religiosity on support for violent practices is consistently positive across countries.
 
-==H3a: The effect of religiosity on support for violent practices is consistently positive across countries==
+Similarly, we also consider a less stringent test which allows the level of development in a country to dampen the positive effect of religiosity:
 
-==H3b: The effect of religiosity on support for violent practices is positively correlated with overall support for violent practices in a country (socialization)==
+> *H3b:* The effect of religiosity on support for violent practices is less positive in countries with higher levels of development.
 
-==H3c: The effect of religiosity on support for violent practices is negatively correlated with overall support for violent practices in a country (resistance)==
+Although less widely acknowledged than for the case of education, the effect of religiosity may similarly be mediated by the role that religious institutions play as socialization agents [@scheepers_education_2002]. In particular, religious institutions may respond to the prevailing norms and beliefs in a society in one of two ways. Greater liberalism within a society may dampen the conservative effect of religiosity on liberal values or it may alternatively provoke a greater defense of religious values and increase the association between religiosity and conservative values [@kelley_national_1997]. We therefore consider two hypotheses about the role that overall support for violent practices may play in the relationship between religiosity and that support. 
 
-==H3d: The effect of religiosity on support for violent practices is less positive in countries with higher levels of development.==
+> *H3c:* The effect of religiosity on support for violent practices is positively correlated with overall support for violent practices in a country (socialization).
 
-## Heterogeneity and Multiple Modernities
+> *H3d:* The effect of religiosity on support for violent practices is negatively correlated with overall support for violent practices in a country (resistance).
 
-==Wondering if this should actually go before the next section so it can set the stage for country-specific effects of education and religiosity?==
+Importantly, the relationship between religiosity and conservative values may be partially tautological depending on how religiosity is defined. Given that the core religious texts of the major Western religions are frequently conservative and authoritarian, it is not surprising that strong believers with a tendency for theological literalism would themselves be more conservative and authoritarian. Therefore, in analyzing the effect of religiosity on values and attitudes, it is imperative to distinguish the effects of theological conservatism and literalism from the effects of variables that measure how important religion and religious practices are in a person’s life. 
 
-Modernization theorists have viewed modernization as a fundamental process that would evolve similarly across countries, ultimately producing a global cosmopolitan society through the broad convergence in social and cultural systems [@fukuyama_end_1992]. Many scholars today criticize this view for privileging the historical experience of the West as a universal model. These “multiple modernities” scholars argue that while modernity will likely lead to changes in social and cultural systems, these changes will materialize in multiple dissimilar and non-convergent forms because countries develop within various historical and cultural contexts [@hefner_multiple_1998; @eisenstadt_multiple_2000; @kamali_multiple_2006; @casanova_cosmopolitanism_2011]. 
+Finally, we consider how the effects of education and religiosity within a country may be correlated to one another. This correlation tells us the degree to which unmeasured factors producing heterogeneity in these effects across countries operate similarly or differently on educational and religious institutions. We consider three possibilities for this correlation. If the correlation is positive, then we observe a process of synchronicity in which educational and religious institutions are responding in the same way to other societal influences. Alternatively, if the correlation is negative, then we observe a process of polarization between education and religious institutions, in which other societal influences push educational and religious institutions in opposite directions. Formally: 
 
-In the present study, consideration of such heterogeneity is relevant to studying values in Muslim populations in two ways. First, the "civilizational" argument proposed by @huntington_clash_1996 suggests that heterogeneity across countries will largely correspond to civilizational blocs defined primarily along religious lines. According to Huntington, Western liberal traditions such as individualism, support for pluralism, and secularism are not intrinsic to the process of modernity but rather a specific inheritance of Western civilization [@huntington_clash_1996, pp. 69-72, 114]. If this is the case, then we should not expect to see that development, education, and religiosity have the same effect on values and attitudes in Muslim societies as those observed elsewhere.
+> *H4a:* The effects of education and religiosity on support for violent practices are negatively correlated across countries (polarization).
 
-Specifically, Huntington argued that the primary agents for the contemporary rise of Islamic fundamentalism were an urban and educated middle class [@huntington_clash_1996, pp. 112-113]. Rapid economic growth and urbanization dislocate individuals from traditional structures of social support and this dislocation is experienced most intensely by upwardly mobile, young, urban, and educated individuals. Therefore, contrary to research primarily in Western contexts showing a positive relationship between liberal values and education, Huntington expected a negative relationship in Muslim societies.
-
-==another hypothesis here?==
-
-Second, and contrary to the expectation of both classic modernization theory and the civilizational argument, we may observe significant variation in how educational and religious institutions affect values across Muslim countries. These differences may reflect a wide variety of societal influences, some of which are historical and idiosyncratic. Nonetheless the patterning of such variation across countries may be informative. 
-
-==move up discussion about the synchronizing and polarizing effects of education==
-
-==H4a: Education and religiosity effects on support for violent practices are negatively correlated across countries (polarization)==
-
-==H4b: Education and religiosity effects on support for violent practices are negatively correlated across countries (synchronization)==
+> *H4b:* The effects of education and religiosity on support for violent practices are negatively correlated across countries (synchronization).
 
 
-# Analytical Approach and Theoretical Expectations
+# Analytical Approach
 
 Using the Pew data detailed below, we build a model that can simultaneously measure the effects of education, religiosity, and development on support for violent practices and account for heterogeneity in these effects across countries. Specifically, we use a random intercept and random slope multilevel model, in which the intercepts and the slopes for the educational attainment and religiosity variables are allowed to vary across countries. Our general model specification is:
 
@@ -196,7 +200,7 @@ Second, we also consider how development might affect the relationship between s
 
 Finally, we explore the heterogeneity in the effects of education and religiosity across countries by an examination of the correlation between the random components of the model. These random components provide estimates of how specific countries deviate from the global averages. We analyze these correlations in two ways. First, we analyze how the country-level variation in the association between support for violent practices and religiosity ($\eta_j$) or educational attainment ($\tau_j$) is correlated with the overall average level of support for violent practices within that country ($\delta_j$). These correlations tell us the degree to which these associations increase or decrease with the overall sentiment of the country. They therefore offer a test of the socialization hypothesis which would expect a positive correlation. If this is the case, it suggests that educational and religious institutions move in step with popular attitudes.
 
-Second, we analyze the correlation between the religiosity ($\eta_j$) or educational attainment ($\tau_j$) random effects themselves. This correlation tells us the degree to which unmeasured factors producing heterogeneity in these effects across countries operate similarly or differently on educational and religious institutions. We consider three possibilities for this correlation. If the correlation is positive, then we observe a process of synchronicity in which educational and religious institutions are responding in the same way to other societal influences. Alternatively, if the correlation is negative, then we observe a process of polarization between education and religious institutions, in which other societal influences push educational and religious institutions in opposite directions. A third possibility is that the correlation is zero, suggesting that the societal changes affecting these institutions operate in independent and unconnected ways.
+Second, we analyze the correlation between the religiosity ($\eta_j$) or educational attainment ($\tau_j$) random effects themselves. 
 
 # Data and Measures
 
