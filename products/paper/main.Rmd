@@ -178,7 +178,7 @@ Finally, we consider how the effects of education and religiosity within a count
 
 # Analytical Approach
 
-Using the Pew data detailed below, we build a model that can simultaneously measure the effects of education, religiosity, and development on support for violent practices and account for heterogeneity in these effects across countries. Specifically, we use a random intercept and random slope multilevel model, in which the intercepts and the slopes for the educational attainment and religiosity variables are allowed to vary across countries. Our general model specification is:
+To test the hypotheses outlined above, we developed a multilevel model Using the Pew data detailed below. Specifically, we use a random intercept and random slope multilevel model, in which the intercepts and the slopes for the educational attainment and religiosity variables are allowed to vary across countries. Our general model specification is:
 
 $$y_{ij}=\beta_{0j}+\beta_{1j}(\texttt{religiosity}_{ij})+\beta_{2j}(\texttt{education}_{ij})+\sum_{k=1}^K \lambda_kx_{ijk}+\epsilon_{ij}$$
 
@@ -186,21 +186,15 @@ where $y_{ij}$ is the score on the measure of support for violent practices (det
 
 To complete the multilevel model structure, the three country-varying parameters have their own linear equations:
 
-$$\beta_{0j}=\gamma_{01}+\gamma_{02}\texttt{development}_j+\delta_j$$
-$$\beta_{1j}=\gamma_{11}+\gamma_{12}\texttt{development}_j+\eta_j$$
-$$\beta_{2j}=\gamma_{21}+\gamma_{22}\texttt{development}_j+\tau_j$$
+$$\beta_{0j}=\gamma_{01}+\gamma_{02}(\texttt{development}_j)+\delta_j$$
+$$\beta_{1j}=\gamma_{11}+\gamma_{12}(\texttt{development}_j)+\eta_j$$
+$$\beta_{2j}=\gamma_{21}+\gamma_{22}(\texttt{development}_j)+\tau_j$$
 
 The structure shown here is for the fullest model in which we include a country-level measure of development (detailed below) that predicts the intercept and the two slopes. The $\gamma_{02}$ term measures the association between development and average support for violent practices in a country. The $\gamma_{12}$ and $\gamma_{22}$ terms measure how development in a country affects the individual-level relationship between support for violent practices and either education or religiosity, respectively.
 
 The error terms $\delta_j$, $\eta_j$ and $\tau_j$ are country-level random effects that measure country-level heterogeneity in terms of the intercept and two slopes. Because the correlation of these random effects is important for our understanding of this heterogeneity across countries, we place no restrictions on the correlation between these error terms in the estimation of the model.
 
-Given the model outlined above, we develop several expectations about the estimates it will produce. These expectations relate to several different parameters in the model. First, we lay out the expectations of the effects of development at the country level ($\gamma_{02}$) as well as the average effects of religiosity ($\gamma_{11}$) and educational attainment ($\gamma_{21}$) across countries. Modernization theory expects that overall development at the country level and educational attainment at the individual level will be negatively associated with support for violent practices, while religiosity will be positively associated with support for violent practices. 
-
-Second, we also consider how development might affect the relationship between support for violent practices and religiosity ($\gamma_{12}$) or educational attainment ($\gamma_{22}$). We consider two possibilities for each variable. First, modernization may produce a "flattening" effect in which overall development reduces the association as individuals become more liberal regardless of education or religiosity. Alternatively, modernization may produce a "steepening" effect in which the association gets larger as development increases and differences in values grow in magnitude between individuals of different educational attainment or religiosity.   
-
-Finally, we explore the heterogeneity in the effects of education and religiosity across countries by an examination of the correlation between the random components of the model. These random components provide estimates of how specific countries deviate from the global averages. We analyze these correlations in two ways. First, we analyze how the country-level variation in the association between support for violent practices and religiosity ($\eta_j$) or educational attainment ($\tau_j$) is correlated with the overall average level of support for violent practices within that country ($\delta_j$). These correlations tell us the degree to which these associations increase or decrease with the overall sentiment of the country. They therefore offer a test of the socialization hypothesis which would expect a positive correlation. If this is the case, it suggests that educational and religious institutions move in step with popular attitudes.
-
-Second, we analyze the correlation between the religiosity ($\eta_j$) or educational attainment ($\tau_j$) random effects themselves. 
+==PARAGRAPH ABOUT THE VALUE OF THIS MODELING APPROACH==
 
 # Data and Measures
 
