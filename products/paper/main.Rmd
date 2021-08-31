@@ -153,21 +153,21 @@ Social scientists have often treated religiosity as the anti-modern counterweigh
 
 Given this prior work, we develop a hypothesis that is analagous to H2a for education, but in the opposite direction:
 
-> *H3a:* The effect of religiosity on support for violent practices is consistently positive across countries.
+> *H3a:* The association between religiosity and support for violent practices is consistently positive across countries.
 
-Similarly, we also consider a less stringent test which allows the level of development in a country to dampen the positive effect of religiosity:
+Similarly, we also consider a less stringent test which allows the level of development in a country to dampen this conservative effect of religiosity:
 
-> *H3b:* The effect of religiosity on support for violent practices is less positive in countries with higher levels of development.
+> *H3b:* The association between religiosity and support for violent practices is less positive in countries with higher levels of development.
 
 Although less widely acknowledged than for the case of education, the effect of religiosity may similarly be mediated by the role that religious institutions play as socialization agents [@scheepers_education_2002]. In particular, religious institutions may respond to the prevailing norms and beliefs in a society in one of two ways. Greater liberalism within a society may dampen the conservative effect of religiosity on liberal values or it may alternatively provoke a greater defense of religious values and increase the association between religiosity and conservative values [@kelley_national_1997]. We therefore consider two hypotheses about the role that overall support for violent practices may play in the relationship between religiosity and that support. 
 
-> *H3c:* The effect of religiosity on support for violent practices is positively correlated with overall support for violent practices in a country (socialization).
+> *H3c:* The association between religiosity and support for violent practices is positively correlated with overall support for violent practices in a country (socialization).
 
-> *H3d:* The effect of religiosity on support for violent practices is negatively correlated with overall support for violent practices in a country (resistance).
+> *H3d:* The association between religiosity and support for violent practices is negatively correlated with overall support for violent practices in a country (resistance).
 
 Importantly, the relationship between religiosity and conservative values may be partially tautological depending on how religiosity is defined. Given that the core religious texts of the major Western religions are frequently conservative and authoritarian, it is not surprising that strong believers with a tendency for theological literalism would themselves be more conservative and authoritarian. Therefore, in analyzing the effect of religiosity on values and attitudes, it is imperative to distinguish the effects of theological conservatism and literalism from the effects of variables that measure how important religion and religious practices are in a person’s life. 
 
-Finally, we consider how the effects of education and religiosity within a country may be correlated to one another. This correlation tells us the degree to which unmeasured factors producing heterogeneity in these effects across countries operate similarly or differently on educational and religious institutions. We consider three possibilities for this correlation. If the correlation is positive, then we observe a process of synchronicity in which educational and religious institutions are responding in the same way to other societal influences. Alternatively, if the correlation is negative, then we observe a process of polarization between education and religious institutions, in which other societal influences push educational and religious institutions in opposite directions. Formally: 
+Finally, we consider how the effects of education and religiosity within a country may be correlated to one another. This correlation tells us the degree to which unmeasured factors producing heterogeneity in these effects across countries operate similarly or differently on educational and religious institutions. If this correlation is positive, then we observe a process of synchronicity in which educational and religious institutions are responding in the same way to other societal influences. Alternatively, if the correlation is negative, then we observe a process of polarization between education and religious institutions, in which these societal influences push educational and religious institutions in opposite directions. Formally: 
 
 > *H4a:* The effects of education and religiosity on support for violent practices are negatively correlated across countries (polarization).
 
