@@ -178,7 +178,9 @@ Finally, we consider how the effects of education and religiosity within a count
 
 # Analytical Approach
 
-To test the hypotheses outlined above, we developed a multilevel model Using the Pew data detailed below. Specifically, we use a random intercept and random slope multilevel model, in which the intercepts and the slopes for the educational attainment and religiosity variables are allowed to vary across countries. Our general model specification is:
+To test the hypotheses outlined above, we developed a multilevel model using the Pew data detailed below. Specifically, we use a random intercept and random slope multilevel model in which the intercepts and the slopes for the educational attainment and religiosity variables are allowed to vary across countries. Unlike fixed effects models, multilevel models estimate country-specific parameters using partial pooling between the global estimate and country-specific estimates, which tends to produce more reliable results when the lower-level units consist of random samples of varying size (CITATION?).
+
+Our general model specification is:
 
 $$y_{ij}=\beta_{0j}+\beta_{1j}(\texttt{religiosity}_{ij})+\beta_{2j}(\texttt{education}_{ij})+\sum_{k=1}^K \lambda_kx_{ijk}+\epsilon_{ij}$$
 
@@ -190,11 +192,9 @@ $$\beta_{0j}=\gamma_{01}+\gamma_{02}(\texttt{development}_j)+\delta_j$$
 $$\beta_{1j}=\gamma_{11}+\gamma_{12}(\texttt{development}_j)+\eta_j$$
 $$\beta_{2j}=\gamma_{21}+\gamma_{22}(\texttt{development}_j)+\tau_j$$
 
-The structure shown here is for the fullest model in which we include a country-level measure of development (detailed below) that predicts the intercept and the two slopes. The $\gamma_{02}$ term measures the association between development and average support for violent practices in a country. The $\gamma_{12}$ and $\gamma_{22}$ terms measure how development in a country affects the individual-level relationship between support for violent practices and either education or religiosity, respectively.
+The structure shown here is for the fullest model in which we include a country-level measure of development (detailed below) that predicts the intercept and the two slopes. The $\gamma_{02}$ term measures the association between development and average support for violent practices in a country, which directly addresses *H1*. The $\gamma_{12}$ and $\gamma_{22}$ terms measure how development in a country affects the individual-level relationship between support for violent practices and either education or religiosity, respectively. These terms allows us to test *H2b* and *H3b*.
 
-The error terms $\delta_j$, $\eta_j$ and $\tau_j$ are country-level random effects that measure country-level heterogeneity in terms of the intercept and two slopes. Because the correlation of these random effects is important for our understanding of this heterogeneity across countries, we place no restrictions on the correlation between these error terms in the estimation of the model.
-
-==PARAGRAPH ABOUT THE VALUE OF THIS MODELING APPROACH==
+The error terms $\delta_j$, $\eta_j$ and $\tau_j$ are country-level random effects that measure country-level heterogeneity in terms of the intercept and two slopes. The country-specific intercepts provide a measure of the overall level of support for violent practices within a given country, while the country-specific slopes provide of the association of education and religiosity to support for violent practices within a given country. The variance of these random effects and the correlation between them allows us to address the remaining hypotheses. 
 
 # Data and Measures
 
