@@ -151,7 +151,7 @@ Finally, according to Huntington's civilizational argument, Western liberal trad
 
 Social scientists have often treated religiosity as the anti-modern counterweight to education [@schwadel_explaining_2015]. High levels of religiosity are seen to indicate commitments to conservative and authoritarian values [@rokeach_part_1969; @rokeach_part_1969a; @wilcox_evangelicals_1990, p. 27]. Although there is significant heterogeneity across countries, research has shown that religious identification tends to be associated with support for right-wing parties and more conservative attitudes [@wilcox_evangelicals_1990; @kelley_class_1995; @scheepers_religion_1998; @karpov_religiosity_2002; @norris_sacred_2011, pp. 201-212].
 
-Given this prior work, we develop a hypothesis that is analagous to H2a for education, but in the opposite direction:
+Given this prior work, we develop a hypothesis that is analogous to H2a for education, but in the opposite direction:
 
 > *H3a:* The association between religiosity and support for violent practices is consistently positive across countries.
 
@@ -293,7 +293,7 @@ Further tests indicated scalar invariance in this measure. Scalar invariance is 
 
 At the country-level, we considered two different possibilities for a measure of overall development. Gross domestic product (GDP) per capita is often used as a purely economic measure of the level of development. On the other hand, the Human Development Index (HDI), produced by the United Nations Development Program, offers a more holistic measure of development. The HDI considers three separate components in its overall measure: life expectancy at birth, overall educational attainment, and gross national income per capita. These three components are combined into a single composite index. 
 
-These two measures are highly correlated among the countries used in the analysis ($r=0.78$). All models reported here use the HDI. We chose the HDI as our primary measure of development because it allows us to parsimoniously capture mutiple dimensions of development. As a sensitivity analysis, we constructed identical models with a logged GDP per capita measure. The results were similar, although the logged GDP variable tended to produce slightly smaller overall effects than HDI. The models from this sensitivity analysis are available in the supplementary materials. 
+These two measures are highly correlated among the countries used in the analysis ($r=0.78$). All models reported here use the HDI. We chose the HDI as our primary measure of development because it allows us to parsimoniously capture multiple dimensions of development. As a sensitivity analysis, we constructed identical models with a logged GDP per capita measure. The results were similar, although the logged GDP variable tended to produce slightly smaller overall effects than HDI. The models from this sensitivity analysis are available in the supplementary materials. 
 
 ## Independent Variables
 
