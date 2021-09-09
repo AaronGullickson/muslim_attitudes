@@ -96,9 +96,9 @@ lmer.converge <- function(formula, data) {
 glmer.converge <- function(formula, data) {
   #I will also use bobyqa optimizer and longer iterations
   #to help convergence
-  model <- glmer(formula, data=data,
-                control=lmerControl(optimizer="bobyqa",
-                                    optCtrl=list(maxfun=2e5)))
+  model <- glmer(formula, data=data, family=binomial,
+                 control=glmerControl(optimizer="bobyqa",
+                                      optCtrl=list(maxfun=2e5)))
   model <- check.convergence(model, data)
   return(model)
 }
