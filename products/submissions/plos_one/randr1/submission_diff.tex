@@ -1,0 +1,1552 @@
+% Template for PLoS
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL ../plos_submission.tex   Wed May  5 13:21:02 2021
+%DIF ADD plos_resubmission1.tex   Fri Sep 10 11:15:24 2021
+% Version 3.5 March 2018
+%
+% % % % % % % % % % % % % % % % % % % % % %
+%
+% -- IMPORTANT NOTE
+%
+% This template contains comments intended 
+% to minimize problems and delays during our production 
+% process. Please follow the template instructions
+% whenever possible.
+%
+% % % % % % % % % % % % % % % % % % % % % % % 
+%
+% Once your paper is accepted for publication, 
+% PLEASE REMOVE ALL TRACKED CHANGES in this file 
+% and leave only the final text of your manuscript. 
+% PLOS recommends the use of latexdiff to track changes during review, as this will help to maintain a clean tex file.
+% Visit https://www.ctan.org/pkg/latexdiff?lang=en for info or contact us at latex@plos.org.
+%
+%
+% There are no restrictions on package use within the LaTeX files except that 
+% no packages listed in the template may be deleted.
+%
+% Please do not include colors or graphics in the text.
+%
+% The manuscript LaTeX source should be contained within a single file (do not use \input, \externaldocument, or similar commands).
+%
+% % % % % % % % % % % % % % % % % % % % % % %
+%
+% -- FIGURES AND TABLES
+%
+% Please include tables/figure captions directly after the paragraph where they are first cited in the text.
+%
+% DO NOT INCLUDE GRAPHICS IN YOUR MANUSCRIPT
+% - Figures should be uploaded separately from your manuscript file. 
+% - Figures generated using LaTeX should be extracted and removed from the PDF before submission. 
+% - Figures containing multiple panels/subfigures must be combined into one image file before submission.
+% For figure citations, please use "Fig" instead of "Figure".
+% See http://journals.plos.org/plosone/s/figures for PLOS figure guidelines.
+%
+% Tables should be cell-based and may not contain:
+% - spacing/line breaks within cells to alter layout or alignment
+% - do not nest tabular environments (no tabular environments within tabular environments)
+% - no graphics or colored text (cell background color/shading OK)
+% See http://journals.plos.org/plosone/s/tables for table guidelines.
+%
+% For tables that exceed the width of the text column, use the adjustwidth environment as illustrated in the example table in text below.
+%
+% % % % % % % % % % % % % % % % % % % % % % % %
+%
+% -- EQUATIONS, MATH SYMBOLS, SUBSCRIPTS, AND SUPERSCRIPTS
+%
+% IMPORTANT
+% Below are a few tips to help format your equations and other special characters according to our specifications. For more tips to help reduce the possibility of formatting errors during conversion, please see our LaTeX guidelines at http://journals.plos.org/plosone/s/latex
+%
+% For inline equations, please be sure to include all portions of an equation in the math environment.  For example, x$^2$ is incorrect; this should be formatted as $x^2$ (or $\mathrm{x}^2$ if the romanized font is desired).
+%
+% Do not include text that is not math in the math environment. For example, CO2 should be written as CO\textsubscript{2} instead of CO$_2$.
+%
+% Please add line breaks to long display equations when possible in order to fit size of the column. 
+%
+% For inline equations, please do not include punctuation (commas, etc) within the math environment unless this is part of the equation.
+%
+% When adding superscript or subscripts outside of brackets/braces, please group using {}.  For example, change "[U(D,E,\gamma)]^2" to "{[U(D,E,\gamma)]}^2". 
+%
+% Do not use \cal for caligraphic font.  Instead, use \mathcal{}
+%
+% % % % % % % % % % % % % % % % % % % % % % % % 
+%
+% Please contact latex@plos.org with any questions.
+%
+% % % % % % % % % % % % % % % % % % % % % % % %
+
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+
+% amsmath and amssymb packages, useful for mathematical formulas and symbols
+\usepackage{amsmath,amssymb}
+
+% Use adjustwidth environment to exceed column width (see example table in text)
+\usepackage{changepage}
+
+% Use Unicode characters when possible
+\usepackage[utf8x]{inputenc}
+
+% textcomp package and marvosym package for additional characters
+\usepackage{textcomp,marvosym}
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+% Use nameref to cite supporting information files (see Supporting Information section for more info)
+\usepackage{nameref,hyperref}
+
+% line numbers
+\usepackage[right]{lineno}
+
+% ligatures disabled
+\usepackage{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% color can be used to apply background shading to table cells only
+\usepackage[table]{xcolor}
+
+% array package and thick rules for tables
+\usepackage{array}
+
+\usepackage{dcolumn}
+
+%DIF 111a111-125
+%packages needed by kableExtra %DIF > 
+\usepackage{booktabs} %DIF > 
+\usepackage{longtable} %DIF > 
+\usepackage{array} %DIF > 
+\usepackage{multirow} %DIF > 
+\usepackage{wrapfig} %DIF > 
+\usepackage{float} %DIF > 
+\usepackage{colortbl} %DIF > 
+\usepackage{pdflscape} %DIF > 
+\usepackage{tabu} %DIF > 
+\usepackage{threeparttable} %DIF > 
+\usepackage{threeparttablex} %DIF > 
+\usepackage[normalem]{ulem} %DIF > 
+\usepackage{makecell} %DIF > 
+\usepackage{xcolor} %DIF > 
+%DIF -------
+% create "+" rule type for thick vertical lines
+\newcolumntype{+}{!{\vrule width 2pt}}
+
+% create \thickcline for thick horizontal lines of variable length
+\newlength\savedwidth
+\newcommand\thickcline[1]{%
+  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+  \cline{#1}%
+  \noalign{\vskip\arrayrulewidth}%
+  \noalign{\global\arrayrulewidth\savedwidth}%
+}
+
+% \thickhline command for thick horizontal lines that span the table
+\newcommand\thickhline{\noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+\hline
+\noalign{\global\arrayrulewidth\savedwidth}}
+
+
+% Remove comment for double spacing
+%\usepackage{setspace} 
+%\doublespacing
+
+% Text layout
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in 
+\textheight 8.75in
+
+% Bold the 'Figure #' in the caption and separate it from the title/caption with a period
+% Captions will be left justified
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
+\renewcommand{\figurename}{Fig}
+
+% Use the PLoS provided BiBTeX style
+%DIF 145c160
+%DIF < \bibliographystyle{plos2015}
+%DIF -------
+\bibliographystyle{../plos2015} %DIF > 
+%DIF -------
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+
+
+% Header and Footer with logo
+\usepackage{lastpage,fancyhdr,graphicx}
+\usepackage{epstopdf}
+%\pagestyle{myheadings}
+\pagestyle{fancy}
+\fancyhf{}
+%\setlength{\headheight}{27.023pt}
+%\lhead{\includegraphics[width=2.0in]{PLOS-submission.eps}}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+\lfoot{\today}
+
+%% Include all macros below
+
+\newcommand{\lorem}{{\bf LOREM}}
+\newcommand{\ipsum}{{\bf IPSUM}}
+
+%% END MACROS SECTION
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFaddtex}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdeltex}[1]{{\protect\color{red}\sout{#1}}}                      %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+\providecommand{\DIFmodbegin}{} %DIF PREAMBLE
+\providecommand{\DIFmodend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF HYPERREF PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{\texorpdfstring{\DIFaddtex{#1}}{#1}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{\texorpdfstring{\DIFdeltex{#1}}{}} %DIF PREAMBLE
+\newcommand{\DIFscaledelfig}{0.5}
+%DIF HIGHLIGHTGRAPHICS PREAMBLE %DIF PREAMBLE
+\RequirePackage{settobox} %DIF PREAMBLE
+\RequirePackage{letltxmacro} %DIF PREAMBLE
+\newsavebox{\DIFdelgraphicsbox} %DIF PREAMBLE
+\newlength{\DIFdelgraphicswidth} %DIF PREAMBLE
+\newlength{\DIFdelgraphicsheight} %DIF PREAMBLE
+% store original definition of \includegraphics %DIF PREAMBLE
+\LetLtxMacro{\DIFOincludegraphics}{\includegraphics} %DIF PREAMBLE
+\newcommand{\DIFaddincludegraphics}[2][]{{\color{blue}\fbox{\DIFOincludegraphics[#1]{#2}}}} %DIF PREAMBLE
+\newcommand{\DIFdelincludegraphics}[2][]{% %DIF PREAMBLE
+\sbox{\DIFdelgraphicsbox}{\DIFOincludegraphics[#1]{#2}}% %DIF PREAMBLE
+\settoboxwidth{\DIFdelgraphicswidth}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\settoboxtotalheight{\DIFdelgraphicsheight}{\DIFdelgraphicsbox} %DIF PREAMBLE
+\scalebox{\DIFscaledelfig}{% %DIF PREAMBLE
+\parbox[b]{\DIFdelgraphicswidth}{\usebox{\DIFdelgraphicsbox}\\[-\baselineskip] \rule{\DIFdelgraphicswidth}{0em}}\llap{\resizebox{\DIFdelgraphicswidth}{\DIFdelgraphicsheight}{% %DIF PREAMBLE
+\setlength{\unitlength}{\DIFdelgraphicswidth}% %DIF PREAMBLE
+\begin{picture}(1,1)% %DIF PREAMBLE
+\thicklines\linethickness{2pt} %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\framebox(1,1){}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,0){\line( 1,1){1}}}% %DIF PREAMBLE
+{\color[rgb]{1,0,0}\put(0,1){\line(1,-1){1}}}% %DIF PREAMBLE
+\end{picture}% %DIF PREAMBLE
+}\hspace*{3pt}}} %DIF PREAMBLE
+} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbegin}{\DIFaddbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddend}{\DIFaddend} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbegin}{\DIFdelbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelend}{\DIFdelend} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbegin}{\DIFOaddbegin \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbegin}{\DIFOdelbegin \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbeginFL}{\DIFaddbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddendFL}{\DIFaddendFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbeginFL}{\DIFdelbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelendFL}{\DIFdelendFL} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbeginFL}{\DIFOaddbeginFL \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbeginFL}{\DIFOdelbeginFL \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+
+\begin{document}
+\vspace*{0.2in}
+
+% Title must be 250 characters or less.
+\begin{flushleft}
+{\Large
+\textbf\newline{The role of education, religiosity and development on support for violent practices among Muslims in thirty-five countries} % Please use "sentence case" for title and headings (capitalize only the first word in a title (or heading), the first word in a subtitle (or subheading), and any proper nouns).
+}
+\newline
+% Insert author names, affiliations and corresponding author email (do not include titles, positions, or degrees).
+\\
+Aaron Gullickson\textsuperscript{1*},
+Sarah Ahmed\textsuperscript{1}
+\\
+\bigskip
+\textbf{1} Department of Sociology, University of Oregon, Eugene, OR, USA
+\\
+\bigskip
+
+% Insert additional author notes using the symbols described below. Insert symbol callouts after author names as necessary.
+% 
+% Remove or comment out the author notes below if they aren't used.
+%
+% Primary Equal Contribution Note
+%\Yinyang These authors contributed equally to this work.
+
+% Additional Equal Contribution Note
+% Also use this double-dagger symbol for special authorship notes, such as senior authorship.
+%\ddag These authors also contributed equally to this work.
+
+% Current address notes
+%\textcurrency Current Address: Dept/Program/Center, Institution Name, City, State, Country % change symbol to "\textcurrency a" if more than one current address note
+% \textcurrency b Insert second current address 
+% \textcurrency c Insert third current address
+
+% Deceased author note
+%\dag Deceased
+
+% Group/Consortium Author Note
+%\textpilcrow Membership list can be found in the Acknowledgments section.
+
+% Use the asterisk to denote corresponding authorship and provide email address in note below.
+* aarong@uoregon.edu
+
+\end{flushleft}
+
+\newpage
+
+% Please keep the abstract below 300 words
+
+\begin{flushleft}
+{\Large
+\textbf\newline{The role of education, religiosity and development on support for violent practices among Muslims in thirty-five countries} % Please use "sentence case" for title and headings (capitalize only the first word in a title (or heading), the first word in a subtitle (or subheading), and any proper nouns).
+}
+\newline
+\end{flushleft}
+
+\section*{Abstract}
+\DIFaddbegin 
+
+\DIFaddend Despite widespread scholarly interest in values and attitudes among Muslim populations, relatively little work has focused on specific attitudes popularly thought to indicate anti-modern or anti-liberal tendencies within Islam. In this article, we use data from the Pew Research Center from 2008-2012 to examine support for violent practices among Muslims in thirty-five countries. Support for violent practices is defined by three questions on the acceptability of killing apostates, the stoning of adulterers, and severe corporal punishment for thieves. Using multilevel models that capture country-level variability, we analyze the relationship between support for violent practices and education, religiosity, and development. In general, we find that support for violent practices is less common among individuals with more education and less religiosity and who come from more developed countries. However, when we examine variation across countries, we see evidence of substantial heterogeneity in the association of education and religiosity with support for violent practices. We find that education \DIFdelbegin \DIFdel{and religiosity are less liberalizing in less liberal countries }\DIFdelend \DIFaddbegin \DIFadd{is more liberalizing in more liberal countries and in less developed countries. The effects of religiosity are also related to country-level context but vary depending on how religiosity is measured}\DIFaddend . \DIFdelbegin \DIFdel{Furthermore, there is no association between the effects of education and religiosity within a country. We discuss the implications
+of these findings more broadly based on prior work on liberal value
+systems in mostly Western countries. }\DIFdelend Overall, the variation we observe across countries calls into question a civilizational approach to studying values among Muslim populations and points to a more \DIFdelbegin \DIFdel{nuanced
+}\DIFdelend \DIFaddbegin \DIFadd{detailed }\DIFaddend multiple modernities approach.
+
+% Please keep the Author Summary between 150 and 200 words
+% Use first person. PLOS ONE authors please skip this step. 
+% Author Summary not valid for PLOS ONE submissions.   
+%\section*{Author summary}
+%Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
+
+\linenumbers
+
+% Use "Eq" instead of "Equation" for equation citations.
+\section*{Introduction}
+
+In a viral appearance on the HBO Show ``Real Time with Bill Maher'' in 2014, actor Ben Affleck became embroiled in an unexpected debate with host Bill Maher and fellow guest, Sam Harris, over the allegedly authoritarian and violent tendencies of Islamic doctrine \cite{casey_real_2014}. Harris, one of the leading figures in the New Atheist movement, argued that Islam ``at this moment is the motherlode of bad ideas.'' To support this view, Maher offered data from a recent poll of Muslims worldwide conducted by the Pew Research Center which showed that ``like 90\%'' of Egyptian Muslims supported death as a punishment for leaving the faith.
+
+Although Maher's figure was factually correct, the statistic is nonetheless misleading. Egyptian Muslims were more supportive of this statement than Muslims in any other country in the Pew study. In contrast, only 0.8\% of Muslims in Kazakhstan felt similarly. Among the more than thirty countries in the cited Pew survey as well as a similar one conducted in sub-Saharan Africa, the level of support among Muslims for killing apostates varies uniformly between these two extremes. Substantial variation rather than strict orthodoxy is the key to understanding Muslim responses to this question. For social scientists, this variation then begs a further question - why do Muslims vary so much in their support for such ``bad'' ideas?
+
+In this article, we take up this question with a more formal analysis of the Pew data. The data were collected between 2008-12 on Muslims in thirty-five countries representing roughly sixty-five percent of the global Muslim population. From this data, we develop a value construct measuring support for violent practices from three questions on the acceptability of killing apostates, the stoning of adulterers, and severe corporal punishment for thieves. Following prior work on the impact of modernization and development on liberal values in mostly Western contexts, our analysis focuses on the relationship between this value construct, education, religiosity, and development.
+
+Our analysis builds on an extensive literature on values and attitude among Muslims, and complements prior research in two important ways. First, we address specific attitudes that have never been examined in scholarly work, despite their prominence in popular discussions of Islam in the West. Most prior research focuses either on attitudes regarding universalistic and abstract concepts such as support for democracy, political violence, and gender equality, or relies upon large aggregate indices that are driven by a multitude of specific attitudes ranging from acceptance of abortion to whether respondents would be willing to sign a petition \cite{inglehart_worldviews_2007}.
+
+A focus on universalistic attitudes, however, provides little insight into the specific attitudes and values that differentiate cultural and religious groups. For example, whether a respondent is willing to sign a petition or is supportive of democracy in the abstract may tell us little to nothing about how that respondent feels toward the mandate that apostates should be killed. Yet, the justifiability of killing apostates is a topic that both divides Muslims internally and distinguishes Muslims from other religious groups. It is not simply that Muslims feel differently on this issue in comparison to other religious groups, but rather that the question itself is only intelligible among Muslims.
+
+Second, the large sample of countries here allows us to more systematically examine country-level variation than has been possible in much of the prior work on value systems in Muslim populations. While \DIFaddbegin \DIFadd{proponents of }\DIFaddend classic modernization theory expected a fairly uniform pattern of modernization, contemporary scholars expect greater heterogeneity in this process \cite{eisenstadt_civilizational_2001}. Some have even suggested that change in cultural systems -- including values and attitudes -- may be largely unconnected to processes of modernization and development \cite{huntington_clash_1996}. To better understand this heterogeneity, we use multilevel models that provide information about country-level variation in support for violent practices and country-level variation in the association between support for violent practices and education and religiosity. We argue that the pattern of variation at the country level provides insight into the role of educational and religious institutions in the process of value change.
+
+\DIFaddbegin \DIFadd{In summary, our analysis is guided by the following research questions:
+}
+
+\begin{enumerate}
+%DIF > \def\labelenumi{\arabic{enumi}.}
+%DIF > \tightlist
+\item
+  \DIFadd{What is the relationship between support for violent practices and education, religiosity, and level of development across all countries?
+}\item
+  \DIFadd{How does the level of development in a country affect the relationship between support for violent practices and education/religiosity?
+}\item
+  \DIFadd{How is the average level of support for violence in a country associated with the relationship to education/religiosity in that country?
+}\item
+  \DIFadd{How are the country-specific effects of education and religiosity on support for violent practices associated with one another?
+}\end{enumerate}
+
+\DIFaddend When we pool results across countries, our analysis \DIFdelbegin \DIFdel{largely }\DIFdelend \DIFaddbegin \DIFadd{somewhat }\DIFaddend supports the expectations of modernization theory. Support for violent practices is less common among individuals with more education and less religiosity and who come from more developed countries. However, when we examine variation across countries, we see evidence of substantial heterogeneity in the effects of education and religiosity on support for violent practices \DIFdelbegin \DIFdel{. In both cases, we find that the association between
+education/religiosity is less liberalizing in countries that are more supportive of violent practices overall, suggesting that the role of
+educational and religious institutions shifts with changes in the larger
+society. Furthermore, we find little association between the effects for
+}\DIFdelend \DIFaddbegin \DIFadd{that is more consistent with a ``multiple modernities'' perspective. Further analysis of these patterns of heterogeneity suggest that the effects of both }\DIFaddend education and religiosity \DIFdelbegin \DIFdel{themselves, suggesting that idiosyncratic
+county-level factors operate independently on religious and educational
+institutions}\DIFdelend \DIFaddbegin \DIFadd{respond to the social context of the country in important, but also sometimes unexpected, ways}\DIFaddend .
+
+\section*{Background}
+
+Prior work on values and attitudes in Muslim populations has focused on a variety of such attitudes including support for democracy \cite{jamal_attitudes_2008, ciftci_modernization_2010, ciftci_secularislamist_2013}, political violence\cite{mousseau_urban_2011, berger_foreign_2014}, women's rights \cite{inglehart_true_2003}, and fundamentalism \cite{moaddel_religious_2018}. While a summary of this work is beyond the scope of this article, such studies are often framed around modernization theory and its closely related cousin, secularization theory, as well as critiques of these theories \cite{jamal_reassessing_2006, moaddel_introduction_2007, ciftci_modernization_2010}.
+
+Modernization theory treats cultural and value change as largely a by-product of structural development \cite{lerner_passing_1958, parsons_social_1964, inkeles_becoming_1974}. Industrialization and economic growth bring about \DIFaddbegin \DIFadd{higher educational attainment, }\DIFaddend greater differentiation in the occupational workforce, urbanization, and higher standards of living \cite{rostow_stages_1960}. All of these factors contribute to a shift from conservative and authoritarian values to liberal values that promote individual autonomy and self-determination \cite{parsons_social_1964}. Concomitantly, rationalization, individualism, and cultural pluralism reduce the significance of religious institutions in favor of secular institutions, diminishing the role of religion in social life \cite{wilson_religion_1966, bruce_secularization_2011, emerson_rise_2006}.
+
+\DIFdelbegin \DIFdel{For this }\DIFdelend \DIFaddbegin \DIFadd{From the basic expectation of modernization theory, we develop our first hypothesis:
+}
+
+\begin{quote}
+\emph{\DIFadd{H1:}} \DIFadd{The level of development in a country is negatively associated with support for violent practices.
+}\end{quote}
+
+\DIFadd{While classic modernization theorists have viewed modernization as a fundamental process that would evolve similarly across countries, many scholars today criticize this view for privileging the historical experience of the West as a universal model. These ``multiple modernities'' scholars argue that while modernity will likely lead to changes in social and cultural systems, these changes will materialize in multiple dissimilar and non-convergent forms because countries develop within various historical and cultural contexts \mbox{%DIFAUXCMD
+\cite{hefner_multiple_1998, eisenstadt_multiple_2000, kamali_multiple_2006, casanova_cosmopolitanism_2011}}\hspace{0pt}%DIFAUXCMD
+.
+}
+
+\DIFadd{In this }\DIFaddend article, we focus on \DIFdelbegin \DIFdel{two important themes within this
+framework. First, scholars often treat }\DIFdelend \DIFaddbegin \DIFadd{the role that such heterogeneity may play in the association between support for violent practices and individual level variables across countries. Specifically, we look at the role of }\DIFaddend education and religiosity \DIFaddbegin \DIFadd{on value change, because these two variables are seen }\DIFaddend as key variables \DIFdelbegin \DIFdel{at the individual level connected }\DIFdelend \DIFaddbegin \DIFadd{that connect individual-level practices }\DIFaddend to processes of modernization and value change \cite{scheepers_education_2002}. \DIFdelbegin \DIFdel{Second,
+contemporary critiques of modernization theory have often pointed to the heterogeneity and variation in the experience of development across
+countries rather than its uniformity and standardization
+\mbox{%DIFAUXCMD
+\cite{smith_future_2008}}\hspace{0pt}%DIFAUXCMD
+}\DIFdelend \DIFaddbegin \DIFadd{The effects of these variables also inform us more broadly about the role of educational and religious institutions in value change}\DIFaddend .
+
+\subsection*{The role of education and religiosity \DIFdelbegin \DIFdel{on values}\DIFdelend \DIFaddbegin \DIFadd{in value change}\DIFaddend }
+
+Education is often seen as a crucial fulcrum at the individual level for processes of modernization \cite{meyer_effects_1977, chabbott_development_2000, depaepe_educationalization_2008}. In terms of value change, research has repeatedly shown that education is positively related to liberal values \cite{hyman_education_1979, bobo_education_1989, weakliem_effects_2002, kingston_why_2003}.
+
+While these results are broadly consistent with modernization theory, significant debate has persisted on how to understand this finding. The development perspective\DIFaddbegin \DIFadd{, often tied to modernization theory, }\DIFaddend holds that education is linked to fundamental cognitive changes in the way people view the world that \DIFdelbegin \DIFdel{leads }\DIFdelend \DIFaddbegin \DIFadd{lead }\DIFaddend to more tolerance and less authoritarianism \cite{adorno_authoritarian_1950, mcclosky_dimensions_1983}. On the other hand, the socialization perspective argues that educational institutions socialize individuals to the prevailing norms of a society \cite{selznick_tenacity_1969, jackman_education_1984, phelan_education_1995}. Therefore, the liberalizing effects of education will only exist in countries where liberal values are commonplace. Consistent with the socialization perspective, cross-national results in Western countries show that the positive effect of education is greatest in countries with more liberal values overall \cite{weil_variable_1985}.
+
+\DIFaddbegin \DIFadd{From these arguments, we develop several hypotheses relating to the effects of education. First, the development perspective would expect education to have a similarly negative effect on support for violent practices across countries. Thus:
+}
+
+\begin{quote}
+\emph{\DIFadd{H2a:}} \DIFadd{The association between education and support for violent practices is consistently negative across countries.
+}\end{quote}
+
+\DIFadd{A less stringent version of this hypothesis would expect that the liberalizing effects of education are most substantial in countries that have developed a modern educational system. Thus, we should expect the negative effect of education to be the greatest in countries with the highest level of development:
+}
+
+\begin{quote}
+\emph{\DIFadd{H2b:}} \DIFadd{The association between education and support for violent practices is more negative in countries with higher levels of development.
+}\end{quote}
+
+\DIFadd{Alternatively, the socialization perspective would expect that the effect of education will be the most negative in countries where support for violent practices is low and the negative effect of education will be weaker or even reverse direction in countries where support for violent practices is high. Thus:
+}
+
+\begin{quote}
+\emph{\DIFadd{H2c}}\DIFadd{: The association between education and support for violent practices is positively correlated with overall support for violent practices in a country.
+}\end{quote}
+
+\DIFadd{Finally, according to Huntington's civilizational argument, Western liberal traditions are not intrinsic to the process of modernity but rather a specific inheritance of Western civilization \mbox{%DIFAUXCMD
+\cite{huntington_clash_1996}}\hspace{0pt}%DIFAUXCMD
+. Thus, we should not expect to see education operate in a similar fashion outside of Western contexts. Specifically, Huntington argued that the primary agents for the contemporary rise of Islamic fundamentalism were an urban and educated middle class \mbox{%DIFAUXCMD
+\cite{huntington_clash_1996}}\hspace{0pt}%DIFAUXCMD
+. Rapid economic growth and urbanization dislocate individuals from traditional structures of social support and this dislocation is experienced most intensely by upwardly mobile, young, urban, and educated individuals. Therefore, contrary to research primarily in Western contexts showing a liberalizing effect of education, Huntington expected the reverse in Muslim societies. Thus:
+}
+
+\begin{quote}
+\emph{\DIFadd{H2d:}} \DIFadd{The association between education and support for violent practices is consistently positive across countries.
+}\end{quote}
+
+\DIFaddend Social scientists have often treated religiosity as the anti-modern counterweight to education \cite{schwadel_explaining_2015}. High levels of religiosity are seen to indicate commitments to conservative and authoritarian values \cite{rokeach_part_1969, rokeach_part_1969a, wilcox_evangelicals_1990}. Although there is significant heterogeneity across countries, research has shown that religious identification tends to be associated with support for right-wing parties and more conservative attitudes \cite{wilcox_evangelicals_1990, kelley_class_1995, scheepers_religion_1998, karpov_religiosity_2002, norris_sacred_2011}.
+
+\DIFdelbegin \DIFdel{However, the relationship }\DIFdelend \DIFaddbegin \DIFadd{Given this prior work, we develop a hypothesis that is analogous to H2a for education, but in the opposite direction:
+}
+
+\begin{quote}
+\emph{\DIFadd{H3a:}} \DIFadd{The association }\DIFaddend between religiosity and \DIFdelbegin \DIFdel{conservative values
+may be partially tautological depending on how religiosity is defined.
+Given that the core religious texts of the major Western religions are
+frequently conservative and authoritarian, it is not surprising that
+strong believers with a tendency for theological literalism would
+themselves be more conservative and authoritarian. Therefore, in
+analyzing the }\DIFdelend \DIFaddbegin \DIFadd{support for violent practices is consistently positive across countries.
+}\end{quote}
+
+\DIFadd{Similarly, we also consider a less stringent test which allows the level of development in a country to dampen this conservative }\DIFaddend effect of religiosity\DIFdelbegin \DIFdel{on values and attitudes, it is
+imperative to distinguish the effects of theological conservatism and
+literalism from the effects of variables that measure how important
+religion and religious practices are in a person's life.
+}\DIFdelend \DIFaddbegin \DIFadd{:
+}\DIFaddend 
+
+\DIFaddbegin \begin{quote}
+\emph{\DIFadd{H3b:}} \DIFadd{The association between religiosity and support for violent practices is less positive in countries with higher levels of development.
+}\end{quote}
+
+\DIFaddend Although less widely acknowledged than for the case of education, the effect of religiosity may similarly be mediated by the role that religious institutions play as socialization agents \cite{scheepers_education_2002}. In particular, religious institutions may respond to the prevailing norms and beliefs in a society in one of two ways. Greater liberalism within a society may dampen the conservative effect of religiosity on liberal values or it may alternatively provoke a greater defense of religious values and increase the association between religiosity and conservative values \cite{kelley_national_1997}. \DIFaddbegin \DIFadd{We therefore consider two hypotheses about the role that overall support for violent practices may play in the relationship between religiosity and that support.
+}\DIFaddend 
+
+\DIFdelbegin \subsection*{\DIFdel{Heterogeneity and multiple modernities}}
+%DIFAUXCMD
+\DIFdelend \DIFaddbegin \begin{quote}
+\emph{\DIFadd{H3c:}} \DIFadd{The association between religiosity and support for violent practices is positively correlated with overall support for violent practices in a country (socialization).
+}\end{quote}
+\DIFaddend 
+
+\DIFdelbegin \DIFdel{Modernization theorists have viewed modernization as a fundamental
+process that would evolve similarly across countries, ultimately
+producing a global cosmopolitan society through the broad convergence in social and cultural systems \mbox{%DIFAUXCMD
+\cite{fukuyama_end_1992}}\hspace{0pt}%DIFAUXCMD
+.
+Many scholars
+today criticize this view for privileging the historical experience of
+the West as a universal model.
+These ``multiple modernities'' scholars
+argue that while modernity will likely lead to changes in social and cultural systems, these changes will materialize in multiple dissimilar
+and non-convergent forms because countries develop within various
+historical and cultural contexts
+\mbox{%DIFAUXCMD
+\cite{hefner_multiple_1998, eisenstadt_multiple_2000, kamali_multiple_2006, casanova_cosmopolitanism_2011}}\hspace{0pt}%DIFAUXCMD
+.
+}\DIFdelend \DIFaddbegin \begin{quote}
+\emph{\DIFadd{H3d:}} \DIFadd{The association between religiosity and support for violent practices is negatively correlated with overall support for violent practices in a country (resistance).
+}\end{quote}
+\DIFaddend 
+
+\DIFdelbegin \DIFdel{In the present study, consideration of such heterogeneity is relevant to
+studying values in Muslim populations in two ways. First, the ``civilizational'' argument proposed by Samuel Huntington
+suggests that heterogeneity across countries will largely correspond to
+civilizational blocs definedprimarily along religious lines \mbox{%DIFAUXCMD
+\cite{huntington_clash_1996}}\hspace{0pt}%DIFAUXCMD
+. According
+to Huntington, Western liberal traditions such as individualism, support
+for pluralism, and secularism are not intrinsic to the process of modernity but rather a specific inheritance of Western civilization
+\mbox{%DIFAUXCMD
+\cite{huntington_clash_1996}}\hspace{0pt}%DIFAUXCMD
+. If this is the case, then
+we should not expect to see that development, education, and religiosity
+have the same effect }\DIFdelend \DIFaddbegin \DIFadd{Importantly, the relationship between religiosity and conservative values may be partially tautological depending on how religiosity is defined. Given that the core religious texts of the major Western religions are frequently conservative and authoritarian, it is not surprising that strong believers with a tendency for theological literalism would themselves be more conservative and authoritarian. Therefore, in analyzing the effect of religiosity }\DIFaddend on values and attitudes\DIFdelbegin \DIFdel{in Muslim societies as
+those observed elsewhere.
+}%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{Specifically, Huntington argued that the primary agents for the
+contemporary rise of Islamic fundamentalism were an urban and educated
+middle class \mbox{%DIFAUXCMD
+\cite{huntington_clash_1996}}\hspace{0pt}%DIFAUXCMD
+. Rapid economic
+growth and urbanization dislocate individuals from traditional
+structures of social support and this dislocation is experienced most
+intensely by upwardly mobile, young, urban, and educated individuals.
+Therefore, contrary to research primarily in Western contexts showing a positive relationship between liberal values and education, Huntington
+expected a negative relationship in Muslim societies}\DIFdelend \DIFaddbegin \DIFadd{, it is imperative to distinguish the effects of theological conservatism and literalism from the effects of variables that measure how important religion and religious practices are in a person's life}\DIFaddend .
+
+\DIFdelbegin \DIFdel{Second, and contrary to the expectation of both classic modernization
+theory and the civilizational argument, we may observe significant
+variation in how }\DIFdelend \DIFaddbegin \DIFadd{Finally, we consider how the effects of education and religiosity within a country may be correlated to one another. This correlation tells us the degree to which unmeasured factors producing heterogeneity in these effects across countries operate similarly or differently on }\DIFaddend educational and religious institutions\DIFdelbegin \DIFdel{affect values
+across Muslim countries. These differences may reflect a wide variety of societal influences, some of which are historical and idiosyncratic. Nonetheless the patterning of such variation across countries may be
+informative.
+The expectations of socialization theory discussed above
+are one example of such patterning. We discuss further expectations
+below.
+}\DIFdelend \DIFaddbegin \DIFadd{. If this correlation is positive, then we observe a process of synchronicity in which educational and religious institutions are responding in the same way to other societal influences. Alternatively, if the correlation is negative, then we observe a process of polarization between education and religious institutions, in which these societal influences push educational and religious institutions in opposite directions. Formally:
+}\DIFaddend 
+
+\DIFdelbegin \section*{\DIFdel{Analytical approach and theoretical expectations}}
+%DIFAUXCMD
+\DIFdelend \DIFaddbegin \begin{quote}
+\emph{\DIFadd{H4a:}} \DIFadd{The effects of education and religiosity on support for violent practices are negatively correlated across countries (polarization).
+}\end{quote}
+\DIFaddend 
+
+\DIFdelbegin \DIFdel{Using the Pew data detailed below, we build a model that can
+simultaneously measure the }\DIFdelend \DIFaddbegin \begin{quote}
+\emph{\DIFadd{H4b:}} \DIFadd{The }\DIFaddend effects of education \DIFdelbegin \DIFdel{, religiosity, and development }\DIFdelend \DIFaddbegin \DIFadd{and religiosity }\DIFaddend on support for violent practices \DIFdelbegin \DIFdel{and account for
+heterogeneity in these effects across countries . }\DIFdelend \DIFaddbegin \DIFadd{are negatively correlated across countries (synchronization).
+}\end{quote}
+
+
+\section*{\DIFadd{Analytical approach}}
+
+\DIFadd{To test the hypotheses outlined above, we developed a multilevel model using the Pew data detailed below. }\DIFaddend Specifically, we use a random intercept and random slope multilevel model \DIFdelbegin \DIFdel{, }\DIFdelend in which the intercepts and the slopes for the educational attainment and religiosity variables are allowed to vary across countries. \DIFaddbegin \DIFadd{Multilevel models estimate country-specific parameters using partial pooling between the global estimate and fixed-effects country-specific estimates, which avoids overfitting the data and produces more reasonable estimates \mbox{%DIFAUXCMD
+\cite{gelman_multilevel_2006}}\hspace{0pt}%DIFAUXCMD
+.
+}
+
+\DIFaddend Our general model specification is:
+
+\[y_{ij}=\beta_{0j}+\beta_{1j}(\texttt{religiosity}_{ij})+\beta_{2j}(\texttt{education}_{ij})+\sum_{k=1}^K \lambda_kx_{ijk}+\epsilon_{ij}\]
+
+where \(y_{ij}\) is the score on the measure of support for violent practices (detailed below) for the \(i\)th respondent in the \(j\)th country. The intercept \(\beta_{0j}\), and the two slopes of \(\beta_{1j}\) and \(\beta_{2j}\) on religiosity and education, respectively, are allowed to vary by country. The model also includes \(K\) additional independent control variables \(x_{ijk}\) that are not allowed to vary by country. \(\epsilon_{ij}\) is an individual-level error term.
+
+To complete the multilevel model structure, the three country-varying parameters have their own linear equations:
+
+\[\beta_{0j}=\gamma_{01}+\gamma_{02}\DIFaddbegin \DIFadd{(}\DIFaddend \texttt{development}_j\DIFaddbegin \DIFadd{)}\DIFaddend +\delta_j\]
+\[\beta_{1j}=\gamma_{11}+\gamma_{12}\DIFaddbegin \DIFadd{(}\DIFaddend \texttt{development}_j\DIFaddbegin \DIFadd{)}\DIFaddend +\eta_j\]
+\[\beta_{2j}=\gamma_{21}+\gamma_{22}\DIFaddbegin \DIFadd{(}\DIFaddend \texttt{development}_j\DIFaddbegin \DIFadd{)}\DIFaddend +\tau_j\]
+
+The structure shown here is for the fullest model in which we include a country-level measure of development (detailed below) that predicts the intercept and the two slopes. The \(\gamma_{02}\) term measures the association between development and average support for violent practices in a country\DIFaddbegin \DIFadd{, which directly addresses }\emph{\DIFadd{H1}}\DIFaddend . The \(\gamma_{12}\) and \(\gamma_{22}\) terms measure how development in a country affects the individual-level relationship between support for violent practices and either education or religiosity, respectively. \DIFaddbegin \DIFadd{These terms allows us to test }\emph{\DIFadd{H2b}} \DIFadd{and }\emph{\DIFadd{H3b}}\DIFadd{.
+}\DIFaddend 
+
+The error terms \(\delta_j\), \(\eta_j\) and \(\tau_j\) are country-level random effects that measure country-level heterogeneity in terms of the intercept and two slopes. \DIFdelbegin \DIFdel{Because the correlation of these
+random effects is important for our understanding of this heterogeneity
+across countries, we place no restrictions on the correlation between
+these error terms in the estimation of the model.
+}%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{Given the model outlined above, we develop several expectations about
+the estimates it will produce. These expectations relate to several
+different parameters in the model. First, we lay out the expectations of
+the effects of development at the country level (\(\gamma_{02}\)) as
+well as the average effects of religiosity (\(\gamma_{11}\)) and
+educational attainment (\(\gamma_{21}\)) across countries. Modernization
+theory expects that overall development at the country level and
+educational attainment at the individual level will be negatively
+associated with }\DIFdelend \DIFaddbegin \DIFadd{The country-specific intercepts provide a measure of the overall level of }\DIFaddend support for violent practices \DIFdelbegin \DIFdel{, while religiosity will be
+positively associated with support for violent practices.
+}%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{Second, we also consider how development might affect the relationship
+between support for violent practices and religiosity (\(\gamma_{12}\))
+or educational attainment (\(\gamma_{22}\)). We consider two
+possibilities for each variable. First, modernization may produce a
+``flattening'' effect in which overall development reduces the
+association as individuals become more liberal regardless of education
+or religiosity. Alternatively, modernization may produce a
+``steepening'' effect in which the association gets larger as
+development increases and differences in values grow in magnitude
+between individuals of different educational attainment or religiosity.
+}%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{Finally, we explore the heterogeneity in the effects of }\DIFdelend \DIFaddbegin \DIFadd{within a given country, while the country-specific slopes provide of the association of }\DIFaddend education and religiosity \DIFdelbegin \DIFdel{across countries by an examination of the correlation
+between the random components of the model. These random components
+provide estimates of how specific countries deviate from the global
+averages. We analyze these correlations in two ways. First, we analyze
+how the country-level variation in the association between }\DIFdelend \DIFaddbegin \DIFadd{to }\DIFaddend support for violent practices \DIFdelbegin \DIFdel{and religiosity (\(\eta_j\)) or educational attainment
+(\(\tau_j\)) is correlated with the overall average level of support for
+violent practices within that country(\(\delta_j\)). These correlations
+tell us the degree to which these associations increase or decrease with
+the overall sentiment of the country. They therefore offer a test of the
+socialization hypothesis which would expect a positive correlation. If
+this is the case, it suggests that educational and religious
+institutions move in step with popular attitudes.
+}%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{Second, we analyze }\DIFdelend \DIFaddbegin \DIFadd{within a given country. The variance of these random effects and }\DIFaddend the correlation between \DIFdelbegin \DIFdel{the religiosity (\(\eta_j\))
+or educational attainment (\(\tau_j\)) random effects themselves. This
+correlation tells us the degree to which unmeasured factors producing
+heterogeneity in these effects across countries operate similarly or
+differently on educational and religious institutions. We consider three
+possibilities for this correlation. If the correlation is positive, then
+we observe a process of synchronicity in which educational and religious
+institutions are responding in the same way to other societal
+influences.
+Alternatively, if the correlation is negative, then we
+observe a process of polarization between education and religious
+institutions, in which other societal influences push educational and
+religious institutions in opposite directions. A third possibility is
+that the correlation is zero, suggesting that the societal changes
+affecting these institutions operate in independent and unconnected
+ways.
+}\DIFdelend \DIFaddbegin \DIFadd{them allows us to address the remaining hypotheses.
+}\DIFaddend 
+
+\section*{Materials and methods}
+
+Data for this analysis come primarily from two cross-national surveys conducted by the Pew Research Center's Religion and Public Life project. The first survey, \emph{Tolerance and Tension: Islam and Christianity in Sub-Saharan Africa}, sampled more than 25,000 respondents in nineteen countries in sub-Saharan Africa in 2008-2009. The second survey, \emph{The World's Muslims: Religion, Politics and Society}, sampled more than 30,000 Muslim respondents in twenty-six countries throughout the world in 2011-2012. The questionnaires for the surveys are very similar, although additional questions were added and some other questions were re-worded in the second survey. We focus our analysis only on questions that are consistent across both surveys.
+\DIFdelbegin \DIFdel{In both data sources, respondents were 
+fully anonymized prior to our access.
+}\DIFdelend 
+
+We combine Muslim respondents from these surveys together to construct our full analytical dataset. Five sub-Saharan African countries (Democratic Republic of Congo, Botswana, Rwanda, South Africa, and Zambia) were excluded from analysis because of minuscule (2\% or less) Muslim populations. Four other countries were excluded because key questions for the analysis were not asked in those countries (Iran, Morocco, Mozambique, and Uzbekistan). Finally, Thailand was excluded because the sample was not nationally representative. \DIFdelbegin \DIFdel{Fig~\ref{fig1} }\DIFdelend \DIFaddbegin \DIFadd{Figure \ref{fig:figure-world-map} }\DIFaddend shows a map of the countries included in our analysis with shading by the percent Muslim in each country. The countries in the sample cover all regions of the world with substantial Muslim populations. In total, we use data from 35 countries and 35,400 respondents. The average sample size per country was 1,011 respondents with a minimum size of 245 respondents in Cameroon and a maximum size of 1,918 respondents in Bangladesh.
+
+\begin{figure}[!h]
+%\begin{adjustwidth}{-2.25in}{0in}
+\centering
+\includegraphics{figures/fig1.eps}
+\caption{Map showing countries included in the analysis by percent
+Muslim. Mollweide projection used to preserve area proportions.}
+\DIFdelbeginFL %DIFDELCMD < \label{fig1}
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \label{fig:figure-world-map}
+\DIFaddendFL %\end{adjustwidth}
+\end{figure}
+
+Because the country-level surveys were designed to be nationally representative, the data should be representative of within-country populations, but not necessarily the global Muslim population. Collectively, the countries in the sample roughly account for sixty-five percent of the global Muslim population \cite{pewforumonreligionandpubliclife_global_2012}, but some important countries both symbolically (e.g.~Saudi Arabia, Iran) and by population weight (e.g.~India) are absent.
+
+\DIFdelbegin \DIFdel{Several variables used in this analysisare }\DIFdelend \DIFaddbegin \DIFadd{For the dependent variable and several other variables in the analysis, we considered }\DIFaddend constructs made up of multiple individual items\DIFdelbegin \DIFdel{, including the dependent variable and the
+measure of religiosity. All constructs were developed through an
+}\DIFdelend \DIFaddbegin \DIFadd{. We developed all constructs through an exploratory factor analysis. Furthermore, we tested both the reliability and measurement invariance of constructs across countries \mbox{%DIFAUXCMD
+\cite{vandevijver_methods_2021}}\hspace{0pt}%DIFAUXCMD
+. Because of the ordinal nature of all items involved in the construct, we use polychoric, rather than pearson, correlation to estimate the alpha measure of reliability and to conduct }\DIFaddend exploratory factor analysis \DIFdelbegin \DIFdel{that identified points of separation and correlation between items}\DIFdelend \DIFaddbegin \DIFadd{\mbox{%DIFAUXCMD
+\cite{gadermann_estimating_2012}}\hspace{0pt}%DIFAUXCMD
+. Similarly, we use item response theory (IRT) models rather than multigroup confirmatory factor analysis to test for measurement invariance because IRT is better suited to analyze categorical ordinal outcomes \mbox{%DIFAUXCMD
+\cite{tay_overview_2015}}\hspace{0pt}%DIFAUXCMD
+. Because frequentist test statistics are likely to identify even trivial deviations from invariance in a sample this large \mbox{%DIFAUXCMD
+\cite[p.~106]{vandevijver_methods_2021}}\hspace{0pt}%DIFAUXCMD
+, we use the Bayesian Information Criterion to evaluate IRT models that test sequentially for metric and scalar invariance}\DIFaddend .
+
+\subsection*{Measuring support for violent practices}
+
+We develop our measures of support for violent practices based on multiple questions that were fielded in both surveys. Respondents were asked yes/no questions for whether they favored (a) the death penalty for people who leave Islam, (b) harsh punishments like whipping and cutting off hands for crimes like theft and robbery, and (c) stoning people who committed adultery. \DIFdelbegin \DIFdel{These three measures were highly
+correlated with one another (Cronbach's \(\alpha=0.83\)) and exploratory
+factor analysis indicated that a single scale worked well for all three
+variables. }\DIFdelend We also considered a likert-scale question on the justifiability of violence against civilians in defense of religion, but this variable had a much weaker correlation with the three other measures and so we dropped it from analysis. \DIFaddbegin \DIFadd{We constructed the dependent variable for our models by counting the number of favorable responses to each of the remaining questions and then re-scaling this tally to have a mean of zero and a standard deviation of one.
+}\DIFaddend 
+
+\DIFdelbegin \DIFdel{Fig~\ref{fig2} }\DIFdelend \DIFaddbegin \DIFadd{Figure \ref{fig:country-averages} }\DIFaddend shows the average level of support by country for the three items that make up our measure of support for violent practices. Countries tend to have similar levels of support for all items within the construct, but the variation across countries is substantial. Support for these values ranges from virtually no support in countries such as Azerbaijan and Kazakhstan to nearly universal support in countries such as Afghanistan and Egypt.
+
+\begin{figure}[!h]
+%\begin{adjustwidth}{-2.25in}{0in}
+\centering
+\includegraphics{figures/fig2.eps}
+\caption{Dotplot of percentage of Muslim respondents who support three different questions measuring support for violent practices for the violation of norms. Countries are ordered from lowest to highest average level of support across all three questions.}
+\DIFdelbeginFL %DIFDELCMD < \label{fig2}
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \label{fig:country-averages}
+\DIFaddendFL %\end{adjustwidth}
+\end{figure}
+
+\DIFdelbegin \DIFdel{We constructed the dependent variable for our models by counting the number of favorable responses to each question and then re-scaling this tally to have a mean of zero and a standard deviation of one.
+}\DIFdelend \DIFaddbegin \DIFadd{Globally, these three measures were highly correlated with one another (\(\alpha=0.93\)) and exploratory factor analysis indicated that a single scale worked well for all three variables. At the country level, \(\alpha\) was above the standard cutoff for good reliability of 0.7 for all countries except for Jordan and Egypt, which still had reasonable \(\alpha\) values of 0.68 and 0.62, respectively.
+}\DIFaddend 
+
+\DIFaddbegin \DIFadd{When testing for measurement invariance, we found some evidence of metric invariance. After analyzing model fit, we found that this metric invariance was caused by low correlations between the death for apostasy variable and the other two variables in Egypt and Jordan. Removing either of these countries led to a model fit that supported metric invariance. Figure \ref{fig:country-averages} shows that the ordering of overall support for each item is different in Egypt and Jordan than in the remaining countries. In Egypt and Jordan, respondents were substantially more supportive of death for apostasy than the other two measures, whereas in the remaining countries, this item typically has similar or lower support. These results suggests that as support for this item approaches universality in these countries, its correlation with remaining items declines.  Previous work has noted that this issue is a common problem in analyzing measurement invariance when group-level item means vary across the entire range of the distribution \mbox{%DIFAUXCMD
+\cite{welzel_noninvariance_2021}}\hspace{0pt}%DIFAUXCMD
+. We have decided to retain Egypt and Jordan in the full analysis, but some caution should be taken in interpreting the specific results for these countries.
+}
+
+\DIFadd{Further tests indicated scalar invariance in this measure. Scalar invariance is an extremely common issue in cross-national research \mbox{%DIFAUXCMD
+\cite{meitinger_measurement_2020}}\hspace{0pt}%DIFAUXCMD
+, but the literature currently offers little guidance in how to resolve such problems. While scalar invariance technically indicates that means across groups are not directly comparable, it may in some cases have a minimal impact on such comparisons. As a sensitivity test, we estimated separate multilevel logit models on each of the items within the construct and compared the fixed and random components of each model to one another and to the model using the construct itself. Overall, both the fixed and random components are highly consistent across all models and none of our substantial conclusions would be modified by use of the separate models. Importantly, the random intercepts across the separate logit models (which measure the mean value in a country) are highly correlated (\(r>=0.92\)) with the random intercepts of the construct model in all three cases. Therefore, on the principle of parsimony, we use the construct-based model for the remainder of the analysis here. The results of the sensitivity analysis are provided in the supplementary materials.
+}
+
+\DIFaddend \subsection*{Measuring development}
+
+At the country-level, we considered two different possibilities for a measure of overall development. Gross domestic product (GDP) per capita is often used as a purely economic measure of the level of development. On the other hand, the Human Development Index (HDI), produced by the United Nations Development Program, offers a more holistic measure of development. The HDI considers three separate components in its overall measure: life expectancy at birth, overall educational attainment, and gross national income per capita. These three components are combined into a single composite index.
+
+These two measures are highly correlated among the countries used in the analysis (\(r=0.78\)). All models reported here use the HDI. We chose the HDI as our primary measure of development because it allows us to parsimoniously capture \DIFdelbegin \DIFdel{mutiple }\DIFdelend \DIFaddbegin \DIFadd{multiple }\DIFaddend dimensions of development. As a sensitivity analysis, we constructed identical models with a logged GDP per capita measure. The results were similar, although the logged GDP variable tended to produce slightly smaller overall effects than HDI. The models from this sensitivity analysis are available in the \DIFdelbegin %DIFDELCMD < \nameref{S1_Appendix}%%%
+\DIFdelend \DIFaddbegin \DIFadd{supplementary materials}\DIFaddend .
+
+\subsection*{Independent variables}
+
+Education is a key measure in our analysis, but the categories used for educational attainment are country-specific, making it challenging to include in a cross-national analysis. Educational attainment was reported as a three-category system for the sub-Saharan African countries and relative to country-specific educational systems for the remaining countries. These country-specific systems ranged from a high of twelve distinct categories to a low of five distinct categories. We harmonized these measures by creating a quantile score based on the distribution of the educational attainment variable within each country. Each respondent was assigned a midpoint value on the quantile score between their given level of education and the next lowest level (or zero when the respondent was in the lowest category). This quantile score measures a respondent's relative position on the distribution of education within a country. We also considered a three-category measure of absolute educational attainment consisting of no secondary education, at least some secondary education, and post-secondary education that could be used for all countries. Sensitivity tests showed that these models produced similar results, but the \DIFdelbegin \DIFdel{BIC }\DIFdelend model fit statistics strongly preferred the educational quantile measure. Full results are available in the \DIFdelbegin %DIFDELCMD < \nameref{S1_Appendix}%%%
+\DIFdelend \DIFaddbegin \DIFadd{supplementary materials}\DIFaddend .
+
+We measure each respondent's religiosity using a concept that combines the experiential and ritualistic dimensions of Glock and Stark's framework \cite{glock_religion_1965}. Our goal is to isolate the importance of religion in a person's daily life as measured by their personal experience and practice of it from specific ideological beliefs and knowledge about the religion. We \DIFdelbegin \DIFdel{measure religiosity with }\DIFdelend \DIFaddbegin \DIFadd{considered }\DIFaddend a three-item construct including a question on the importance of religion in a person's life, the frequency of mosque attendance, and the frequency of prayer. Across the entire sample, this three item construct had a \DIFdelbegin \DIFdel{Cronbach's }\DIFdelend \DIFaddbegin \DIFadd{reasonable }\DIFaddend \(\alpha\) of \DIFdelbegin \DIFdel{0.68. Mosque attendance has been
+criticized by some scholars as an inappropriate Western import for measuring religiosity among Muslims \mbox{%DIFAUXCMD
+\cite{el-menouar_five_2014}}\hspace{0pt}%DIFAUXCMD
+. }\DIFdelend \DIFaddbegin \DIFadd{0.78. }\DIFaddend However, \DIFdelbegin \DIFdel{sensitivity tests suggested that mosque attendance had similar
+effects on outcomes as other measures of religiosity when we examined
+the separate effect of each variable and we therefore retain it.
+These
+results are available in the }%DIFDELCMD < \nameref{S1_Appendix}%%%
+\DIFdelend \DIFaddbegin \DIFadd{country-level \(\alpha\) values for this religiosity construct varied considerably and fourteen countries had an \(\alpha\) below 0.6. Therefore, we decided to include each of the three variables measuring religiosity separately into the models. As the results below will show, each variable had a similar average effect on the outcome variable, but the pattern of random country-level slopes was substantially different for each variable}\DIFaddend .
+
+Prior research has shown that religiosity is positively associated with theological literalism, conservativism, and fundamentalism among Muslims \cite{moaddel_religious_2018}. Individuals with more literal and theologically conservative beliefs are likely to have more anti-liberal values simply because some of the measures used for the dependent variable can be argued to have scriptural justification. To control for this potential confounding influence in our analysis, we tested a separate construct that measured theological conservatism and literalism in a person's actual beliefs. We considered questions on whether a person must believe in god to be moral, whether Islam is the one true faith, and whether there was only one way to interpret religious teachings. However, these questions did not hold up well as a single construct (\DIFdelbegin \DIFdel{Cronbach's \(\alpha=0.38\)}\DIFdelend \DIFaddbegin \DIFadd{\(\alpha=0.56\)}\DIFaddend ). Therefore, to capture theologically conservative beliefs and practices, we included all three questions as separate independent variables in our models.
+
+We include a variety of other individual-level variables in all models. We include variables for the age (five-year brackets), gender, income, and urbanicity of the respondent. Income was reported in loosely defined quartiles (i.e.~four categories from ``low'' to ``high'') for the sub-Saharan African countries and brackets that were specific to each national currency for remaining countries and so we use a method identical to that for education to create income quantile scores. The country-specific income brackets ranged from a high of seventeen \DIFdelbegin \DIFdel{distinct }\DIFdelend categories to a low of five \DIFdelbegin \DIFdel{distinct brackets}\DIFdelend \DIFaddbegin \DIFadd{categories}\DIFaddend .
+
+We also include a measure of the respondent's self-reported denomination. The primary division here is between Sunni and Shia, but many respondents also identified in a non-denominational way (e.g.~``just a Muslim'') which we retain as a separate category. We combine all other denominations into a single ``other'' category. A separate item asked respondents whether they identified with any Sufi orders. We code this \DIFaddbegin \DIFadd{response }\DIFaddend as a binary variable that is distinct from the denominational categories.
+
+We also control for non-religious ideological views. We constructed \DIFdelbegin \DIFdel{an
+index }\DIFdelend \DIFaddbegin \DIFadd{two indices }\DIFaddend of socially conservative views based on the respondent's answers regarding the acceptability of \DIFdelbegin \DIFdel{seven stigmatized behaviors(drinking
+alcohol, }\DIFdelend \DIFaddbegin \DIFadd{several stigmatized behaviors. Exploratory factor analysis suggested that the best fit was provided by a two factor solution that divided the items into those associated with death (}\DIFaddend euthanasia, suicide, abortion\DIFdelbegin \DIFdel{, prostitution, premarital sex, and homosexuality; Cronbach's \(\alpha=0.76\)). We also combine }\DIFdelend \DIFaddbegin \DIFadd{; \(\alpha=0.82\)) and those associated with sex (prostitution, homosexuality, and premarital sex; \(\alpha=0.88\)). This two factor solution also was metrically invariant across countries, although not scalar invariant. We also include }\DIFaddend two questions that gauge respondents' attitudes toward Western movies, music, and television\DIFdelbegin \DIFdel{into an anti-Westernization scale}\DIFdelend . Finally, we include questions on whether religion is in conflict with modernity, and whether the country would be better off with a strong leader rather than a democratic government.
+
+\subsection*{Multiple imputation}
+
+We use multiple imputation to address missing values in the dataset. We imputed five complete datasets using multivariate imputation by chained equations \cite{buuren_mice_2011}. We generally did not impute values when a question was missing because it was not asked in a particular country, but we made two exceptions to this rule. Questions regarding the moral acceptability of prostitution, premarital sex, and homosexuality were not asked in Afghanistan and the two questions about the morality of western movies, music, and television were not asked in Lebanon. In both of these cases, we imputed values in order to maximize country sample size. The percentage of values imputed ranged from a high of 11.4\% for the question on whether religion was in conflict with modernity to 0.7\% for the respondent's age. We included dependent variables in the imputation procedure, but drop cases that were missing on the dependent variable. After this exclusion, the sample size of our \DIFdelbegin \DIFdel{anlalytical }\DIFdelend \DIFaddbegin \DIFadd{analytical }\DIFaddend dataset is 31,528 respondents.
+
+\subsection*{Scaling variables}
+
+To facilitate comparisons between variables in the models, all quantitative variables have been re-centered on the mean and re-scaled. The dependent variable has been divided by its standard deviation. Independent variables have been divided by twice their standard deviation. The estimated effects of quantitative variables shown throughout this article can be interpreted as the expected change in standard deviations of the dependent variable for an increase of two standard deviations in the independent variable. Dividing by twice the standard deviation makes the slopes of quantitative variables in linear models roughly comparable to the effects of categorical dummy variables \cite{gelman_scaling_2008}.
+
+% Results and Discussion can be combined.
+\section*{Results}
+
+Table \DIFdelbegin \DIFdel{~\ref{tab1} }\DIFdelend \DIFaddbegin \DIFadd{\ref{tab:model-table} }\DIFaddend shows the results of three multilevel models predicting support for violent practices. Model 1 includes \DIFdelbegin \DIFdel{only individual level variables}\DIFdelend \DIFaddbegin \DIFadd{all independent variables, but no interaction term}\DIFaddend . Model 2 \DIFdelbegin \DIFdel{adds in }\DIFdelend \DIFaddbegin \DIFadd{interacts }\DIFaddend the country-level \DIFdelbegin \DIFdel{Human Development Indicator (HDI ) as a predictor of average support for violent practices in a country. Model }\DIFdelend \DIFaddbegin \DIFadd{HDI measure with the individual-level education and religiosity measures. Based on the results of Model 2, Model }\DIFaddend 3 \DIFdelbegin \DIFdel{additionally allows HDI to be a predictor of the association between }\DIFdelend \DIFaddbegin \DIFadd{removes the interaction between HDI and }\DIFaddend religiosity\DIFdelbegin \DIFdel{/education and support for violent practices within a country}\DIFdelend .
+
+\begin{table}
+\begin{adjustwidth}{-2.25in}{0in}
+\caption{Results from multilevel models predicting support for violent practices for violating norms among Muslims.}
+\begin{center}
+\begin{tabular}{l D{)}{)}{11)3} D{)}{)}{11)3} D{)}{)}{11)3}}
+\hline
+ & \multicolumn{1}{c}{Model 1} & \multicolumn{1}{c}{Model 2} & \multicolumn{1}{c}{Model 3} \\
+\hline
+Intercept                             & -0.205 \; (0.084)^{*}   & -0.196 \; (0.085)^{*}   & -0.200 \; (0.084)^{*}   \\
+Mosque attendance                     & 0.111 \; (0.022)^{***}  & 0.107 \; (0.023)^{***}  & 0.107 \; (0.022)^{***}  \\
+Importance of religion                & 0.089 \; (0.032)^{**}   & 0.084 \; (0.033)^{*}    & 0.084 \; (0.032)^{**}   \\
+Frequency of prayer                   & 0.155 \; (0.034)^{***}  & 0.164 \; (0.034)^{***}  & 0.164 \; (0.034)^{***}  \\
+Education quantile                    & -0.060 \; (0.022)^{**}  & -0.057 \; (0.021)^{**}  & -0.057 \; (0.021)^{**}  \\
+Income quantile                       & -0.009 \; (0.010)       & -0.009 \; (0.010)       & -0.009 \; (0.010)       \\
+Age (ref. 18-24)                      &                         &                         &                         \\
+\quad Age 25-29                       & 0.006 \; (0.014)        & 0.006 \; (0.014)        & 0.006 \; (0.014)        \\
+\quad Age 30-34                       & -0.008 \; (0.015)       & -0.008 \; (0.015)       & -0.008 \; (0.015)       \\
+\quad Age 35-39                       & -0.043 \; (0.016)^{**}  & -0.043 \; (0.016)^{**}  & -0.043 \; (0.016)^{**}  \\
+\quad Age 40-44                       & -0.054 \; (0.016)^{***} & -0.054 \; (0.016)^{**}  & -0.054 \; (0.016)^{**}  \\
+\quad Age 45-49                       & -0.033 \; (0.018)       & -0.033 \; (0.018)       & -0.033 \; (0.018)       \\
+\quad Age 50-54                       & -0.047 \; (0.019)^{*}   & -0.047 \; (0.019)^{*}   & -0.047 \; (0.019)^{*}   \\
+\quad Age 55-59                       & -0.061 \; (0.021)^{**}  & -0.060 \; (0.021)^{**}  & -0.060 \; (0.021)^{**}  \\
+\quad Age 60 and over                 & -0.025 \; (0.019)       & -0.024 \; (0.019)       & -0.024 \; (0.019)       \\
+Female                                & -0.011 \; (0.010)       & -0.011 \; (0.010)       & -0.011 \; (0.010)       \\
+Urban                                 & -0.048 \; (0.009)^{***} & -0.048 \; (0.009)^{***} & -0.048 \; (0.009)^{***} \\
+Denomination (ref. Sunni)             &                         &                         &                         \\
+\quad Shia                            & -0.130 \; (0.020)^{***} & -0.129 \; (0.020)^{***} & -0.129 \; (0.020)^{***} \\
+\quad Other denomination              & -0.050 \; (0.030)       & -0.049 \; (0.030)       & -0.049 \; (0.030)       \\
+\quad Just a Muslim                   & -0.087 \; (0.012)^{***} & -0.087 \; (0.012)^{***} & -0.087 \; (0.012)^{***} \\
+Sufi (ref. non-Sufi)                  & 0.064 \; (0.014)^{***}  & 0.065 \; (0.014)^{***}  & 0.065 \; (0.014)^{***}  \\
+Believe in god to be moral            & 0.035 \; (0.012)^{**}   & 0.036 \; (0.012)^{**}   & 0.036 \; (0.012)^{**}   \\
+Islam is the one true faith           & 0.150 \; (0.013)^{***}  & 0.150 \; (0.013)^{***}  & 0.150 \; (0.013)^{***}  \\
+One way to interpret relig. teachings & 0.015 \; (0.010)        & 0.015 \; (0.010)        & 0.015 \; (0.010)        \\
+Religion in conflict with modernity   & 0.077 \; (0.010)^{***}  & 0.076 \; (0.010)^{***}  & 0.076 \; (0.010)^{***}  \\
+Dislikes western culture              & 0.119 \; (0.010)^{***}  & 0.119 \; (0.010)^{***}  & 0.119 \; (0.010)^{***}  \\
+Western culture is immoral            & 0.034 \; (0.010)^{***}  & 0.034 \; (0.010)^{***}  & 0.034 \; (0.010)^{***}  \\
+Prefers strong leader to democracy    & 0.018 \; (0.010)        & 0.018 \; (0.010)        & 0.018 \; (0.010)        \\
+Socially conservative scale, death    & -0.034 \; (0.011)^{**}  & -0.034 \; (0.011)^{**}  & -0.034 \; (0.011)^{**}  \\
+Socially conservative scale, sex      & -0.011 \; (0.011)       & -0.010 \; (0.011)       & -0.011 \; (0.011)       \\
+Human development index (HDI)         & -0.330 \; (0.130)^{*}   & -0.238 \; (0.169)       & -0.279 \; (0.134)^{*}   \\
+HDI x Mosque attendance               &                         & 0.002 \; (0.046)        &                         \\
+HDI x Importance of relig             &                         & 0.031 \; (0.066)        &                         \\
+HDI x Frequency of prayer             &                         & 0.014 \; (0.070)        &                         \\
+HDI x Education quantile              &                         & 0.077 \; (0.042)        & 0.079 \; (0.029)^{**}   \\
+\hline
+N (individual)                        & 31528                   & 31528                   & 31528                   \\
+N (country)                           & 35                      & 35                      & 35                      \\
+BIC                                   & 72173                   & 72224                   & 72182                   \\
+\hline
+\end{tabular}
+\begin{flushleft}
+$^{***}p<0.001$; $^{**}p<0.01$; $^{*}p<0.05$ \\ Table Notes: All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.
+\end{flushleft}
+\label{tab:model-table}
+\end{center}
+\end{adjustwidth}
+\end{table}
+
+\DIFdelbegin \DIFdel{The individual-level }\DIFdelend \DIFaddbegin \DIFadd{All of the independent }\DIFaddend variables are highly consistent across models. Although we focus primarily on the effects of education\DIFdelbegin \DIFdel{and religiosity, }\DIFdelend \DIFaddbegin \DIFadd{, religiosity, and development, }\DIFaddend we first briefly summarize the effects of other variables on support for violent practices. Income has little effect on support for violent practices. Similarly, we observe no difference between men and women in support for violent practices. \DIFdelbegin \DIFdel{Age differences are relatively small and
+do not demonstrate a consistent trend when comparing younger to older
+respondents. Rather, the results suggest specific cohort effects where
+the cohorts between ages 35-44 and 50-59 are less }\DIFdelend \DIFaddbegin \DIFadd{Differences across age generally show that the youngest cohorts (under age 35) are more }\DIFaddend supportive of violent practices than \DIFdelbegin \DIFdel{adjacent }\DIFdelend \DIFaddbegin \DIFadd{older }\DIFaddend cohorts. Urban residents are less likely to support violent practices than those in rural areas. In terms of denomination, Sunnis are the most supportive of violent practices and Shias the least supportive, with other denominations and ``just a Muslim'' respondents falling in between. Self-identifying as a member of a Sufi order is associated with greater support for violent practices. \DIFdelbegin \DIFdel{All of the variables measuring theological conservatism are positively
+associated with }\DIFdelend \DIFaddbegin \DIFadd{Theological conservatism is generally associated with greater }\DIFaddend support for violent practices\DIFaddbegin \DIFadd{, but the strongest effect among these items is the belief that Islam is the one true faith}\DIFaddend . Respondents with more anti-Western views were also more supportive of violent practices. Preferences for democracy \DIFdelbegin \DIFdel{and social conservatism have little }\DIFdelend \DIFaddbegin \DIFadd{has little to no }\DIFaddend association with support for violent practices. \DIFdelbegin %DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{Religiosity is more strongly }\DIFdelend \DIFaddbegin \DIFadd{Social conservatism is not positively }\DIFaddend associated with support for violent practices\DIFdelbegin \DIFdel{than any of the other individual-level independent variables.
+A two standard deviation increase in religiosity is associatedwith
+roughly a 0.24 standard deviation increase in the }\DIFdelend \DIFaddbegin \DIFadd{, and may in fact be negatively associated.
+}
+
+\DIFadd{The three measures of religiosity are all strongly positively correlated with }\DIFaddend support for violent practices\DIFdelbegin \DIFdel{scale, }\DIFdelend \DIFaddbegin \DIFadd{. In fact, frequency of prayer had the strongest association with support for violent practices among the individual-level variables and the other two measures of religiosity also exhibited some of the strongest associations. This strong association is observed }\DIFaddend even when holding constant a variety of demographic and ideational variables. On average, across countries, Muslims who are more religiously observant and devout are more likely to support violent practices and this result is not simply a function of demography, theological conservatism, social conservatism, or anti-Western sentiment.
+
+The education quantile measure has a \DIFdelbegin \DIFdel{smaller }\DIFdelend \DIFaddbegin \DIFadd{substantial }\DIFaddend negative association with support for violent practices\DIFaddbegin \DIFadd{, but the magnitude here is much smaller than for the religiosity variables}\DIFaddend . A two standard deviation increase in the education quantile is associated with \DIFdelbegin \DIFdel{a 0.062 }\DIFdelend \DIFaddbegin \DIFadd{roughly a 0.06 }\DIFaddend standard deviation reduction in the support for violent practices scale. \DIFaddbegin \DIFadd{The results are inconsistent with the expectations of Huntington expressed in }\emph{\DIFadd{H2d}}\DIFadd{.
+}\DIFaddend 
+
+\DIFdelbegin \DIFdel{Model 2 introduces }\DIFdelend \DIFaddbegin \DIFadd{The results for }\DIFaddend the HDI measure \DIFdelbegin \DIFdel{as a predictor of }\DIFdelend \DIFaddbegin \DIFadd{in Model 1 also shows that the level of development in a country is strongly negatively associated with }\DIFaddend support for violent practices \DIFdelbegin \DIFdel{. This country-level predictor has the largest association of
+any term in the model}\DIFdelend \DIFaddbegin \DIFadd{in that country}\DIFaddend . A two standard deviation increase in the HDI is associated with a \DIFdelbegin \DIFdel{0.417 }\DIFdelend \DIFaddbegin \DIFadd{0.330 }\DIFaddend standard deviation decrease in a country's average on the support for violent practices scale. Individuals from more developed countries are much less supportive of violent practices, on average\DIFaddbegin \DIFadd{, as expected by }\emph{\DIFadd{H1}}\DIFaddend .
+
+In Model \DIFdelbegin \DIFdel{3}\DIFdelend \DIFaddbegin \DIFadd{2}\DIFaddend , we allow for an interaction between HDI and our measures of religiosity and education. Effectively, we are allowing the association between religiosity/education and support for violent practices to vary by the level of HDI\DIFaddbegin \DIFadd{, as predicted by }\emph{\DIFadd{H2b}} \DIFadd{and }\emph{\DIFadd{H3b}}\DIFaddend . There is little evidence of variation in the effect of \DIFdelbegin \DIFdel{religiosity by HDI. However, the }\DIFdelend \DIFaddbegin \DIFadd{any of the religiosity variables by HDI, casting doubt on }\emph{\DIFadd{H3b}}\DIFadd{. The }\DIFaddend effect of education on support for violent practices\DIFdelbegin \DIFdel{varies }\DIFdelend \DIFaddbegin \DIFadd{, on the other hand, does vary }\DIFaddend substantially by HDI\DIFdelbegin \DIFdel{. In general, the results
+suggest a ``flattening'' effect in which the }\DIFdelend \DIFaddbegin \DIFadd{, but in a direction opposite to the expectations of }\emph{\DIFadd{H2b}}\DIFadd{. The }\DIFaddend negative association between education and support for violent practices \DIFdelbegin \DIFdel{gets weaker as HDI
+increases. However, the effect is so large that ``flattening'' does not
+adequately account for the strengh of this interaction term. In countries that have HDI one standard deviation higher than the mean, the model expects the association to reverse directionand become positive. Thus, education is expected to be positively associated with support for
+violent practices in }\DIFdelend \DIFaddbegin \DIFadd{becomes weaker in more developed countries, rather than stronger. In }\DIFaddend the \DIFdelbegin \DIFdel{most developed countries}\DIFdelend \DIFaddbegin \DIFadd{most developed countries, the education association may even reverse direction}\DIFaddend . \DIFaddbegin \DIFadd{While this result is not statistically significant in Model 2, Model 3 shows that the lack of significance is due to multicollinearity problems in Model 2 that inflated the standard error.
+}\DIFaddend 
+
+We now turn to the random country effects estimated by the models. The variance and correlation of \DIFdelbegin \DIFdel{these country effects is shown at the bottom
+of Table ~\ref{tab1}. The association between religiosity and support for violent practices is slightly more variable across countriesthan the
+association between education and support for violent practices, but both effects vary substantially}\DIFdelend \DIFaddbegin \DIFadd{the random intercepts and slopes is shown in Table \ref{tab:cor-table}. All of the slopes varied substantially across countries, but the largest variation was for the questions on whether religion is important and the frequency of prayer}\DIFaddend .
+
+\DIFdelbegin \DIFdel{Fig~\ref{fig3} shows the religiosity and education slopes for all countriesas estimated in Model 3 of Table~\ref{tab1}. Six countries}\DIFdelend \DIFaddbegin 
+
+\begin{table}
+
+\caption{\label{tab:cor-table}Standard deviation and correlation between random intercepts and slopes for religiosity and education.}
+\centering
+\begin{tabu} to \linewidth {>{\raggedright\arraybackslash}p{3.5cm}>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{1}{c}{SD} & \multicolumn{4}{c}{Correlation} \\
+\cmidrule(l{3pt}r{3pt}){2-2} \cmidrule(l{3pt}r{3pt}){3-6}
+  &  & Intercept & Mosque attendance & Religion important & Frequency of prayer\\
+\midrule
+Intercept & 0.488 &  &  &  & \\
+Mosque attendance & 0.099 & -0.253 &  &  & \\
+Religion important & 0.163 & 0.188 & 0.116 &  & \\
+Frequency of prayer & 0.177 & 0.629 & -0.380 & -0.218 & \\
+Educational quantile & 0.108 & 0.429 & -0.656 & -0.515 & 0.758\\
+\bottomrule
+\multicolumn{6}{l}{\rule{0pt}{1em}\textit{Note: }}\\
+\multicolumn{6}{l}{\rule{0pt}{1em}Correlation coefficients based on Model 3 of Table 1.}\\
+\end{tabu}
+\end{table}
+
+\DIFadd{To explore this variation in more detail, we plot the random slopes for all countries in Figure \ref{fig:random-slope-lollipop}. This figure clearly shows the substantial variation in the effects of these variables across countries. As expected, the religiosity slopes are positive and the education slopes are negative for most countries. However, we do observe a small number of countries with estimated slopes in the opposite direction for all four variables. The number of countries with negative slopes for mosque attendance and frequency of prayer is small and the magnitude of these negative slopes is small. For the question on whether religion is important, we see more negative effects and a few (Kenya, Niger, Guinea-Bissau, and Kosovo) that are more substantial in magnitude. In these countries, individuals for whom religion is more important are less supportive of violent practices.
+}
+
+\begin{figure}[H]
+%DIF > \begin{adjustwidth}{-2.25in}{0in}
+\centering
+\includegraphics{figures/fig3.eps}
+\caption{\DIFaddFL{Lollipop plots of the association between religiosity/education and support for violent practices in each country. Values are based on random slopes from Model 3 of Table 1. Each panel is ordered from largest to smallest association. Values are color-coded by direction.}}
+%DIF > \end{adjustwidth}
+\label{fig:random-slope-lollipop}
+\end{figure}
+
+\DIFadd{Eight countries }\DIFaddend (Egypt, Algeria, \DIFdelbegin \DIFdel{Afghanistan, Malaysia, Kenya}\DIFdelend \DIFaddbegin \DIFadd{Malaysia}\DIFaddend , \DIFaddbegin \DIFadd{Afghanistan, Kenya, Guinea-Bissau, }\DIFaddend Pakistan, and Liberia) have estimated slopes that indicate a positive association between educational quantile and support for violent practices. The \DIFdelbegin \DIFdel{effects are very close to zero for Pakistan }\DIFdelend \DIFaddbegin \DIFadd{positive effects are negligible for Guinea-Bissau, Pakistan, }\DIFaddend and Liberia, but substantial for the \DIFdelbegin \DIFdel{other }\DIFdelend \DIFaddbegin \DIFadd{remaining }\DIFaddend countries. In these countries, individuals with more education tend to be more supportive of violent practices.
+\DIFdelbegin \DIFdel{Significant variation exists among countrieswith negative slopes as well. Tunisia stands out as an outlier in the negative direction with a slope that is nearly double the size of its nearest neighbor, Ghana. }\DIFdelend 
+
+\DIFdelbegin %DIFDELCMD < \begin{figure}[!h]
+%DIFDELCMD < %%%
+%DIF < \begin{adjustwidth}{-2.25in}{0in}
+%DIFDELCMD < \centering
+%DIFDELCMD < \includegraphics{figures/fig3.eps}
+%DIFDELCMD < %%%
+%DIFDELCMD < \caption{%
+{%DIFAUXCMD
+\DIFdelFL{Lollipop plots of the association between religiosity/education
+and support for violent practices in each country. Values are based on
+random slopes from Model 3 of Table~\ref{tab1}. Each panel is ordered from
+largest to smallest association. Values are color-coded by direction.}}
+%DIFAUXCMD
+%DIFDELCMD < \label{fig3}
+%DIFDELCMD < %%%
+%DIF < \end{adjustwidth}
+%DIFDELCMD < \end{figure}
+%DIFDELCMD < %%%
+\DIFdelend \DIFaddbegin \DIFadd{Overall, both religiosity and education are highly variable in their effects across countries, casting doubt on }\emph{\DIFadd{H2a}} \DIFadd{and }\emph{\DIFadd{H3a}} \DIFadd{which expected largely consistent and similar effects across countries. While the average effects across countries are broadly consistent with the expectations of classic modernization theory, the variability across countries is not. We now turn to an exploration of that variability in more detail.
+}\DIFaddend 
+
+\DIFdelbegin \DIFdel{In contrast, all of }\DIFdelend \DIFaddbegin \DIFadd{We begin by looking at the correlation of each of the random slopes with }\DIFaddend the \DIFdelbegin \DIFdel{estimated slopes for religiosity are
+consistently positive, with the exception of Azerbaijan where
+religiosity effectively has no association with }\DIFdelend \DIFaddbegin \DIFadd{random intercepts. These correlations tells us how the average level of }\DIFaddend support for violent practices \DIFdelbegin \DIFdel{. While the variation in these positive effects is substantial,
+religiosity does not contributes substantially to lower supportfor
+violent practices for any country within our sample. }%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{Table ~\ref{tab1} also shows the correlations between these random country
+effects. Both slopes are positively related to the intercept. To explore
+these correlations }\DIFdelend in \DIFaddbegin \DIFadd{each country is related to the association of education/religiosity with that support. Table \ref{tab:cor-table} shows the overall correlation coefficients between these variables, while Figure \ref{fig:intercept-slope-plot} plots these relationships in }\DIFaddend more detail \DIFdelbegin \DIFdel{, Fig~\ref{fig4} shows the relationship
+between the }\DIFdelend \DIFaddbegin \DIFadd{using a scatterplot.
+}
+
+\begin{figure}[!h]
+%DIF > \begin{adjustwidth}{-2.25in}{0in}
+\centering
+\includegraphics{figures/fig4.eps}
+\caption{\DIFaddFL{Scatterplot showing the relationship betwen a country's average level of support for violent practices and the association between education/religiosity and support for violent practices in a country. Values are based on random intercepts and slopes from Model 3 of Table 1. Best fitting OLS line is shown in each panel.}}
+%DIF > \end{adjustwidth}
+\label{fig:intercept-slope-plot}
+\end{figure}
+
+\DIFadd{As Table \ref{tab:cor-table} indicated, the }\DIFaddend country-specific \DIFdelbegin \DIFdel{intercepts and the country-specific slopes
+for religiosity and education.
+As Table~\ref{tab1} indicated, there is a strong
+positive correlation in both cases}\DIFdelend \DIFaddbegin \DIFadd{education slopes are positively correlated with the average support for violent practices in a country (\(r=0.429\))}\DIFaddend . In countries with less support for violent practices overall, the association between education and support for violent practices tends to be more negative\DIFdelbegin \DIFdel{and the association
+between religiosity and support for violent practices tends to be less
+positive}\DIFdelend . The correlation here \DIFdelbegin \DIFdel{suggests }\DIFdelend \DIFaddbegin \DIFadd{is consistent with the expectation of }\emph{\DIFadd{H2c}} \DIFadd{and indicates }\DIFaddend a substantial socialization effect on \DIFdelbegin \DIFdel{both religious and }\DIFdelend educational institutions. In more liberal countries (those with less support for violent practices overall), education has more of a liberalizing influence and \DIFdelbegin \DIFdel{religiosity }\DIFdelend \DIFaddbegin \DIFadd{in more conservative countries, education }\DIFaddend has less of a \DIFdelbegin \DIFdel{conservatizing influence}\DIFdelend \DIFaddbegin \DIFadd{liberalizing effect, and may even have a conservatizing effect}\DIFaddend .
+
+\DIFdelbegin %DIFDELCMD < \begin{figure}[!h]
+%DIFDELCMD < %%%
+%DIF < \begin{adjustwidth}{-2.25in}{0in}
+%DIFDELCMD < \centering
+%DIFDELCMD < \includegraphics{figures/fig4.eps}
+%DIFDELCMD < %%%
+%DIFDELCMD < \caption{%
+{%DIFAUXCMD
+\DIFdelFL{Scatterplot showing the relationship betwen a country's average
+level of support for violent practices and the association between
+education/religiosity and support for violent practices in a country.
+Values are based on random intercepts and slopes from Model 3 of Table~\ref{tab1}. Best fitting OLS line is shown for both panels.}}
+%DIFAUXCMD
+%DIFDELCMD < \label{fig4}
+%DIFDELCMD < %%%
+%DIF < \end{adjustwidth}
+%DIFDELCMD < \end{figure}
+%DIFDELCMD < %%%
+\DIFdelend \DIFaddbegin \DIFadd{The correlation between each of the religiosity slopes and the average support in a country do not tell as consistent a story. For frequency of prayer, we observe a similar, and even stronger, positive relationship (\(r=0.629\)). We find that in more liberal countries, frequency of prayer has a less conservatizing effect on support for violent practices. These results suggest a similar socialization effect as for education.
+}\DIFaddend 
+
+\DIFdelbegin \DIFdel{Finally, we look at the relationship between the two measures of association. }\DIFdelend \DIFaddbegin \DIFadd{For the remaining religiosity variables, the correlations are much weaker and in opposite directions. We observe a positive association for the importance of religion variable (\(r=0.188\)), indicating that there may be some socialization effect on this measure. The effect of mosque attendance, however, is negatively associated with the level of support in a country (\(r=-0.253\)). In more liberal countries, mosque attendance tends to be more positively associated with support for violent practices.
+}
+
+\DIFadd{We finally turn to the correlation between the religiosity and education slopes themselves. }\DIFaddend Do the effects of religiosity and education within a country tend to work in synchronicity or are they polarized? As Table \DIFdelbegin \DIFdel{~\ref{tab1}
+shows, the correlation between the two measures of association is very
+low, albeit slightly positive. Figure ~\ref{fig5} shows the relationship between the two slopes on a scatterplot, confirming the low correlation. In
+short, there does not seem to be any connection }\DIFdelend \DIFaddbegin \DIFadd{\ref{tab:cor-table} shows, all three of these correlations are quite strong but do not operate in the same direction. Figure \ref{fig:slope-compare-plot} further explores these relationships by drawing pairwise scatterplots between each of the religiosity random slopes and the educational quantile slopes. For both mosque attendance and the question on whether religion is important, we observe strong negative correlations (\(r=-0.656\) and \(r=-0.515\), respectively), consistent with }\emph{\DIFadd{H4a}}\DIFadd{. These results indicate polarization }\DIFaddend between educational and religious \DIFdelbegin \DIFdel{divisions within a country on this outcome measure. For
+example, Tunisia and Egypt have similar associations between religiosity
+}\DIFdelend \DIFaddbegin \DIFadd{institutions. In countries with the most negative association between education }\DIFaddend and support for violent practices, \DIFdelbegin \DIFdel{but radically different associations
+between education }\DIFdelend \DIFaddbegin \DIFadd{we also tend to find the most positive association between these religiosity measures }\DIFaddend and support for violent practices.
+\DIFdelbegin \DIFdel{Tunisia has by far
+the most negative association of any country while Egypt has the most
+positive . The results here indicate that while religiosity and education
+have somewhat predictable association with support for violent
+practices, the particular constellation of these two associations within
+a country varies in non-predictable ways. }\DIFdelend 
+
+\begin{figure}[!h]
+%\begin{adjustwidth}{-2.25in}{0in}
+\centering
+\includegraphics{figures/fig5.eps}
+\DIFdelbeginFL %DIFDELCMD < \caption{%
+{%DIFAUXCMD
+\DIFdelFL{Scatterplot showing the relationship between country-level
+associations of education and religiosity with support for violent
+practices. Values based on random slopes from Model 3 of Table 1.
+Best-fitting OLS line is shown.}}
+%DIFAUXCMD
+%DIFDELCMD < \label{fig5}
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \caption{\DIFaddFL{Scatterplot showing the relationship between country-level associations of education and religiosity with support for violent practices. Values based on random slopes from Model 3 of Table 1. Best-fitting OLS line is shown in each panel.}}
+\DIFaddendFL %\end{adjustwidth}
+\DIFaddbeginFL \label{fig:slope-compare-plot}
+\DIFaddendFL \end{figure}
+
+\DIFaddbegin \DIFadd{The frequency of prayer results tell a different story, however. The country-level slopes here are strongly positive correlated (\(r=0.758\)), indicating synchronization consistent with }\emph{\DIFadd{H4b}}\DIFadd{. The countries where education has the strongest negative association with support for violent practices also tend to be the countries where frequency of prayer has the smallest positive (and occasionally, negative) association with support for violent practices.
+}
+
+\DIFadd{Overall, the results here reveal the relationship between religiosity and support for violent practices is particularly complex and depends on which aspect of religiosity we focus on. Overall, frequency of prayer seems the most responsive to other social pressures. The positive effect of frequency of prayer is substantially reduced and may even reverse direction in the most liberal countries and in countries where education has the strongest negative effects. In contrast, mosque attendance and the importance of religion seem quite stubbornly resistant to such social pressure. Neither case showed a strong correlation with overall support and both cases evidenced a strong polarization with regard to the effect of education.
+}
+
+\DIFaddend \section*{Conclusion}
+
+In this article, we have analyzed variation in support for violent practices among Muslims in thirty-five countries, paying particular attention to the \DIFdelbegin \DIFdel{effects }\DIFdelend \DIFaddbegin \DIFadd{association }\DIFaddend of education, religiosity, and development \DIFdelbegin \DIFdel{on
+}\DIFdelend \DIFaddbegin \DIFadd{with }\DIFaddend these attitudes, as well as the heterogeneity in \DIFdelbegin \DIFdel{effects }\DIFdelend \DIFaddbegin \DIFadd{this association }\DIFaddend across countries.
+
+At first glance, the results \DIFdelbegin \DIFdel{are largely consistent with prior research
+and }\DIFdelend \DIFaddbegin \DIFadd{seem consistent with }\DIFaddend the expectations of modernization theory. Greater development in a country, as measured by the Human Development Index, strongly predicted less support for violent practices. Similarly, \DIFaddbegin \DIFadd{when averaged across countries, }\DIFaddend the effects of education and religiosity are as expected from prior research in predominantly non-Muslim contexts\DIFdelbegin \DIFdel{, when averaged across countries}\DIFdelend . More educated individuals are moderately less \DIFdelbegin \DIFdel{likely to support }\DIFdelend \DIFaddbegin \DIFadd{supportive of }\DIFaddend violent practices while individuals with greater religiosity are \DIFdelbegin \DIFdel{much more likely to
+support }\DIFdelend \DIFaddbegin \DIFadd{substantially more supportive of }\DIFaddend violent practices. \DIFdelbegin %DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{The association between religiosity and support for violent practices
+was stronger than any other individual-level variable used in the
+analysis. Importantly}\DIFdelend \DIFaddbegin \DIFadd{Furthermore}\DIFaddend , this religiosity \DIFdelbegin \DIFdel{effect is not simply a surrogate
+for theological conservatism or literalism. We found that while measures
+of theological conservatism also predicted greater support for violent
+practices, the religiosity }\DIFdelend association remains strong even after controlling for \DIFdelbegin \DIFdel{these variables, as well as }\DIFdelend \DIFaddbegin \DIFadd{theological conservatism and }\DIFaddend a variety of other ideational variables.
+
+\DIFdelbegin \DIFdel{Looking beyond the average effects across countries toward country-level
+heterogeneity , the results suggest a more complex and nuanced
+assessment. The }\DIFdelend \DIFaddbegin \DIFadd{However, modernization theory is not supported when we look more closely at the heterogeneity in the }\DIFaddend effects of education and religiosity \DIFaddbegin \DIFadd{on support for violent practices across countries. Both of these effects }\DIFaddend were highly variable across countries. In a minority of countries, \DIFdelbegin \DIFdel{education
+predicts more, rather than less, support for violent practices .
+Similarly, in some countries there was virtually no correlation between religiosity }\DIFdelend \DIFaddbegin \DIFadd{the expected relationships were even reversed.
+}
+
+\DIFadd{Furthermore, the association between education and violent practices deviated from the expectations of modernization theory in two ways. First, we found that the negative relationship between education }\DIFaddend and support for violent practices \DIFdelbegin \DIFdel{. While we may observe
+tendencies in terms of the effects of educational and religious
+institutions on }\DIFdelend \DIFaddbegin \DIFadd{is weakest (and may even change direction) in the most developed countries rather than the least developed countries. Second, we found that the association between education and }\DIFaddend support for violent practices \DIFdelbegin \DIFdel{, these effects are far
+from uniform and may be strongly affected by }\DIFdelend \DIFaddbegin \DIFadd{is the most negative when countries have less overall support for violent practices. This latter finding is more consistent with the socialization hypothesis than the development hypothesis in accounting for the relationship between education and liberal values. In short, we find no evidence of a universally consistent effect of education on values, but rather one mediated by social context.
+}
+
+\DIFadd{The results for religiosity are somewhat more complex, owing to the fact that the patterns of }\DIFaddend country-level \DIFdelbegin \DIFdel{heterogeneity. In the context of the strong effect of religiosity on support for violent practices, the heterogeneity observed here
+demonstrates that there is no necessary connection between religiosityand }\DIFdelend \DIFaddbegin \DIFadd{heterogeneity were different across the three variables we used to measure religiosity. The positive association of frequency of prayer with }\DIFaddend support for violent practices \DIFaddbegin \DIFadd{was reduced in countries with less overall support for violent practices, suggesting that this form of religiosity was affected by socialization in a manner similar to education}\DIFaddend . \DIFdelbegin %DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{How can we make sense of this variation in the effects of education and
+religiosity across countries ? Some of this variation may reflect
+idiosyncratic, historical, and path-dependent processes that are not
+easily amenable to a quantitative analysis. }\DIFdelend However, \DIFdelbegin \DIFdel{we did explore two
+possibilities with regard to this variation. First, we find that the within-country association for both education and religiosity is
+positively correlated with the average }\DIFdelend \DIFaddbegin \DIFadd{the other two measures of religiosity were not strongly associated with the overall }\DIFaddend level of support for violent practices in a country. \DIFdelbegin \DIFdel{In the case of education, Education exerts the strongest negative effect }\DIFdelend \DIFaddbegin \DIFadd{We also found that, for all three variables, the effect of religiosity }\DIFaddend on support for violent practices \DIFdelbegin \DIFdel{in countries
+with the lowest average level of support overall while education has
+little effect or even a positive association in countries with the most
+support for violent practices overall. Religiosity has the strongest
+positive effect on support for violent practices in countries with the
+most support overall, and religiosity has the weakest positive effect in
+countries where support for violent practices is the lowest overall.
+Both findings are consistent with the socialization hypothesis, which
+argues that social institutions often reflect rather than drive changes
+in attitudes and values. }%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{Second, we include the level of development as a predictor of }\DIFdelend \DIFaddbegin \DIFadd{was not associated with the level of development in }\DIFaddend the \DIFaddbegin \DIFadd{country. Overall, religiosity seems considerably less responsive to social context than education, but this depends somewhat on which aspect of religiosity we choose to focus on.
+}
+
+\DIFadd{We also explored how the variation in country-level education and religiosity effects might be related to one another. We identified strong correlations between these effects, but we again found that the results varied by which measure of religiosity we examined. The effects of mosque attendance and the importance or religion were strongly negatively associated with the effects of education. These results suggest polarization between educational and religious institutions within countries. Countries with the most negative }\DIFaddend association between education \DIFdelbegin \DIFdel{/religiosity }\DIFdelend and support for violent practices \DIFdelbegin \DIFdel{. We find some evidence that the negative relationship between education }\DIFdelend \DIFaddbegin \DIFadd{tend to have the most positive association between mosque attendance/importance of religion }\DIFaddend and support for violent practices\DIFdelbegin \DIFdel{is weaker in more developed
+countries.
+This may reflect a ``flattening'' process whereby greater
+development universalizes liberal values and leads to less cleavage
+between educational groups. We find little evidence of an effect of
+development on the association with religiosity.
+}\DIFdelend \DIFaddbegin \DIFadd{.
+}\DIFaddend 
+
+\DIFdelbegin \DIFdel{As a further check on what is driving country-level heterogeneity, we examined the correlation between }\DIFdelend \DIFaddbegin \DIFadd{Interestingly, we found an opposite pattern of synchronization in the strong positive association between education effects and }\DIFaddend the effects of \DIFdelbegin \DIFdel{religiosity and
+education across countries. Somewhat surprisingly, there is very little
+correlation in the effects of these two variables across countries. This
+implies that there is not necessarily a greater singular force
+(e.g.~``modernization'') driving change in both religious and
+educational institutions, but rather that these two institutions are
+affected disparately by factors unique to each country}\DIFdelend \DIFaddbegin \DIFadd{frequency of prayer. In this case, countries with the most negative association between education and support for violent practices tend to also have the least positive (and occasionally negative) association between frequency of prayer and support for violent practices. These results suggest that this particular form of religiosity is more amenable to a softening influence in the face of larger social change}\DIFaddend .
+
+\DIFdelbegin \DIFdel{The }\DIFdelend \DIFaddbegin \DIFadd{Overall, the }\DIFaddend heterogeneity we observe across countries \DIFdelbegin \DIFdel{places our results
+somewhere between classic modernization theory and multiple modernities.
+If classic modernization theory is seen as a tendency rather than a
+rule, our results could be considered as an accurate reflection of its
+expectations. Similarly, our results could also be seen as empirical
+evidence in support of a multiple modernities approach by showing just
+how different the process of modernization can be for some countries.
+Nonetheless, the strong aggregate tendency toward the expectations }\DIFdelend \DIFaddbegin \DIFadd{in the effects of education and religiosity casts doubt on the universalistic assumptions }\DIFaddend of classic modernization theory\DIFdelbegin \DIFdel{calls into question an unconstrained
+version of the multiple modernities approach. }%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelend \DIFaddbegin \DIFadd{. }\DIFaddend This heterogeneity also casts doubt on the utility of the civilizational argument to understand value change. We find no evidence of a singular civilizational pattern of Islamic societies. Rather, we find that the general patterns of Islamic ``civilization'' are consistent with those observed in non-Islamic societies but with substantial variation at the country level.
+\DIFdelbegin \DIFdel{This variation cannot be explained by what is held
+constant, namely Islam.
+}\DIFdelend \DIFaddbegin 
+
+\DIFadd{Instead, our results support a multiple modernities perspective and a socialization perspective. Social institutions respond differently to social change in different ways across countries and this produces heterogeneity in effects across countries. Some of this heterogeneity we can account for by observable social context, such as the overall level of development and overall support for violent practices. However, much of this variation remains unaccounted for and would need to be explored by a more detailed comparative analysis of the historical development of each country.
+}
+
+\DIFadd{To highlight this last point, }\DIFaddend We draw attention to the results for Algeria and Tunisia\DIFdelbegin \DIFdel{to highlight this issue}\DIFdelend . Algeria and Tunisia are arguably two of the most similar countries in our dataset by geography, language, and culture. Yet, the observed relationships between education and support for violent practices are not only opposite in these two countries, but represent two of the most extreme values in the data. In Tunisia, educational attainment strongly predicts less support for violent practices, while in Algeria, educational attainment strongly predicts greater support for violent practices. The implication is that we must delve deeper into the particular historical development of each country in order to understand this variation.
+
+We \DIFdelbegin \DIFdel{focus in this article on whether the observed patterns in the data
+are consistent with the expectations of prior theory and have attempted
+to avoid the use of strong causal language throughout.
+}\DIFdelend \DIFaddbegin \DIFadd{draw two additional implications from our results that are relevant for related research. First, the heterogeneity across countries suggests that quantitative analysis of values and attitudes among Muslims using a small set of countries can easily draw misleading results depending on which countries are selected. Much of the prior research on this topic uses samples of five or fewer countries. Attempts to generalize from such samples to the global Muslim population may be suspect.
+}
+
+\DIFadd{Second, the effects of religiosity on attitudes may depend on which measures one employs. We found very different patterns across the three measures of religiosity we used here and also detected issues of unreliability and invariance when trying to develop a construct from these measures. Prior work often relies on a single measure and this may mislead researchers about the potentially variable effects of different elements of religiosity.
+}
+
+\DIFadd{Our results are not without their own weaknesses. }\DIFaddend Strong causal claims are limited by the cross-sectional nature of the data. For example, while we find that Muslims in countries with greater development tend to have less support for violent practices, we cannot show that a change in development is associated with a weakening of those attitudes. Future longitudinal data would be valuable at strengthening our understanding of causal mechanisms, albeit difficult and costly to obtain on a sample of this size and scale.
+
+\DIFaddbegin \DIFadd{Furthermore, although our sample of countries is quite large, it is still a non-random sample and could potentially misrepresent global patterns. In particular, our sample is missing two countries, Saudi Arabia and Iran, which are symbolically very important in discussions of Islamic civilization.
+}
+
+\DIFaddend The goal of this article has been to use statistical analysis to leverage a large dataset and provide a birds-eye view of the relationship between support for violent practices and individual and country-level predictors. By necessity, this approach ignores the specificity and nuance of country-specific historical development. Our intent is not to discount or replace work that focuses on particular historical cases or small N comparative/historical analyses, but rather to complement this work with a broader comparative approach. Indeed one of the central findings of our analysis is the substantial variation in key relationships between countries. This suggests the possibility of fruitful explorations at the country-level using multiple methodological approaches to understand the substantial heterogeneity documented here.
+
+\section*{Supporting information}
+
+\paragraph*{S1 Appendix.}
+\label{S1_Appendix}
+{\bf Supplementary Materials.}  This appendix contains tables of models using alternate specifications of religiosity, education, and development.
+
+\section*{Acknowledgments}
+The data analyzed for this article were collected and distributed by the Pew Research Center. Pew Research Center bears no responsibility for the analyses or interpretations of the data presented here. The opinions expressed herein, including any implications for policy, are those of the authors and not of Pew Research Center.
+
+\nolinenumbers
+
+% Either type in your references using
+% \begin{thebibliography}{}
+% \bibitem{}
+% Text
+% \end{thebibliography}
+%
+% or
+%
+% Compile your BiBTeX database using our plos2015.bst
+% style file and paste the contents of your .bbl file
+% here. See http://journals.plos.org/plosone/s/latex for 
+% step-by-step instructions.
+% 
+%DIF > \bibliography{../../../project.bib}
+\begin{thebibliography}{10}
+
+\bibitem{casey_real_2014}
+Casey P. Real {{Time}} with {{Bill Maher}}\DIFdelbegin %DIFDELCMD < [%%%
+\DIFdel{television broadcast}%DIFDELCMD < ]%%%
+\DIFdel{. Los Angeles; HBO; 2014 Oct 3.
+}\DIFdelend \DIFaddbegin \DIFadd{; 2014.
+}\DIFaddend 
+
+\bibitem{inglehart_worldviews_2007}
+Inglehart RF.
+\newblock The {{Worldviews}} of {{Islamic Publics}} in {{Global Perspective}}.
+\newblock In: Moaddel M, editor. Values and {{Perceptions}} of the {{Islamic}}
+  and {{Middle Eastern Publics}}. {New York}: {Palgrave Macmillan US}; 2007. p.
+  25--46.
+
+\bibitem{eisenstadt_civilizational_2001}
+Eisenstadt SN.
+\newblock The {{Civilizational Dimension}} of {{Modernity}}: {{Modernity}} as a
+  {{Distinct Civilization}}.
+\newblock International Sociology. 2001;16(3):320--340.
+\newblock doi:{10.1177/026858001016003005}.
+
+\bibitem{huntington_clash_1996}
+Huntington SP.
+\newblock The {{Clash}} of {{Civilizations}} and the {{Remaking}} of {{World
+  Order}}.
+\newblock {New York}: {Simon \& Schuster}; 1996.
+
+\bibitem{jamal_attitudes_2008}
+Jamal A, Tessler M.
+\newblock Attitudes in the {{Arab World}}.
+\newblock Journal of Democracy; Baltimore. 2008;19(1):97--110.
+
+\bibitem{ciftci_modernization_2010}
+Ciftci S.
+\newblock Modernization, {{Islam}}, or {{Social Capital}}: {{What Explains
+  Attitudes Toward Democracy}} in the {{Muslim World}}?
+\newblock Comparative Political Studies. 2010;43(11):1442--1470.
+
+\bibitem{ciftci_secularislamist_2013}
+Ciftci S.
+\newblock Secular-{{Islamist Cleavage}}, {{Values}}, and {{Support}} for
+  {{Democracy}} and {{Shari}}'a in the {{Arab World}}.
+\newblock Political Research Quarterly. 2013;66(4):781--793.
+\newblock doi:{10.1177/1065912912470759}.
+
+\bibitem{mousseau_urban_2011}
+Mousseau M.
+\newblock Urban Poverty and Support for {{Islamist}} Terror: {{Survey}} Results
+  of {{Muslims}} in Fourteen Countries.
+\newblock Journal of Peace Research. 2011;48(1):35--47.
+\newblock doi:{10.1177/0022343310391724}.
+
+\bibitem{berger_foreign_2014}
+Berger L.
+\newblock Foreign Policies or Culture: {{What}} Shapes {{Muslim}} Public
+  Opinion on Political Violence against the {{United States}}?
+\newblock Journal of Peace Research. 2014;51(6):782--796.
+
+\bibitem{inglehart_true_2003}
+Inglehart R, Norris P.
+\newblock The {{True Clash}} of {{Civilizations}}.
+\newblock Foreign Policy. 2003;135:62--70.
+\newblock doi:{10.2307/3183594}.
+
+\bibitem{moaddel_religious_2018}
+Moaddel M, Karabenick SA.
+\newblock Religious {{Fundamentalism}} in {{Eight Muslim}}-{{Majority
+  Countries}}: {{Reconceptualization}} and {{Assessment}}.
+\newblock Journal for the Scientific Study of Religion. 2018;57(4):676--706.
+\newblock doi:{10.1111/jssr.12549}.
+
+\bibitem{jamal_reassessing_2006}
+Jamal AA.
+\newblock Reassessing {{Support}} for {{Islam}} and {{Democracy}} in the {{Arab
+  World}}? {{Evidence}} from {{Egypt}} and {{Jordan}}.
+\newblock World Affairs. 2006;169(2):51--63.
+
+\bibitem{moaddel_introduction_2007}
+Moaddel M.
+\newblock Introduction: {{Theoretical}} and {{Methodological Issues}} in the
+  {{Study}} of {{Values}}.
+\newblock In: Moaddel M, editor. Values and {{Perceptions}} of the {{Islamic}}
+  and {{Middle Eastern Publics}}. {New York}: {Palgrave Macmillan US}; 2007. p.
+  1--22.
+
+\bibitem{lerner_passing_1958}
+Lerner D.
+\newblock The {{Passing}} of {{Traditional Society}}: {{Modernizing}} the
+  {{Middle East}}.
+\newblock {New York}: {Free Press}; 1958.
+
+\bibitem{parsons_social_1964}
+Parsons T.
+\newblock Social {{Structure}} and {{Personality}}.
+\newblock {New York}: {Free Press}; 1964.
+
+\bibitem{inkeles_becoming_1974}
+Inkeles A, Smith DH.
+\newblock Becoming {{Modern}}: {{Individual Change}} in {{Six Developing
+  Countries}}.
+\newblock {Cambridge, MA}: {Harvard University Press}; 1974.
+
+\bibitem{rostow_stages_1960}
+Rostow WW.
+\newblock The {{Stages}} of {{Economic Growth}}: A Non-{{Communist Manifesto}}.
+\newblock {Cambridge}: {Cambridge University Press}; 1960.
+
+\bibitem{wilson_religion_1966}
+Wilson BR.
+\newblock Religion in {{Secular Society}}: A {{Sociological Comment}}.
+\newblock {London}: {Watts}; 1966.
+
+\bibitem{bruce_secularization_2011}
+Bruce S.
+\newblock Secularization: {{In Defence}} of an {{Unfashionable Theory}}.
+\newblock {Oxford}: {Oxford University Press}; 2011.
+
+\bibitem{emerson_rise_2006}
+Emerson MO, Hartman D.
+\newblock The {{Rise}} of {{Religious Fundamentalism}}.
+\newblock Annual Review of Sociology. 2006;32(1):127--144.
+\newblock doi:{10.1146/annurev.soc.32.061604.123141}.
+
+\DIFdelbegin \bibitem{scheepers_education_2002}
+\DIFdel{Scheepers P, Te~Grotenhuis M, Van Der~Slik F}\DIFdelend \DIFaddbegin \bibitem{hefner_multiple_1998}
+\DIFadd{Hefner RW.
+}\newblock \DIFadd{Multiple }{{\DIFadd{Modernities}}}\DIFadd{: }{{\DIFadd{Christianity}}}\DIFadd{, }{{\DIFadd{Islam}}}\DIFadd{, and
+  }{{\DIFadd{Hinduism}}} \DIFadd{in a }{{\DIFadd{Globalizing Age}}}\DIFaddend .
+\newblock \DIFdelbegin \DIFdel{Education}\DIFdelend \DIFaddbegin \DIFadd{Annual Review of Anthropology. 1998;27:83--104.
+}
+
+\bibitem{eisenstadt_multiple_2000}
+\DIFadd{Eisenstadt SN.
+}\newblock \DIFadd{Multiple }{{\DIFadd{Modernities}}}\DIFadd{.
+}\newblock \DIFadd{Daedalus. 2000;129(1):1--29.
+}
+
+\bibitem{kamali_multiple_2006}
+\DIFadd{Kamali M.
+}\newblock \DIFadd{Multiple }{{\DIFadd{Modernities}}}\DIFaddend , {{\DIFdelbegin \DIFdel{Religiosity}\DIFdelend \DIFaddbegin \DIFadd{Civil Society}\DIFaddend }} and {{\DIFdelbegin \DIFdel{Moral Attitudes}\DIFdelend \DIFaddbegin \DIFadd{Islam}\DIFaddend }}: \DIFaddbegin \DIFadd{The
+  }\DIFaddend {{\DIFdelbegin \DIFdel{Explaining
+  Cross}\DIFdelend \DIFaddbegin \DIFadd{Case}\DIFaddend }} \DIFdelbegin \DIFdel{-}\DIFdelend \DIFaddbegin \DIFadd{of }\DIFaddend {{\DIFdelbegin \DIFdel{National Effect Differences}\DIFdelend \DIFaddbegin \DIFadd{Iran}\DIFaddend }} \DIFaddbegin \DIFadd{and }{{\DIFadd{Turkey}}}\DIFaddend .
+\newblock \DIFdelbegin \DIFdel{Sociology of Religion.
+2002;63}\DIFdelend \DIFaddbegin {\DIFadd{Liverpool}}\DIFadd{: }{\DIFadd{Liverpool University Press}}\DIFadd{; 2006.
+}
+
+\bibitem{casanova_cosmopolitanism_2011}
+\DIFadd{Casanova J.
+}\newblock \DIFadd{Cosmopolitanism, }{{\DIFadd{The Clash}}} \DIFadd{of }{{\DIFadd{Civilizations}}} \DIFadd{and }{{\DIFadd{Multiple
+  Modernities}}}\DIFadd{.
+}\newblock \DIFadd{Current Sociology. 2011;59}\DIFaddend (2):\DIFdelbegin \DIFdel{157--176}\DIFdelend \DIFaddbegin \DIFadd{252--267}\DIFaddend .
+\newblock doi:{\DIFdelbegin \DIFdel{10.2307}\DIFdelend \DIFaddbegin \DIFadd{10.1177}\DIFaddend /\DIFdelbegin \DIFdel{3712563}\DIFdelend \DIFaddbegin \DIFadd{0011392110391162}\DIFaddend }.
+
+\DIFdelbegin \bibitem{smith_future_2008}
+\DIFdel{Smith C}\DIFdelend \DIFaddbegin \bibitem{scheepers_education_2002}
+\DIFadd{Scheepers P, Te~Grotenhuis M, Van Der~Slik F}\DIFaddend .
+\newblock \DIFdelbegin \DIFdel{Future }\DIFdelend \DIFaddbegin \DIFadd{Education, }\DIFaddend {{\DIFdelbegin \DIFdel{Directions}\DIFdelend \DIFaddbegin \DIFadd{Religiosity}\DIFaddend }} \DIFdelbegin \DIFdel{in the }\DIFdelend \DIFaddbegin \DIFadd{and }\DIFaddend {{\DIFdelbegin \DIFdel{Sociology}\DIFdelend \DIFaddbegin \DIFadd{Moral Attitudes}\DIFaddend }}\DIFdelbegin \DIFdel{of }\DIFdelend \DIFaddbegin \DIFadd{: }\DIFaddend {{\DIFdelbegin \DIFdel{Religion}\DIFdelend \DIFaddbegin \DIFadd{Explaining
+  Cross}\DIFaddend }}\DIFaddbegin \DIFadd{-}{{\DIFadd{National Effect Differences}}}\DIFaddend .
+\newblock \DIFdelbegin \DIFdel{Social Forces. 2008;86(4):1561--1589}\DIFdelend \DIFaddbegin \DIFadd{Sociology of Religion. 2002;63(2):157--176}\DIFaddend .
+\newblock doi:{\DIFdelbegin \DIFdel{10.1353}\DIFdelend \DIFaddbegin \DIFadd{10.2307}\DIFaddend /\DIFdelbegin \DIFdel{sof.0.0040}\DIFdelend \DIFaddbegin \DIFadd{3712563}\DIFaddend }.
+
+\bibitem{meyer_effects_1977}
+Meyer JW.
+\newblock The {{Effects}} of {{Education}} as an {{Institution}}.
+\newblock American Journal of Sociology. 1977;83(1):55--77.
+\newblock doi:{10.1086/226506}.
+
+\bibitem{chabbott_development_2000}
+Chabbott C, Ramirez FO.
+\newblock Development and {{Education}}.
+\newblock In: Hallinan MT, editor. Handbook of the {{Sociology}} of
+  {{Education}}. Handbooks of {{Sociology}} and {{Social Research}}. {Boston,
+  MA}: {Springer US}; 2000. p. 163--187.
+
+\bibitem{depaepe_educationalization_2008}
+Depaepe M, Smeyers P.
+\newblock Educationalization as an {{Ongoing Modernization Process}}.
+\newblock Educational Theory. 2008;58(4):379--389.
+
+\bibitem{hyman_education_1979}
+Hyman HH, Wright CR.
+\newblock Education's {{Lasting Influence}} on {{Values}}.
+\newblock {Chicago, IL}: {University of Chicago Press}; 1979.
+
+\bibitem{bobo_education_1989}
+Bobo L, Licari FC.
+\newblock Education and {{Political Tolerance}}: {{Testing}} the {{Effects}} of
+  {{Cognitive Sophistication}} and {{Target Group Affect}}.
+\newblock The Public Opinion Quarterly. 1989;53(3):285--308.
+
+\bibitem{weakliem_effects_2002}
+Weakliem DL.
+\newblock The {{Effects}} of {{Education}} on {{Political Opinions}}: {{An
+  International Study}}.
+\newblock International Journal of Public Opinion Research.
+  2002;14(2):141--157.
+\newblock doi:{10.1093/ijpor/14.2.141}.
+
+\bibitem{kingston_why_2003}
+Kingston PW, Hubbard R, Lapp B, Schroeder P, Wilson J.
+\newblock Why {{Education Matters}}.
+\newblock Sociology of Education. 2003;76(1):53--70.
+\newblock doi:{10.2307/3090261}.
+
+\bibitem{adorno_authoritarian_1950}
+Adorno TW.
+\newblock The {{Authoritarian Personality}}.
+\newblock {New York}: {Harper}; 1950.
+
+\bibitem{mcclosky_dimensions_1983}
+Mcclosky H, Brill A.
+\newblock The {{Dimensions}} of {{Tolerance}}: {{What Americans Believe About
+  Civil Liberties}}.
+\newblock {New York}: {Russell Sage Foundation}; 1983.
+
+\bibitem{selznick_tenacity_1969}
+Selznick GJ, Steinberg S.
+\newblock The {{Tenacity}} of {{Prejudice}}: Anti-{{Semitism}} in
+  {{Contemporary America}}.
+\newblock {New York}: {Harper \& Row}; 1969.
+
+\bibitem{jackman_education_1984}
+Jackman MR, Muha MJ.
+\newblock Education and {{Intergroup Attitudes}}: {{Moral Enligtenment}},
+  {{Superficial Democratic Commitment}} or {{Ideological Refinement}}?
+\newblock American Sociological Review. 1984;49:751--769.
+
+\bibitem{phelan_education_1995}
+Phelan J, Link BG, Stueve A, Moore RE.
+\newblock Education, {{Social Liberalism}}, and {{Economic Conservatism}}:
+  {{Attitudes Toward Homeless People}}.
+\newblock American Sociological Review. 1995;60(1):126--140.
+\newblock doi:{10.2307/2096349}.
+
+\bibitem{weil_variable_1985}
+Weil FD.
+\newblock The {{Variable Effects}} of {{Education}} on {{Liberal Attitudes}}:
+  {{A Comparative}}- {{Historical Analysis}} of {{Anti}}-{{Semitism Using
+  Public Opinion Survey Data}}.
+\newblock American Sociological Review. 1985;50(4):458--474.
+\newblock doi:{10.2307/2095433}.
+
+\bibitem{schwadel_explaining_2015}
+Schwadel P.
+\newblock Explaining {{Cross}}-{{National Variation}} in the {{Effect}} of
+  {{Higher Education}} on {{Religiosity}}.
+\newblock Journal for the Scientific Study of Religion. 2015;54(2):402--418.
+\newblock doi:{10.1111/jssr.12187}.
+
+\bibitem{rokeach_part_1969}
+Rokeach M.
+\newblock Part {{I}}. {{Value Systems}} in {{Religion}}.
+\newblock Review of Religious Research. 1969;11(1):3--23.
+\newblock doi:{10.2307/3510550}.
+
+\bibitem{rokeach_part_1969a}
+Rokeach M.
+\newblock Part {{II}}. {{Religious Values}} and {{Social Compassion}}.
+\newblock Review of Religious Research. 1969;11(1):24--39.
+\newblock doi:{10.2307/3510551}.
+
+\bibitem{wilcox_evangelicals_1990}
+Wilcox C, Jelen T.
+\newblock Evangelicals and {{Political Tolerance}}.
+\newblock American Politics Quarterly. 1990;18(1):25--46.
+\newblock doi:{10.1177/1532673X9001800102}.
+
+\bibitem{kelley_class_1995}
+Kelley J, Evans MDR.
+\newblock Class and {{Class Conflict}} in {{Six Western Nations}}.
+\newblock American Sociological Review. 1995;60(2):157--178.
+\newblock doi:{10.2307/2096382}.
+
+\bibitem{scheepers_religion_1998}
+Scheepers P, Van Der~Slik F.
+\newblock Religion and {{Attitudes}} on {{Moral Issues}}: {{Effects}} of
+  {{Individual}}, {{Spouse}} and {{Parental Characteristics}}.
+\newblock Journal for the Scientific Study of Religion. 1998;37(4):678--691.
+\newblock doi:{10.2307/1388149}.
+
+\bibitem{karpov_religiosity_2002}
+Karpov V.
+\newblock Religiosity and {{Tolerance}} in the {{United States}} and
+  {{Poland}}.
+\newblock Journal for the Scientific Study of Religion. 2002;41(2):267--288.
+\newblock doi:{10.1111/1468-5906.00116}.
+
+\bibitem{norris_sacred_2011}
+Norris P, Inglehart R.
+\newblock Sacred and {{Secular}}: {{Religion}} and {{Politics Worldwide}}.
+\newblock {Cambridge}: {Cambridge University Press}; 2011.
+
+\bibitem{kelley_national_1997}
+Kelley J, De~Graaf ND.
+\newblock National {{Context}}, {{Parental Socialization}}, and {{Religious
+  Belief}}: {{Results}} from 15 {{Nations}}.
+\newblock American Sociological Review. 1997;62(4):639--659.
+\newblock doi:{10.2307/2657431}.
+
+\DIFdelbegin \bibitem{fukuyama_end_1992}
+\DIFdel{Fukuyama F}\DIFdelend \DIFaddbegin \bibitem{gelman_multilevel_2006}
+\DIFadd{Gelman A}\DIFaddend .
+\newblock \DIFdelbegin \DIFdel{The }\DIFdelend \DIFaddbegin \DIFadd{Multilevel (}\DIFaddend {{\DIFdelbegin \DIFdel{End}\DIFdelend \DIFaddbegin \DIFadd{Hierarchical}\DIFaddend }}\DIFdelbegin \DIFdel{of }\DIFdelend \DIFaddbegin \DIFadd{) }\DIFaddend {{\DIFdelbegin \DIFdel{History}\DIFdelend \DIFaddbegin \DIFadd{Modeling}\DIFaddend }}\DIFdelbegin \DIFdel{and }\DIFdelend \DIFaddbegin \DIFadd{: }\DIFaddend {{\DIFdelbegin \DIFdel{The Last Man}\DIFdelend \DIFaddbegin \DIFadd{What It Can}\DIFaddend }} \DIFdelbegin \DIFdel{.
+}%DIFDELCMD < \newblock %%%
+\DIFdelend \DIFaddbegin \DIFadd{and
+  }\DIFaddend {\DIFdelbegin \DIFdel{New York}%DIFDELCMD < }%%%
+\DIFdel{:}\DIFdelend {\DIFdelbegin \DIFdel{Free Press}\DIFdelend \DIFaddbegin \DIFadd{Cannot Do}\DIFaddend }\DIFaddbegin }\DIFadd{.
+}\newblock \DIFadd{Technometrics. 2006}\DIFaddend ;\DIFdelbegin \DIFdel{1992.
+}\DIFdelend \DIFaddbegin \DIFadd{48(3):432--435.
+}\DIFaddend 
+
+\DIFdelbegin \bibitem{hefner_multiple_1998}
+\DIFdel{Hefner RW. }%DIFDELCMD < \newblock %%%
+\DIFdel{Multiple }\DIFdelend \DIFaddbegin \bibitem{pewforumonreligionandpubliclife_global_2012}
+\DIFaddend {\DIFdelbegin %DIFDELCMD < {%%%
+\DIFdel{Modernities}\DIFdelend \DIFaddbegin \DIFadd{Pew Forum on Religion and Public Life}\DIFaddend }\DIFdelbegin %DIFDELCMD < }%%%
+\DIFdel{: }\DIFdelend \DIFaddbegin \DIFadd{. The }\DIFaddend {{\DIFdelbegin \DIFdel{Christianity}\DIFdelend \DIFaddbegin \DIFadd{Global Religious Landscape}\DIFaddend }\DIFdelbegin %DIFDELCMD < }%%%
+\DIFdel{, }\DIFdelend \DIFaddbegin }\DIFadd{;
+  2012.
+}
+
+\bibitem{vandevijver_methods_2021}
+\DIFadd{Van De~Vijver FJR, Leung K.
+}\newblock \DIFadd{Methods and }\DIFaddend {{\DIFdelbegin \DIFdel{Islam}\DIFdelend \DIFaddbegin \DIFadd{Data Analysis}\DIFaddend }} \DIFdelbegin \DIFdel{, and
+  }\DIFdelend \DIFaddbegin \DIFadd{for }\DIFaddend {{\DIFdelbegin \DIFdel{Hinduism}\DIFdelend \DIFaddbegin \DIFadd{Cross}\DIFaddend }}\DIFdelbegin \DIFdel{in a }\DIFdelend \DIFaddbegin \DIFadd{-}\DIFaddend {{\DIFdelbegin \DIFdel{Globalizing Age}\DIFdelend \DIFaddbegin \DIFadd{Cultural Research}\DIFaddend }}.
+\newblock \DIFdelbegin \DIFdel{Annual Review of Anthropology. 1998}\DIFdelend \DIFaddbegin \DIFadd{2nd ed. }{\DIFadd{New York}}\DIFadd{: }{\DIFadd{Cambridge University Press}}\DIFaddend ; \DIFdelbegin \DIFdel{27: 83--104.
+}\DIFdelend \DIFaddbegin \DIFadd{2021.
+}\DIFaddend 
+
+\DIFdelbegin \bibitem{eisenstadt_multiple_2000}
+\DIFdel{Eisenstadt SN}\DIFdelend \DIFaddbegin \bibitem{gadermann_estimating_2012}
+\DIFadd{Gadermann AM, Guhn M, Zumbo BD}\DIFaddend .
+\newblock \DIFdelbegin \DIFdel{Multiple }\DIFdelend \DIFaddbegin \DIFadd{Estimating Ordinal Reliability for }\DIFaddend {{\DIFdelbegin \DIFdel{Modernities}\DIFdelend \DIFaddbegin \DIFadd{Likert}\DIFaddend }}\DIFaddbegin \DIFadd{-Type and Ordinal Item
+  Response Data: }{{\DIFadd{A}}} \DIFadd{Conceptual, Empirical, and Practical Guide}\DIFaddend .
+\newblock \DIFdelbegin \DIFdel{Daedalus. 2000;129(1):1--29.
+}\DIFdelend \DIFaddbegin \DIFadd{Practical Assessment, Research and Evaluation. 2012;17(3):1--13.
+}\newblock \DIFadd{doi:}{\DIFadd{10.7275/N560-J767}}\DIFadd{.
+}\DIFaddend 
+
+\DIFdelbegin \bibitem{kamali_multiple_2006}
+\DIFdel{Kamali }\DIFdelend \DIFaddbegin \bibitem{tay_overview_2015}
+\DIFadd{Tay L, Meade AW, Cao }\DIFaddend M.
+\newblock \DIFdelbegin \DIFdel{Multiple }\DIFdelend \DIFaddbegin \DIFadd{An }\DIFaddend {{\DIFdelbegin \DIFdel{Modernities}\DIFdelend \DIFaddbegin \DIFadd{Overview}\DIFaddend }} \DIFdelbegin \DIFdel{, }%DIFDELCMD < {{%%%
+\DIFdel{Civil Society}%DIFDELCMD < }} %%%
+\DIFdelend and {{\DIFdelbegin \DIFdel{Islam}\DIFdelend \DIFaddbegin \DIFadd{Practical Guide}\DIFaddend }} \DIFdelbegin \DIFdel{: The
+  }\DIFdelend \DIFaddbegin \DIFadd{to }\DIFaddend {{\DIFdelbegin \DIFdel{Case}\DIFdelend \DIFaddbegin \DIFadd{IRT Measurement
+  Equivalence Analysis}\DIFaddend }}\DIFdelbegin \DIFdel{of }\DIFdelend \DIFaddbegin \DIFadd{.
+}\newblock \DIFadd{Organizational Research Methods. 2015;18(1):3--46.
+}\newblock \DIFadd{doi:}\DIFaddend {\DIFdelbegin %DIFDELCMD < {%%%
+\DIFdel{Iran}\DIFdelend \DIFaddbegin \DIFadd{10.1177/1094428114553062}\DIFaddend }\DIFdelbegin %DIFDELCMD < } %%%
+\DIFdel{and }\DIFdelend \DIFaddbegin \DIFadd{.
+}
+
+\bibitem{welzel_noninvariance_2021}
+\DIFadd{Welzel C, Brunkert L, Kruse S, Inglehart RF.
+}\newblock \DIFadd{Non-Invariance? }\DIFaddend {{\DIFdelbegin \DIFdel{Turkey}\DIFdelend \DIFaddbegin \DIFadd{An Overstated Problem With Misconceived Causes}\DIFaddend }}.
+\newblock \DIFdelbegin %DIFDELCMD < {%%%
+\DIFdel{Liverpool}%DIFDELCMD < }%%%
+\DIFdelend \DIFaddbegin \DIFadd{Sociological Methods \& Research. 2021; p. 0049124121995521.
+}\newblock \DIFadd{doi}\DIFaddend :{\DIFdelbegin \DIFdel{Liverpool University Press}\DIFdelend \DIFaddbegin \DIFadd{10.1177/0049124121995521}\DIFaddend }\DIFdelbegin \DIFdel{; 2006.
+}\DIFdelend \DIFaddbegin \DIFadd{.
+}\DIFaddend 
+
+\DIFdelbegin \bibitem{casanova_cosmopolitanism_2011}
+\DIFdel{Casanova J}\DIFdelend \DIFaddbegin \bibitem{meitinger_measurement_2020}
+\DIFadd{Meitinger K, Davidov E, Schmidt P, Braun M}\DIFaddend .
+\newblock \DIFdelbegin \DIFdel{Cosmopolitanism, }\DIFdelend \DIFaddbegin \DIFadd{Measurement }\DIFaddend {{\DIFdelbegin \DIFdel{The Clash}\DIFdelend \DIFaddbegin \DIFadd{Invariance}\DIFaddend }}\DIFdelbegin \DIFdel{of }\DIFdelend \DIFaddbegin \DIFadd{: }\DIFaddend {{\DIFdelbegin \DIFdel{Civilizations}\DIFdelend \DIFaddbegin \DIFadd{Testing}\DIFaddend }} \DIFaddbegin \DIFadd{for }{{\DIFadd{It}}} \DIFaddend and {{\DIFdelbegin \DIFdel{Multiple
+  Modernities}\DIFdelend \DIFaddbegin \DIFadd{Explaining
+  Why It}\DIFaddend }} \DIFaddbegin \DIFadd{Is }{{\DIFadd{Absent}}}\DIFaddend .
+\newblock \DIFdelbegin \DIFdel{Current Sociology. 2011;59(2):252--267}\DIFdelend \DIFaddbegin \DIFadd{Survey Research Methods. 2020;14(4):345--349 Pages}\DIFaddend .
+\newblock doi:{\DIFdelbegin \DIFdel{10.1177}\DIFdelend \DIFaddbegin \DIFadd{10.18148}\DIFaddend /\DIFdelbegin \DIFdel{0011392110391162}\DIFdelend \DIFaddbegin \DIFadd{SRM/2020.V14I4.7655}\DIFaddend }.
+
+\DIFdelbegin \bibitem{pewforumonreligionandpubliclife_global_2012}
+%DIFDELCMD < {%%%
+\DIFdel{Pew Forum on Religion and Public Life}%DIFDELCMD < }%%%
+\DIFdel{. The }%DIFDELCMD < {{%%%
+\DIFdel{Global Religious Landscape}%DIFDELCMD < }}%%%
+\DIFdel{;
+  2012.
+}%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelend \bibitem{glock_religion_1965}
+Glock CY, Stark R.
+\newblock Religion and {{Society}} in {{Tension}}.
+\newblock {Chicago}: {Rand McNally}; 1965.
+
+\DIFdelbegin \bibitem{el-menouar_five_2014}
+%DIFDELCMD < {%%%
+\DIFdel{El-Menouar}%DIFDELCMD < } %%%
+\DIFdel{Y.
+}%DIFDELCMD < \newblock %%%
+\DIFdel{The Five Dimensions of }%DIFDELCMD < {{%%%
+\DIFdel{Muslim}%DIFDELCMD < }} %%%
+\DIFdel{Religiosity. }%DIFDELCMD < {{%%%
+\DIFdel{Results}%DIFDELCMD < }} %%%
+\DIFdel{of an
+  Empirical Study.
+}%DIFDELCMD < \newblock %%%
+\DIFdel{methods, data, analyses. 2014;8(1):26.
+}%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelend \bibitem{buuren_mice_2011}
+van Buuren S, {Groothuis-Oudshoorn} K.
+\newblock {{MICE}} : {{Multivariate Imputation}} by {{Chained Equations}} in
+  {{R}}.
+\newblock Journal of Statistical Software. 2011;45(3).
+\newblock doi:{10.18637/jss.v045.i03}.
+
+\bibitem{gelman_scaling_2008}
+Gelman A.
+\newblock Scaling {{Regression Inputs}} by {{Dividing}} by {{Two Standard
+  Deviations}}.
+\newblock Statistics in Medicine. 2008;27(15):2865--2873.
+\newblock doi:{10.1002/sim.3107}.
+
+\end{thebibliography}
+\DIFdelbegin %DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIF < \bibliography{../../project.bib}
+\DIFdelend 
+
+\end{document}
