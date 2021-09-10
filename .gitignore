@@ -8,3 +8,4 @@
 **/*.out
 **/*.log
 products/submissions/plos_one/figures/*.pdf
+**/latexdiff
