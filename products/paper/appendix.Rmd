@@ -15,26 +15,67 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, error = FALSE, warning = FA
 library(here)
 source(here("analysis","useful_functions.R"))
 source(here("analysis","check_packages.R"))
+#you need to load kableExtra in the doc
+options(kableExtra.latex.load_packages = FALSE)
+options(knitr.table.format = "latex")
+library(kableExtra)
 load(here("analysis","output","analytic_samples.RData"))
 load(here("analysis","output","country_data.RData"))
 ```
 
 # Supplementary Material
 
-```{r gdp_models, echo=FALSE, results='asis'}
-formula_baseline <- formula(violence~(1+religiosity+educqq_scl|country)+
-                              religiosity+educqq_scl)
-formula_demog <- update(formula_baseline, .~.+incomeqq_scl+
-                          age25_29+age30_34+age35_39+age40_44+
-                          age45_49+age50_54+age55_59+ageAge60orover+
-                          Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr)
-formula_theocons <- update(formula_demog, .~.+NecessarytobelieveinGodtobemoral+
-                             islam_truth_ctr+islam_oneway_ctr)
-formula_attitudes <- update(formula_theocons, .~.+conflict_modern_ctr+
-                              anti_western+anti_democratic_ctr+social_cons)
+```{r model-formulas, echo=FALSE, results='asis'}
+formula_no_interact <- formula(violence~(1+attend.scale+relig_important.scale+
+                                           prayer.scale+educqq_scl|country)+
+                                 attend.scale+relig_important.scale+
+                                 prayer.scale+educqq_scl+incomeqq_scl+
+                                 age25_29+age30_34+age35_39+age40_44+
+                                 age45_49+age50_54+age55_59+ageAge60orover+
+                                 Female+Urban+
+                                 Shia+Other+Nothinginparticular+sufi_ctr+
+                                 NecessarytobelieveinGodtobemoral+
+                                 islam_truth_ctr+islam_oneway_ctr+
+                                 conflict_modern_ctr+
+                                 western_culture+western_immoral+
+                                 anti_democratic_ctr+
+                                 social_cons_death+social_cons_sex+hdi_scaled)
+formula_interact_restrained <- update(formula_no_interact, 
+                                      .~.+educqq_scl*hdi_scaled)
 
-formula_gdp_intercept <- update(formula_attitudes, .~.+lgdpcap_scaled)
-formula_gdp_full <- update(formula_attitudes, .~.+(religiosity+educqq_scl)*lgdpcap_scaled)
+formula_gdp_intercept <- update(formula_no_interact, .~.-hdi_scaled+lgdpcap_scaled)
+formula_gdp_full <- update(formula_gdp_intercept, .~.+educqq_scl*lgdpcap_scaled)
+
+formula_ed_alt_individ <- formula(violence~(1+attend.scale+relig_important.scale+
+                                              prayer.scale+Secondary+Post_Secondary|country)+
+                                    attend.scale+relig_important.scale+
+                                    prayer.scale+Secondary+Post_Secondary+incomeqq_scl+
+                                    age25_29+age30_34+age35_39+age40_44+
+                                    age45_49+age50_54+age55_59+ageAge60orover+
+                                    Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr+
+                                    NecessarytobelieveinGodtobemoral+
+                                    islam_truth_ctr+islam_oneway_ctr+conflict_modern_ctr+
+                                    western_culture+western_immoral+
+                                    anti_democratic_ctr+
+                                    social_cons_death+social_cons_sex+hdi_scaled)
+formula_ed_alt_hdi <- update(formula_ed_alt_individ, 
+                          .~.+(Secondary+Post_Secondary)*hdi_scaled)
+
+#results_full <- pool_re_models(mclapply(analytic_samples, function(x) {
+#  lmer.converge(formula_interact_restrained, data=x)
+#}))
+results_apostasy <- pool_re_models(mclapply(analytic_samples, function(x) {
+  glmer.converge(update(formula_interact_restrained, (death_apostasy=="Favor")~.), 
+                 data=x)
+}))
+results_stoning <- pool_re_models(mclapply(analytic_samples, function(x) {
+  glmer.converge(update(formula_interact_restrained, (stone_adultery=="Favor")~.), 
+                 data=x)
+}))
+results_corporal <- pool_re_models(mclapply(analytic_samples, function(x) {
+  glmer.converge(update(formula_interact_restrained, (severe_corporal=="Favor")~.), 
+                 data=x)
+}))
 
 results_gdp_intercept <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_gdp_intercept, data=x)
@@ -43,6 +84,15 @@ results_gdp_full <- pool_re_models(mclapply(analytic_samples, function(x) {
   lmer.converge(formula_gdp_full, data=x)
 }))
 
+results_ed_alt_individ <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_ed_alt_individ, data=x)
+}))
+results_ed_alt_hdi <- pool_re_models(mclapply(analytic_samples, function(x) {
+  lmer.converge(formula_ed_alt_hdi, data=x)
+}))
+```
+
+```{r convert-models-func}
 convert_model_re <- function(model) {
   tr <- createTexreg(
     coef.names = names(model$fixef$beta), 
@@ -50,128 +100,32 @@ convert_model_re <- function(model) {
     se = model$fixef$se, 
     pvalues = model$fixef$pvalue,
     gof.names = c("N (individual)","N (country)", "BIC",
-                  "SD (religiosity)","SD (education quantile)",
-                  "r(intercept, religiosity)","r(intercept, education)",
-                  "r(religiosity, education)"),
+                  "SD (education quantile)", "SD (attendance)",
+                  "SD (religion important)", "SD (prayer)",
+                  "r(intercept, education)","r(intercept, attendance)",
+                  "r(intercept, religion important)","r(intercept, prayer)",
+                  "r(education, attendance)","r(education, religion important)",
+                  "r(education, prayer)","r(attendance, religion important)",
+                  "r(attendance, prayer)","r(religion important, prayer)"),
     gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC,
-            model$ranef_sd["religiosity"], model$ranef_sd["educqq_scl"],
-            model$ranef_cor["(Intercept)","religiosity"],
+            model$ranef_sd["educqq_scl"],
+            model$ranef_sd["attend.scale"],
+            model$ranef_sd["relig_important.scale"],
+            model$ranef_sd["prayer.scale"],
             model$ranef_cor["(Intercept)","educqq_scl"],
-            model$ranef_cor["religiosity","educqq_scl"]), 
-    gof.decimal = c(F,F,F,T,T,T,T,T)
+            model$ranef_cor["(Intercept)","attend.scale"],
+            model$ranef_cor["(Intercept)","relig_important.scale"],
+            model$ranef_cor["(Intercept)","prayer.scale"],
+            model$ranef_cor["educqq_scl","attend.scale"],
+            model$ranef_cor["educqq_scl","relig_important.scale"],
+            model$ranef_cor["educqq_scl","prayer.scale"],
+            model$ranef_cor["relig_important.scale","attend.scale"],
+            model$ranef_cor["prayer.scale","attend.scale"],
+            model$ranef_cor["relig_important.scale","prayer.scale"]),
+    gof.decimal = c(F,F,F,rep(T, 14))
   )
 }
 
-knitreg(lapply(list(results_gdp_intercept, results_gdp_full),
-               convert_model_re),
-        digits=3,
-        custom.coef.names=c("Intercept","Religiosity","Education quantile",
-                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
-                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
-                            "Age 60 and over", "Female", "Urban", "Shia",
-                            "Other denomination","Just a Muslim", "Sufi",
-                            "Necessary to believe in god to be moral",
-                            "Islam is the one true faith",
-                            "One way to interpret relig. teachings",
-                            "Religion in conflict with modernity",
-                            "Anti-Westernization scale",
-                            "Prefers strong leader to democracy",
-                            "Socially conservative scale",
-                            "GDP per capita (logged)",
-                            "log GDP x religiosity", "log GDP x education quantile"),
-        single.row=TRUE,
-        dcolumn=TRUE,
-        caption="Comparing results from multilevel models predicting support for violent practices for violating norms among Muslims using the Human Development Index vs. logged GDP per capita.",
-        caption.above=TRUE,
-        custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
-```
-
-```{r religiosity_sensitivity_models, echo=FALSE, results='asis'}
-formula_relig_sep <- formula(violence~(1+attend.scale+relig_important.scale+prayer.scale+
-                                         educqq_scl|country)+
-                               educqq_scl+incomeqq_scl+
-                               age25_29+age30_34+age35_39+age40_44+
-                               age45_49+age50_54+age55_59+ageAge60orover+
-                               Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr+
-                               NecessarytobelieveinGodtobemoral+
-                               islam_truth_ctr+islam_oneway_ctr+
-                               conflict_modern_ctr+anti_western+anti_democratic_ctr+
-                               social_cons+
-                               attend.scale+relig_important.scale+prayer.scale)
-formula_relig2 <- formula(violence~(1+religiosity2+attend.scale+educqq_scl|country)+
-                            educqq_scl+incomeqq_scl+
-                            age25_29+age30_34+age35_39+age40_44+
-                            age45_49+age50_54+age55_59+ageAge60orover+
-                            Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr+
-                            NecessarytobelieveinGodtobemoral+
-                            islam_truth_ctr+islam_oneway_ctr+
-                            conflict_modern_ctr+anti_western+anti_democratic_ctr+
-                            social_cons+
-                            religiosity2+attend.scale)
-
-results_relig_sep <- pool_re_models(mclapply(analytic_samples, function(x) {
-  lmer.converge(formula_relig_sep, data=x)
-}))
-
-results_relig2 <- pool_re_models(mclapply(analytic_samples, function(x) {
-  lmer.converge(formula_relig2, data=x)
-}))
-  
-convert_model_re_relig <- function(model) {
-  tr <- createTexreg(
-    coef.names = names(model$fixef$beta), 
-    coef = model$fixef$beta, 
-    se = model$fixef$se, 
-    pvalues = model$fixef$pvalue,
-    gof.names = c("N (individual)","N (country)", "BIC"),
-    gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC), 
-    gof.decimal = c(F,F,F)
-  )
-}
-
-knitreg(lapply(list(results_relig_sep, results_relig2),
-               convert_model_re_relig),
-        digits=3,
-        custom.coef.names=c("Intercept","Education quantile",
-                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
-                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
-                            "Age 60 and over", "Female", "Urban", "Shia",
-                            "Other denomination","Just a Muslim", "Sufi",
-                            "Necessary to believe in god to be moral",
-                            "Islam is the one true faith",
-                            "One way to interpret relig. teachings",
-                            "Religion in conflict with modernity",
-                            "Anti-Westernization scale",
-                            "Prefers strong leader to democracy",
-                            "Socially conservative scale",
-                            "Mosque attendance scale","Religion important scale",
-                            "Prayer frequency scale", 
-                            "Prayer and religion important scale"),
-        single.row=TRUE,
-        dcolumn=TRUE,
-        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims using alternative religiosity measures.",
-        caption.above=TRUE,
-        custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
-```
-
-```{r education_sensitivity_models, echo=FALSE, results='asis'}
-formula_baseline_educ_lvl <- formula(violence~(1+religiosity+Secondary+Post_Secondary|country)+
-                              religiosity+Secondary+Post_Secondary)
-formula_demog_educ_lvl <- update(formula_baseline_educ_lvl, .~.+incomeqq_scl+
-                          age25_29+age30_34+age35_39+age40_44+
-                          age45_49+age50_54+age55_59+ageAge60orover+
-                          Female+Urban+Shia+Other+Nothinginparticular+sufi_ctr)
-formula_theocons_educ_lvl <- update(formula_demog_educ_lvl, .~.+NecessarytobelieveinGodtobemoral+
-                             islam_truth_ctr+islam_oneway_ctr)
-formula_attitudes_educ_lvl <- update(formula_theocons_educ_lvl, .~.+conflict_modern_ctr+
-                              anti_western+anti_democratic_ctr+social_cons)
-
-results_attitudes_educ_lvl <- pool_re_models(mclapply(analytic_samples, function(x) {
-  lmer.converge(formula_attitudes_educ_lvl, data=x)
-}))
-
-#the function for converting back for knitreg will need to be model specific so 
-#it goes here and not useful functions
 convert_model_re_educ <- function(model) {
   tr <- createTexreg(
     coef.names = names(model$fixef$beta), 
@@ -179,42 +133,139 @@ convert_model_re_educ <- function(model) {
     se = model$fixef$se, 
     pvalues = model$fixef$pvalue,
     gof.names = c("N (individual)","N (country)", "BIC",
-                  "SD (religiosity)","SD (secondary)","SD (post-secondary)",
-                  "r(intercept, religiosity)","r(intercept, secondary)",
-                  "r(intercept, post-secondary)","r(religiosity, secondary)",
-                  "r(religiosity, post-secondary)", "r(secondary, post-secondary)"),
+                  "SD (Secondary)",
+                  "SD (Post-Secondary)",
+                  "SD (attendance)",
+                  "SD (religion important)",
+                  "SD (prayer)",
+                  "r(intercept, secondary)",
+                  "r(intercept, post-secondary)",
+                  "r(intercept, attendance)",
+                  "r(intercept, religion important)",
+                  "r(intercept, prayer)",
+                  "r(secondary, attendance)",
+                  "r(post-secondary, attendance)",
+                  "r(secondary, religion important)",
+                  "r(post-secondary, religion important)",
+                  "r(secondary, prayer)",
+                  "r(post-secondary, prayer)",
+                  "r(secondary, post-secondary)",
+                  "r(attendance, religion important)",
+                  "r(attendance, prayer)",
+                  "r(religion important, prayer)"),
     gof = c(model$sumStats$n, model$sumStats$ngrp, model$sumStats$BIC,
-            model$ranef_sd["religiosity"], model$ranef_sd["Secondary"],
+            model$ranef_sd["Secondary"],
             model$ranef_sd["Post_Secondary"],
-            model$ranef_cor["(Intercept)","religiosity"],
+            model$ranef_sd["attend.scale"],
+            model$ranef_sd["relig_important.scale"],
+            model$ranef_sd["prayer.scale"],
             model$ranef_cor["(Intercept)","Secondary"],
             model$ranef_cor["(Intercept)","Post_Secondary"],
-            model$ranef_cor["religiosity","Secondary"], 
-            model$ranef_cor["religiosity","Post_Secondary"],
-            model$ranef_cor["Secondary","Post_Secondary"]), 
-    gof.decimal = c(F,F,F,T,T,T,T,T,T,T,T,T)
+            model$ranef_cor["(Intercept)","attend.scale"],
+            model$ranef_cor["(Intercept)","relig_important.scale"],
+            model$ranef_cor["(Intercept)","prayer.scale"],
+            model$ranef_cor["Secondary","attend.scale"],
+            model$ranef_cor["Post_Secondary","attend.scale"],
+            model$ranef_cor["Secondary","relig_important.scale"],
+            model$ranef_cor["Post_Secondary","relig_important.scale"],
+            model$ranef_cor["Secondary","prayer.scale"],
+            model$ranef_cor["Post_Secondary","prayer.scale"],
+            model$ranef_cor["Secondary","Post_Secondary"],
+            model$ranef_cor["relig_important.scale","attend.scale"],
+            model$ranef_cor["prayer.scale","attend.scale"],
+            model$ranef_cor["relig_important.scale","prayer.scale"]),
+    gof.decimal = c(F,F,F,rep(T, 20))
   )
 }
+```
 
-knitreg(convert_model_re_educ(results_attitudes_educ_lvl),
+```{r logit-models, eval=TRUE, results='asis'}
+knitreg(lapply(list(results_apostasy, results_stoning, results_corporal),
+               convert_model_re),
         digits=3,
-        custom.coef.names=c("Intercept","Religiosity","Secondary","Post-Secondary",
+        custom.coef.names=c("Intercept","Mosque attendance","Importance of religion",
+                            "Frequency of prayer","Education quantile",
                             "Income quantile","Age 25-29","Age 30-34","Age 35-39",
                             "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
                             "Age 60 and over", "Female", "Urban", "Shia",
-                            "Other denomination","Just a Muslim", "Sufi",
+                            "Other denomination","Just a Muslim", "Sufi (ref. non-Sufi)",
                             "Necessary to believe in god to be moral",
                             "Islam is the one true faith",
                             "One way to interpret relig. teachings",
                             "Religion in conflict with modernity",
-                            "Anti-Westernization scale",
+                            "Dislikes western culture",
+                            "Western culture is immoral",
                             "Prefers strong leader to democracy",
-                            "Socially conservative scale"),
+                            "Socially conservative scale, death",
+                            "Socially conservative scale, sex",
+                            "Human development index","HDI x education quantile"),
         single.row=TRUE,
         dcolumn=TRUE,
-        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims using absolute educational attainment rather than education quantile.",
+        longtable=TRUE,
+        groups=list("Age (ref. 18-24)"=7:14, "Denomination (ref. Sunni)"=17:19),
+        custom.model.names=c("Death for Apostasy","Stoning Adulterers","Corporal punishment"),
+        caption="Results from multilevel logit models predicting support for each component of the violent practices measure among Muslims.",
         caption.above=TRUE,
         custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
 ```
 
+```{r gdp_models, results='asis'}
+knitreg(lapply(list(results_gdp_intercept, results_gdp_full),
+               convert_model_re),
+        digits=3,
+        custom.coef.names=c("Intercept","Mosque attendance","Importance of religion",
+                            "Frequency of prayer","Education quantile",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi (ref. non-Sufi)",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Dislikes western culture",
+                            "Western culture is immoral",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale, death",
+                            "Socially conservative scale, sex",
+                            "GDP per capita (logged)","log GDP x education quantile"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        longtable=TRUE,
+        groups=list("Age (ref. 18-24)"=7:14, "Denomination (ref. Sunni)"=17:19),
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims using GDP to measure to development.",
+        caption.above=TRUE,
+        custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+```
+
+```{r education-models, results='asis', eval=TRUE}
+knitreg(lapply(list(results_ed_alt_individ, results_ed_alt_hdi),
+               convert_model_re_educ),
+        digits=3,
+        custom.coef.names=c("Intercept","Mosque attendance","Importance of religion",
+                            "Frequency of prayer","Secondary","Post-Secondary",
+                            "Income quantile","Age 25-29","Age 30-34","Age 35-39",
+                            "Age 40-44","Age 45-49","Age 50-54","Age 55-59",
+                            "Age 60 and over", "Female", "Urban", "Shia",
+                            "Other denomination","Just a Muslim", "Sufi (ref. non-Sufi)",
+                            "Necessary to believe in god to be moral",
+                            "Islam is the one true faith",
+                            "One way to interpret relig. teachings",
+                            "Religion in conflict with modernity",
+                            "Dislikes western culture",
+                            "Western culture is immoral",
+                            "Prefers strong leader to democracy",
+                            "Socially conservative scale, death",
+                            "Socially conservative scale, sex",
+                            "Human development index",
+                            "HDI x Secondary",
+                            "HDI x Post-Secondary"),
+        single.row=TRUE,
+        dcolumn=TRUE,
+        longtable=TRUE,
+        groups=list("Age (ref. 18-24)"=8:15, "Denomination (ref. Sunni)"=18:20),
+        caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims using three category educational variable.",
+        caption.above=TRUE,
+        custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and slopes for some variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
+```
 
