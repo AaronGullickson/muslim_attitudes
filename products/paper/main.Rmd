@@ -11,7 +11,7 @@ output:
     citation_package: natbib
     fig_caption: yes
     template: ./resources/aog-latex-ms.tex
-    keep_tex: no
+    keep_tex: yes
     toc: false
   word_document:
     reference_docx: ./resources/aog_word_style.docx
@@ -137,7 +137,7 @@ From these arguments, we develop several hypotheses relating to the effects of e
 
 > *H2a:* The association between education and support for violent practices is consistently negative across countries.
 
-A less stringent version of this hypothesis would expect that the liberalizing effects of education are most substantial in countries that have developed a modern educational system. Thus, we should expect the negative effect of education to be greatest in countries with the highest level of development:
+A less stringent version of this hypothesis would expect that the liberalizing effects of education are most substantial in countries that have developed a modern educational system. Thus, we should expect the negative effect of education to be the greatest in countries with the highest level of development:
 
 > *H2b:* The association between education and support for violent practices is more negative in countries with higher levels of development.
 
@@ -176,7 +176,7 @@ Finally, we consider how the effects of education and religiosity within a count
 
 # Analytical Approach
 
-To test the hypotheses outlined above, we developed a multilevel model using the Pew data detailed below. Specifically, we use a random intercept and random slope multilevel model in which the intercepts and the slopes for the educational attainment and religiosity variables are allowed to vary across countries. Unlike fixed effects models, multilevel models estimate country-specific parameters using partial pooling between the global estimate and country-specific estimates, which tends to produce more reliable results when the lower-level units consist of random samples of varying size ==(CITATION?)==.
+To test the hypotheses outlined above, we developed a multilevel model using the Pew data detailed below. Specifically, we use a random intercept and random slope multilevel model in which the intercepts and the slopes for the educational attainment and religiosity variables are allowed to vary across countries. Multilevel models estimate country-specific parameters using partial pooling between the global estimate and fixed-effects country-specific estimates, which avoids overfitting the data and produces more reasonable estimates [@gelman_multilevel_2006].
 
 Our general model specification is:
 
@@ -287,7 +287,7 @@ Globally, these three measures were highly correlated with one another ($\alpha=
 
 When testing for measurement invariance, we found some evidence of metric invariance. After analyzing model fit, we found that this metric invariance was caused by low correlations between the death for apostasy variable and the other two variables in Egypt and Jordan. Removing either of these countries led to a model fit that supported metric invariance. Figure \@ref(fig:country-averages) shows that the ordering of overall support for each item is different in Egypt and Jordan than in the remaining countries. In Egypt and Jordan, respondents were substantially more supportive of death for apostasy than the other two measures, whereas in the remaining countries, this item typically has similar or lower support. These results suggests that as support for this item approaches universality in these countries, its correlation with remaining items declines. @welzel_noninvariance_2021 note that this issue is a common problem in analyzing measurement invariance when group-level item means vary across the entire range of the distribution. We have decided to retain Egypt and Jordan in the full analysis, but some caution should be taken in interpreting the specific results for these countries.
 
-Further tests indicated scalar invariance in this measure. Scalar invariance is an extremely common issue in cross-national research [@meitinger_measurement_2020], but the literature currently offers little guidance in how to resolve such problems. While scalar invariance technically indicates that means across groups are not directly comparable, it may in some cases have a minimal impact on such comparisons. As a sensitivity test, we estimated separate multilevel logit models on each of the items within the construct and compared the fixed and random components of each model to one another and to the model using the construct itself. Overall, both the fixed and random components are highly consistent across all models and none of our substantial conclusions would be modified by use of the separate models. Importantly, the random intercepts across the separate logit models (which measure the mean value in a country) are highly correlated ($r>=0.95$) with the random intercepts of the construct model in all three cases. Therefore, on the principles of data reduction and parsimony, we use the construct-based model for the remainder of the analysis here. The results of the sensitivity analysis are provided in the supplementary materials. 
+Further tests indicated scalar invariance in this measure. Scalar invariance is an extremely common issue in cross-national research [@meitinger_measurement_2020], but the literature currently offers little guidance in how to resolve such problems. While scalar invariance technically indicates that means across groups are not directly comparable, it may in some cases have a minimal impact on such comparisons. As a sensitivity test, we estimated separate multilevel logit models on each of the items within the construct and compared the fixed and random components of each model to one another and to the model using the construct itself. Overall, both the fixed and random components are highly consistent across all models and none of our substantial conclusions would be modified by use of the separate models. Importantly, the random intercepts across the separate logit models (which measure the mean value in a country) are highly correlated ($r>=0.92$) with the random intercepts of the construct model in all three cases. Therefore, on the principle of parsimony, we use the construct-based model for the remainder of the analysis here. The results of the sensitivity analysis are provided in the supplementary materials. 
 
 ## Measuring Development
 
@@ -311,7 +311,7 @@ We also control for non-religious ideological views. We constructed two indices 
 
 ## Multiple Imputation
 
-We use multiple imputation to address missing values in the dataset. We imputed five complete datasets using multivariate imputation by chained equations [@buuren_mice_2011]. We generally did not impute values when a question was missing because it was not asked in a particular country, but we made two exceptions to this rule. Questions regarding the moral acceptability of prostitution, premarital sex, and homosexuality were not asked in Afghanistan and the two questions about the morality of western movies, music, and television were not asked in Lebanon. In both of these cases, we imputed values in order to maximize country sample size. The percentage of values imputed ranged from a high of 11.4% for the question on whether religion was in conflict with modernity to 0.7% for the respondent’s age. We included dependent variables in the imputation procedure, but drop cases that were missing on the dependent variable. After this exclusion, the sample size of our anlalytical dataset is 31,528 respondents. 
+We use multiple imputation to address missing values in the dataset. We imputed five complete datasets using multivariate imputation by chained equations [@buuren_mice_2011]. We generally did not impute values when a question was missing because it was not asked in a particular country, but we made two exceptions to this rule. Questions regarding the moral acceptability of prostitution, premarital sex, and homosexuality were not asked in Afghanistan and the two questions about the morality of western movies, music, and television were not asked in Lebanon. In both of these cases, we imputed values in order to maximize country sample size. The percentage of values imputed ranged from a high of 11.4% for the question on whether religion was in conflict with modernity to 0.7% for the respondent’s age. We included dependent variables in the imputation procedure, but drop cases that were missing on the dependent variable. After this exclusion, the sample size of our analytical dataset is 31,528 respondents. 
 
 ## Scaling Variables
 
