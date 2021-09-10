@@ -370,6 +370,7 @@ knitreg(lapply(list(results_no_interact, results_interact_full,
         caption="Results from multilevel models predicting support for violent practices for violating norms among Muslims.",
         caption.above=TRUE,
         groups=list("Age (ref. 18-24)"=7:14, "Denomination (ref. Sunni)"=17:19),
+        label="tab:model-table",
         custom.note="\\parbox{\\linewidth}{\\vspace{2pt} \\small %stars \\\\ \\emph{Notes:} All models include random country-level intercepts and random slopes for education and religiosity variables. All quantitative variables are divided by twice their standard deviation for comparability. Results are based on five complete datasets with imputation for missing values.}")
 ```
 
