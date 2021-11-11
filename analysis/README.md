@@ -1,22 +1,26 @@
-# analysis directory
+# Analysis directory
 
-This is the main directory for the analysis. All of the scripts necessary to run the analysis are placed directly into this directory. All datasets should be placed in the `input` or `output` folder.
+This is the main directory for the analysis. All of the scripts necessary to run the analysis are placed directly into this directory. All raw datasets are in the `input` directory. Constructerd analytical data and output is in the `output` directory. Logs of the last run of certain scripts are in the `logs` directory.
 
-It is important to maintain a logical separation between raw data files that are acquired from elsewhere and serve as a basis for the project from constructed datasets that are created from the raw data by performing typical data manipulation routines (e.g. cleaning, recoding, aggregating, subsetting). All raw data should be kept in the `input` directory. All constructed datasets should be kept in the `output` directory. It should be possible to delete all files in the `output` directory and reproduce them exactly from data in the `input` directory via the constructed scripts.
+The file `run_entire_project.sh` contains information on the proper order to run all scripts and R Markdown files in to reproduce the analysis. We briefly review all the files here.
 
-Every analysis is different and may require a different set of scripts, but I provide here some simple baseline scripts that I typically use in my projects. They are:
+### Utility scripts
 
-- `check_packages.R` - You can put a list of all libraries used in any R script for the analysis and this script will check to make sure they are installed and if they are not installed it will attempt to install them.
-- `useful_functions.R` - A script to keep track of R functions that might have uses across multiple scripts.
-- `organize_data.R` - A script that will read in raw data, perform data manipulation, and output analytical dataset. In practice, projects often contain multiple scripts for this purpose depending on the complexity of the raw data.
-- `analysis.Rmd` - I typically run the main analysis for the project in a single R Markdown file, output as HTML. This allows me to write a more detailed description of what I am doing and serves as a rough draft of the language that will ultimately go into the paper. The output file basically serves as a lab notebook and will contain a variety of analyses, only some of which will make it into the final paper. Sometimes I may split this into multiple Rmd files if I find that the quantity of analysis makes it slow to run this file.
+- `check_packages.R` - This will check for and load all of the required libraries for the project> If not found, it will attempt to install them from CRAN and then load them.
+- `useful_functions.R` - A collection of functions that are used across multiple scripts.
 
-In addition, I also include a shell script called `run_entire_project.sh` that will run the entire analysis from scratch. Keep in mind that this script will remove any HTML output and all files in the `logs` and `output` directories before attempting to re-run the scripts, in order to ensure that old output does not get mixed in with new output. As other scripts are added to the project, this shell script should be updated. Any user should be able to view this shell script and see how all the various scripts in this directory are used to reproduce the analysis.
+### Organizing data scripts
 
-I remove all identifying information from scripts and output in this directory so that I can share this information with reviewers through an anonymous link on [osf.io](https://osf.io). One good way to check and make sure that all names have been removed is to use the command line tool `grep` to search for names in all the documents. For example (from within the analysis directory):
+- `construct_analytical_data.R` - A script that sources the various other scripts that are used to go from the raw data to the analytical data and combines the output to produce the final analytical dataset.
+- `organize_world_muslim_pew_data.R` - This script reads in the raw data from the Pew data on *The World’s Muslims: Religion, Politics and Society*. It cleans and recodes the data as necessary and extracts a dataset of just the required variables and countries.
+- `organize_african_pew_data.R` - This script reads in the raw data from the Pew data on *Tolerance and Tension: Islam and Christianity in Sub-Saharan Africa*. It cleans and recodes the data as necessary and extracts a dataset of just the required variables and countries.
+- `imputation.Rmd` This R Markdown file runs a multiple imputation on missing values in the full analytical dataset.
+- `add_country_data.R` - This file merges in country-level data (particularly the HDI and GDP measures) with the individual level pew data.
+- `code_variables.R` - This file codes final variables needed from the analysis from the merged individual and country-level data.
 
-```bash
-grep -r Gullickson *
-```
+### Analysis scripts
 
-will search for any documents with the word "Gullickson" in them. 
+- `factor_analysis.Rmd` - This R Markdown files conducts an exploratory factor analysis of several constructs considered for the final analysis. 
+- `analysis.Rmd` - This R Markdown file conducts the full analysis including a variety of multilevel models. 
+
+All Rmd files produce associated html files that can be read as research logs.
